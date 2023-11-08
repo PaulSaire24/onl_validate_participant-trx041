@@ -44,11 +44,7 @@
 			<scope>test</scope>
 		</dependency>
 		<!-- End test dependencies -->
-		<dependency>
-			<groupId>com.bbva.rbvd.dto.insurance</groupId>
-			<artifactId>RBVDC007</artifactId>
-			<version>[0.0, )</version>
-		</dependency>
+
         <dependency>
             <groupId>com.bbva.rbvd</groupId>
             <artifactId>RBVDR041</artifactId>

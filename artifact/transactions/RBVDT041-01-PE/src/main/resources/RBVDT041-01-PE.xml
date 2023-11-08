@@ -3,15 +3,15 @@
 	<paramsIn>
 		<list order="1" name="participants" mandatory="0">
 			<dto order="1" name="Type" mandatory="0" package="com.bbva.rbvd.dto.insurance.commons.ParticipantsDTO" artifactId="RBVDC007">
-				<parameter order="1" name="customerId" mandatory="0" type="String" size="20"/>
+				<parameter order="1" name="customerId" mandatory="0" type="String" size="8"/>
 				<dto order="2" name="document" mandatory="0" package="com.bbva.rbvd.dto.insurance.commons.DocumentDTO" artifactId="RBVDC007">
 					<dto order="1" name="documentType" mandatory="1" package="com.bbva.rbvd.dto.insurance.commons.DocumentTypeDTO" artifactId="RBVDC007">
 						<parameter order="1" name="documentNumber" mandatory="1" type="String" size="20"/>
 					</dto>
 				</dto>
-				<parameter order="3" name="firstName" mandatory="0" type="String" size="50"/>
-				<parameter order="4" name="middleName" mandatory="0" type="String" size="20"/>
-				<parameter order="5" name="lastName" mandatory="0" type="String" size="50"/>
+				<parameter order="3" name="firstName" mandatory="0" type="String" size="100"/>
+				<parameter order="4" name="middleName" mandatory="0" type="String" size="100"/>
+				<parameter order="5" name="lastName" mandatory="0" type="String" size="100"/>
 				<parameter order="6" name="birthDate" mandatory="0" type="Date (YYYY-MM-DD)" size="0"/>
 				<dto order="7" name="gender" mandatory="0" package="com.bbva.rbvd.dto.insurance.commons.GenderDTO" artifactId="RBVDC007">
 					<parameter order="1" name="id" mandatory="1" type="String" size="20"/>
@@ -22,14 +22,14 @@
 						<dto order="2" name="contact" mandatory="0" package="com.bbva.rbvd.dto.insurance.commons.ContactDTO" artifactId="RBVDC007">
 							<parameter order="1" name="contactDetailType" mandatory="1" type="String" size="30"/>
 							<parameter order="2" name="address" mandatory="0" type="String" size="100"/>
-							<parameter order="3" name="number" mandatory="0" type="String" size="20"/>
+							<parameter order="3" name="number" mandatory="0" type="String" size="40"/>
 						</dto>
 					</dto>
 				</list>
 				<list order="9" name="addresses" mandatory="0">
 					<dto order="1" name="Type" mandatory="0" package="com.bbva.rbvd.dto.insurance.commons.AddressesDTO" artifactId="RBVDC007">
 						<dto order="1" name="location" mandatory="0" package="com.bbva.rbvd.dto.insurance.commons.LocationDTO" artifactId="RBVDC007">
-							<parameter order="1" name="formattedAddress" mandatory="0" type="String" size="50"/>
+							<parameter order="1" name="formattedAddress" mandatory="0" type="String" size="200"/>
 							<list order="2" name="addressComponents" mandatory="0">
 								<dto order="1" name="Type" mandatory="0" package="com.bbva.rbvd.dto.insurance.commons.AddressComponentsDTO" artifactId="RBVDC007">
 									<list order="1" name="componentTypes" mandatory="0">
@@ -42,8 +42,8 @@
 						</dto>
 					</dto>
 				</list>
-				<dto order="10" name="participantType" mandatory="1" package="com.bbva.rbvd.dto.insurance.commons.ParticipantsDTO" artifactId="RBVDC007">
-					<parameter order="1" name="id" mandatory="1" type="String" size="20"/>
+				<dto order="10" name="participantType" mandatory="1" package="com.bbva.rbvd.dto.insurance.commons.ParticipantTypeDTO" artifactId="RBVDC007">
+					<parameter order="1" name="id" mandatory="1" type="String" size="30"/>
 				</dto>
 			</dto>
 		</list>
@@ -52,16 +52,16 @@
 		<list order="1" name="participants" mandatory="0">
 			<list order="1" name="Type" mandatory="0">
 				<dto order="1" name="Type" mandatory="0" package="com.bbva.rbvd.dto.insurance.commons.ParticipantsDTO" artifactId="RBVDC007">
-					<parameter order="1" name="customerId" mandatory="0" type="String" size="20"/>
+					<parameter order="1" name="customerId" mandatory="0" type="String" size="8"/>
 					<dto order="2" name="document" mandatory="0" package="com.bbva.rbvd.dto.insurance.commons.DocumentDTO" artifactId="RBVDC007">
 						<dto order="1" name="documentType" mandatory="1" package="com.bbva.rbvd.dto.insurance.commons.DocumentTypeDTO" artifactId="RBVDC007">
 							<parameter order="1" name="id" mandatory="1" type="String" size="20"/>
 						</dto>
-						<parameter order="2" name="documentNumber" mandatory="1" type="String" size="50"/>
+						<parameter order="2" name="documentNumber" mandatory="1" type="String" size="20"/>
 					</dto>
-					<parameter order="3" name="firstName" mandatory="0" type="String" size="50"/>
-					<parameter order="4" name="middleName" mandatory="0" type="String" size="50"/>
-					<parameter order="5" name="lastName" mandatory="0" type="String" size="50"/>
+					<parameter order="3" name="firstName" mandatory="0" type="String" size="100"/>
+					<parameter order="4" name="middleName" mandatory="0" type="String" size="100"/>
+					<parameter order="5" name="lastName" mandatory="0" type="String" size="100"/>
 					<parameter order="6" name="birthDate" mandatory="0" type="Date (YYYY-MM-DD)" size="0"/>
 					<dto order="7" name="gender" mandatory="0" package="com.bbva.rbvd.dto.insurance.commons.GenderDTO" artifactId="RBVDC007">
 						<parameter order="1" name="id" mandatory="1" type="String" size="20"/>
@@ -72,14 +72,14 @@
 							<dto order="2" name="contact" mandatory="0" package="com.bbva.rbvd.dto.insurance.commons.ContactDTO" artifactId="RBVDC007">
 								<parameter order="1" name="contactDetailType" mandatory="1" type="String" size="30"/>
 								<parameter order="2" name="address" mandatory="0" type="String" size="100"/>
-								<parameter order="3" name="number" mandatory="0" type="String" size="20"/>
+								<parameter order="3" name="number" mandatory="0" type="String" size="40"/>
 							</dto>
 						</dto>
 					</list>
 					<list order="9" name="addresses" mandatory="0">
 						<dto order="1" name="Type" mandatory="0" package="com.bbva.rbvd.dto.insurance.commons.AddressesDTO" artifactId="RBVDC007">
 							<dto order="1" name="location" mandatory="0" package="com.bbva.rbvd.dto.insurance.commons.LocationDTO" artifactId="RBVDC007">
-								<parameter order="1" name="formattedAddress" mandatory="0" type="String" size="20"/>
+								<parameter order="1" name="formattedAddress" mandatory="0" type="String" size="200"/>
 								<list order="2" name="addressComponents" mandatory="0">
 									<dto order="1" name="Type" mandatory="0" package="com.bbva.rbvd.dto.insurance.commons.AddressComponentsDTO" artifactId="RBVDC007">
 										<list order="1" name="componentTypes" mandatory="0">
@@ -93,14 +93,14 @@
 						</dto>
 					</list>
 					<dto order="10" name="participantType" mandatory="1" package="com.bbva.rbvd.dto.insurance.commons.ParticipantTypeDTO" artifactId="RBVDC007">
-						<parameter order="1" name="id" mandatory="1" type="String" size="20"/>
+						<parameter order="1" name="id" mandatory="1" type="String" size="30"/>
 					</dto>
 					<dto order="11" name="dictum" mandatory="0" package="com.bbva.rbvd.dto.insurance.commons.DictumDTO" artifactId="RBVDC007">
 						<parameter order="1" name="isApproved" mandatory="1" type="Boolean" size="0"/>
 						<list order="2" name="reasons" mandatory="0">
 							<dto order="1" name="Type" mandatory="0" package="com.bbva.rbvd.dto.insurance.commons.ReasonsDTO" artifactId="RBVDC007">
-								<parameter order="1" name="id" mandatory="1" type="String" size="20"/>
-								<parameter order="2" name="description" mandatory="0" type="String" size="20"/>
+								<parameter order="1" name="id" mandatory="1" type="String" size="30"/>
+								<parameter order="2" name="description" mandatory="0" type="String" size="200"/>
 							</dto>
 						</list>
 					</dto>

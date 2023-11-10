@@ -6,8 +6,9 @@
 				<parameter order="1" name="customerId" mandatory="0" type="String" size="8"/>
 				<dto order="2" name="document" mandatory="0" package="com.bbva.rbvd.dto.insurance.commons.DocumentDTO" artifactId="RBVDC007">
 					<dto order="1" name="documentType" mandatory="1" package="com.bbva.rbvd.dto.insurance.commons.DocumentTypeDTO" artifactId="RBVDC007">
-						<parameter order="1" name="documentNumber" mandatory="1" type="String" size="20"/>
+						<parameter order="1" name="id" mandatory="1" type="String" size="20"/>
 					</dto>
+					<parameter order="2" name="documentNumber" mandatory="1" type="String" size="20"/>
 				</dto>
 				<parameter order="3" name="firstName" mandatory="0" type="String" size="100"/>
 				<parameter order="4" name="middleName" mandatory="0" type="String" size="100"/>

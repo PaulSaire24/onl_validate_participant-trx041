@@ -21,9 +21,9 @@ public abstract class AbstractRBVDT04101PETransaction extends AbstractTransactio
 	}
 
 	/**
-	 * Set value for List<List<ParticipantsDTO>> output parameter participants
+	 * Set value for List<ParticipantsDTO> output parameter participants
 	 */
-	protected void setParticipants(final List<List<ParticipantsDTO>> field){
+	protected void setParticipants(final List<ParticipantsDTO> field){
 		this.addParameter("participants", field);
 	}
 }

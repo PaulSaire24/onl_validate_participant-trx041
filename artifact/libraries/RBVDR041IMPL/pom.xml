@@ -1,5 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>com.bbva.rbvd</groupId>
@@ -79,6 +79,21 @@
 			<scope>test</scope>
 		</dependency>
 		<!-- End test dependencies -->
+		<dependency>
+			<groupId>com.bbva.pisd</groupId>
+			<artifactId>PISDR352</artifactId>
+			<version>0.5.1</version>
+		</dependency>
+		<dependency>
+			<groupId>com.bbva.rbvd</groupId>
+			<artifactId>RBVDR066</artifactId>
+			<version>0.1.0-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>com.bbva.pbtq</groupId>
+			<artifactId>PBTQR002</artifactId>
+			<version>0.1.4</version>
+		</dependency>
 	</dependencies>
 	<build>
 		<finalName>${project.artifactId}</finalName>
@@ -113,9 +128,9 @@
 						<phase>install</phase>
 						<configuration>
 							<tasks>
-								<copy todir="${outputDirectoryLibraries}" file="./target/${project.artifactId}.jar" />
+								<copy todir="${outputDirectoryLibraries}" file="./target/${project.artifactId}.jar"/>
 							</tasks>
-							</configuration>
+						</configuration>
 						<goals>
 							<goal>run</goal>
 						</goals>

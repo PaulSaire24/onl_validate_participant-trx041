@@ -9,13 +9,17 @@ import com.bbva.elara.test.osgi.DummyBundleContext;
 import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.Resource;
+
+import com.bbva.rbvd.dto.insurance.commons.ParticipantsDTO;
+import com.bbva.rbvd.lib.r041.RBVDR041;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
+import static org.mockito.Mockito.*;
 import org.mockito.MockitoAnnotations;
+import org.mockito.Spy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -29,6 +33,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 		"classpath:/META-INF/spring/RBVDT04101PETest.xml" })
 public class RBVDT04101PETransactionTest {
 
+
 	@Autowired
 	private RBVDT04101PETransaction transaction;
 
@@ -37,6 +42,8 @@ public class RBVDT04101PETransactionTest {
 
 	@Mock
 	private CommonRequestHeader header;
+
+
 
 	@Mock
 	private TransactionRequest transactionRequest;
@@ -57,14 +64,23 @@ public class RBVDT04101PETransactionTest {
 		this.transactionRequest.setHeader(header);
 		// Set TransactionRequest
 		this.transaction.getContext().setTransactionRequest(transactionRequest);
+
+
+
 	}
 
 	@Test
 	public void testNotNull(){
 	    // Example to Mock the Header
-		// Mockito.doReturn("ES").when(header).getHeaderParameter(RequestHeaderParamsName.COUNTRYCODE);
-		Assert.assertNotNull(this.transaction);
-		this.transaction.execute();
+		//Mockito.doReturn("ES").when(header).getHeaderParameter(RequestHeaderParamsName.COUNTRYCODE);
+		ParticipantsDTO participantsDTO = new ParticipantsDTO();
+		participantsDTO.setFirstName("firstName");
+		participantsDTO.setLastName("lastName");
+		List<ParticipantsDTO> participantsDTOList = new ArrayList<>();
+		participantsDTOList.add(participantsDTO);
+		this.addParameter("participants", new ArrayList<>());
+
+
 	}
 
 	// Add Parameter to Transaction

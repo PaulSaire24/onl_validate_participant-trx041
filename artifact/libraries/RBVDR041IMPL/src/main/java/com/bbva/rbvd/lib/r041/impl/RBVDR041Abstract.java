@@ -5,6 +5,7 @@ import com.bbva.elara.library.AbstractLibrary;
 import com.bbva.pbtq.lib.r002.PBTQR002;
 import com.bbva.pisd.lib.r352.PISDR352;
 import com.bbva.rbvd.lib.r041.RBVDR041;
+import com.bbva.rbvd.lib.r041.impl.util.MapperHelper;
 import com.bbva.rbvd.lib.r066.RBVDR066;
 
 /**
@@ -19,6 +20,8 @@ public abstract class RBVDR041Abstract extends AbstractLibrary implements RBVDR0
 	protected RBVDR066 rbvdR066;
 
 	protected PBTQR002 pbtqR002;
+
+	protected MapperHelper mapperHelper;
 
 
 	/**
@@ -49,4 +52,7 @@ public abstract class RBVDR041Abstract extends AbstractLibrary implements RBVDR0
 		this.pbtqR002 = pbtqR002;
 	}
 
+	public void setMapperHelper(MapperHelper mapperHelper) {
+		this.mapperHelper = mapperHelper;
+	}
 }

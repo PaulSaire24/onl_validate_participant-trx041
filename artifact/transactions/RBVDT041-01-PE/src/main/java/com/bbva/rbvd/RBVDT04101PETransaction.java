@@ -23,7 +23,7 @@ public class RBVDT04101PETransaction extends AbstractRBVDT04101PETransaction {
 		LOGGER.info("RBVDT04101PETransaction - START");
 		RBVDR041 rbvdr041 = this.getServiceLibrary(RBVDR041.class);
 
-		rbvdr041.addThird(this.getParticipants());
+		rbvdr041.executeAddThird(this.getParticipants());
 		// TODO - Implementation of business logic
 	}
 

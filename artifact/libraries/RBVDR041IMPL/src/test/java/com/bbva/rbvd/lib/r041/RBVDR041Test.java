@@ -76,11 +76,11 @@ public class RBVDR041Test {
 		participantsDTOList.add(mockHelper.getParticipantsDTOMock());
 		when(pbtqR002.executeSearchInHostByCustomerId(anyString())).thenReturn(pewuResponse);
 		when(pisdR352.executeAddParticipantsService(anyObject(),anyString(),anyString(),anyString())).thenReturn(new AgregarTerceroBO());
-		rbvdR041.addThird(participantsDTOList);
+		rbvdR041.executeAddThird(participantsDTOList);
 
 		participantsDTOList.get(0).getDocument().getDocumentType().setId("RUC20");
 		when(rbvdR066.executeGetListBusinesses(anyString(),anyString())).thenReturn(listBussinesses);
-		rbvdR041.addThird(participantsDTOList);
+		rbvdR041.executeAddThird(participantsDTOList);
 		Assert.assertEquals(0, context.getAdviceList().size());
 	}
 	

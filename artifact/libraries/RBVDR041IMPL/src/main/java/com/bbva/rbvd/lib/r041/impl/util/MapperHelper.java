@@ -16,6 +16,9 @@ public class MapperHelper {
     private static final String TAG_OTROS = "OTROS";
     private static final String FIELD_BLANK = "";
 
+    private static final String EMAIL_VALUE = "EMAIL";
+    private static final String PHONE_NUMBER_VALUE = "PHONE";
+
     public static PersonaBO convertLisCustomerToPerson(PEWUResponse listCustomer) {
         LOGGER.info("[RequestRimacBean] convertListPersons() :: Start");
 
@@ -43,16 +46,16 @@ public class MapperHelper {
 
 
         LOGGER.info("[RequestRimacBean] convertListPersons() :: End");
-
+        LOGGER.info("[RequestRimacBean] personData{}", personaDTO);
         return personaDTO;
     }
     public static OrganizacionBO convertBusinessToOrganization(final BusinessASO business, ParticipantsDTO participant) {
 
         ContactDetailsDTO correoSelect= participant.getContactDetails().stream().
-                filter(contactDetail -> contactDetail.getContact().getContactDetailType().equals("EMAIL")).findFirst().orElse(new ContactDetailsDTO());
+                filter(contactDetail -> contactDetail.getContact().getContactDetailType().equals(EMAIL_VALUE)).findFirst().orElse(new ContactDetailsDTO());
 
         ContactDetailsDTO celularSelect= participant.getContactDetails().stream().
-                filter(contactDetail -> contactDetail.getContact().getContactDetailType().equals("PHONE")).findFirst().orElse(new ContactDetailsDTO());
+                filter(contactDetail -> contactDetail.getContact().getContactDetailType().equals(PHONE_NUMBER_VALUE)).findFirst().orElse(new ContactDetailsDTO());
 
         AddressComponentsDTO distrito = participant.getAddresses().get(0).getLocation().getAddressComponents().stream().
                 filter(addressComponents -> addressComponents.getComponentTypes().get(0).equals("")).findFirst().orElse(new AddressComponentsDTO());
@@ -104,10 +107,10 @@ public class MapperHelper {
     public static PersonaBO convertParticipantToPerson(ParticipantsDTO participant) {
         LOGGER.info("[RequestRimacBean] convertListPersons() :: Start");
         ContactDetailsDTO correoSelect= participant.getContactDetails().stream().
-                filter(contactDetail -> contactDetail.getContact().getContactDetailType().equals("EMAIL")).findFirst().orElse(new ContactDetailsDTO());
+                filter(contactDetail -> contactDetail.getContact().getContactDetailType().equals(EMAIL_VALUE)).findFirst().orElse(new ContactDetailsDTO());
 
         ContactDetailsDTO celularSelect= participant.getContactDetails().stream().
-                filter(contactDetail -> contactDetail.getContact().getContactDetailType().equals("PHONE")).findFirst().orElse(new ContactDetailsDTO());
+                filter(contactDetail -> contactDetail.getContact().getContactDetailType().equals(PHONE_NUMBER_VALUE)).findFirst().orElse(new ContactDetailsDTO());
 
         AddressComponentsDTO distrito = participant.getAddresses().get(0).getLocation().getAddressComponents().stream().
                 filter(addressComponents -> addressComponents.getComponentTypes().get(0).equals("")).findFirst().orElse(new AddressComponentsDTO());
@@ -154,10 +157,10 @@ public class MapperHelper {
     public static OrganizacionBO convertParticipantToOrganization(ParticipantsDTO participant) {
 
         ContactDetailsDTO correoSelect= participant.getContactDetails().stream().
-                filter(contactDetail -> contactDetail.getContact().getContactDetailType().equals("EMAIL")).findFirst().orElse(new ContactDetailsDTO());
+                filter(contactDetail -> contactDetail.getContact().getContactDetailType().equals(EMAIL_VALUE)).findFirst().orElse(new ContactDetailsDTO());
 
         ContactDetailsDTO celularSelect= participant.getContactDetails().stream().
-                filter(contactDetail -> contactDetail.getContact().getContactDetailType().equals("PHONE")).findFirst().orElse(new ContactDetailsDTO());
+                filter(contactDetail -> contactDetail.getContact().getContactDetailType().equals(PHONE_NUMBER_VALUE)).findFirst().orElse(new ContactDetailsDTO());
 
         AddressComponentsDTO distrito = participant.getAddresses().get(0).getLocation().getAddressComponents().stream().
                 filter(addressComponents -> addressComponents.getComponentTypes().get(0).equals("")).findFirst().orElse(new AddressComponentsDTO());
@@ -205,4 +208,5 @@ public class MapperHelper {
         organizacion.setTipoPersona("JURIDICO");
         return  organizacion;
     }
+    
 }

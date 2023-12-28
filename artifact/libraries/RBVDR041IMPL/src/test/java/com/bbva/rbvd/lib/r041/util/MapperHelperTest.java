@@ -15,7 +15,8 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
-
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
 import static org.junit.Assert.assertNotNull;
 
 
@@ -23,7 +24,7 @@ public class MapperHelperTest {
     @Spy
     private Context context;
     PEWUResponse pewuResponse;
-    MapperHelper mapperHelper = new MapperHelper();
+    private final MapperHelper mapperHelper = new MapperHelper();
     ParticipantsDTO participants;
     BusinessASO business;
     @Rule

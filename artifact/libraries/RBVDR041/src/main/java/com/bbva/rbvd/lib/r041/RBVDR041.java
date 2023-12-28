@@ -9,6 +9,6 @@ import java.util.List;
  * The  interface RBVDR041 class...
  */
 public interface RBVDR041 {
-	void addThird(List<ParticipantsDTO> participantsDTOList);
+	void executeAddThird(List<ParticipantsDTO> participantsDTOList);
 
 }

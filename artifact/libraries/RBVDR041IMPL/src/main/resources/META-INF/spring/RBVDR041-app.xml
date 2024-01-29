@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:osgi="http://www.springframework.org/schema/osgi" xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/osgi http://www.springframework.org/schema/osgi/spring-osgi.xsd">
+	<bean id="rbvdR041" class="com.bbva.rbvd.lib.r041.impl.RBVDR041Impl" parent="rbvdR041Abstract">
+		<property name="rbvdR066" ref="rbvdR066"/>
+		<property name="pbtqR002" ref="pbtqR002"/>
+		<property name="ksmkR002" ref="ksmkR002"/>
+		<property name="pisdR352" ref="pisdR352"/>
+		<property name="pisdR601" ref="pisdR601"/>
+		<property name="pisdR012" ref="pisdR012"/>
+		<property name="addParticipantBusiness" ref="addParticipantBusiness"/>
+	</bean>
+	<!-- Business -->
+	<bean id="addParticipantBusiness" class="com.bbva.rbvd.lib.r041.business.AddParticipantBusiness">
+		<property name="participantFactory" ref="participantFactory" />
+		<property name="customerInformationDAO" ref="customerInformationDAO" />
+		<property name="rolDAO" ref="rolDAO" />
+	</bean>
+	<!-- Factory -->
+	<!-- impl -->
+	<bean id="participantFactory" class="com.bbva.rbvd.lib.r041.pattern.factory.ParticipantFactory">
+		<constructor-arg index="0" ref="naturalParticipantTypeImpl"/>
+		<constructor-arg index="1" ref="legalParticipantTypeImpl"/>
+	</bean>
+	<bean id="naturalParticipantTypeImpl" class="com.bbva.rbvd.lib.r041.pattern.factory.impl.NaturalParticipantTypeImpl">
+		<property name="participantProperties"                 ref="participantProperties" />
+		<property name="consumerValidatePersonExternalService" ref="consumerValidatePersonExternalService" />
+		<property name="consumerPersonInternalService"         ref="consumerPersonInternalService" />
+		<property name="applicationConfigurationService"       ref="applicationConfigurationService"/>
+		<property name="validationEnrichByProduct"			   ref="validationEnrichByProduct"/>
+	</bean>
+	<bean id="legalParticipantTypeImpl" class="com.bbva.rbvd.lib.r041.pattern.factory.impl.LegalParticipantTypeImpl">
+		<property name="participantProperties"                 ref="participantProperties" />
+		<property name="consumerValidatePersonExternalService" ref="consumerValidatePersonExternalService" />
+		<property name="consumerPersonInternalService"         ref="consumerPersonInternalService" />
+		<property name="consumerCryptographyService"           ref="consumerCryptographyService" />
+		<property name="consumerLegalPersonInternalService"    ref="consumerLegalPersonInternalService" />
+	</bean>
+	<!-- Service -->
+	<!-- Dao -->
+	<bean id="customerInformationDAO" class="com.bbva.rbvd.lib.r041.service.dao.impl.CustomerInformationDAOImpl">
+		<property name="pisdr601" ref="pisdR601"/>
+	</bean>
+	<bean id="rolDAO" class="com.bbva.rbvd.lib.r041.service.dao.impl.RolDAOImpl">
+		<property name="pisdr012" ref="pisdR012"/>
+	</bean>
+	<!-- api -->
+	<bean id="consumerPersonInternalService" class="com.bbva.rbvd.lib.r041.service.api.ConsumerPersonInternalService">
+		<property name="pbtqr002" ref="pbtqR002" />
+	</bean>
+	<bean id="consumerValidatePersonExternalService" class="com.bbva.rbvd.lib.r041.service.api.ConsumerValidatePersonExternalService">
+		<property name="pisdr352" ref="pisdR352" />
+	</bean>
+	<bean id="consumerCryptographyService" class="com.bbva.rbvd.lib.r041.service.api.ConsumerCryptographyService">
+		<property name="ksmkr002" ref="ksmkR002" />
+	</bean>
+	<bean id="consumerLegalPersonInternalService" class="com.bbva.rbvd.lib.r041.service.api.ConsumerLegalPersonInternalService">
+		<property name="rbvdr066" ref="rbvdR066" />
+	</bean>
+
+	<!-- Properties -->
+	<bean id="participantProperties" class="com.bbva.rbvd.lib.r041.properties.ParticipantProperties" parent="properties">
+
+	</bean>
+	<bean id="properties" class="com.bbva.rbvd.lib.r041.properties.Properties">
+		<property name="applicationConfigurationService" ref="applicationConfigurationService"/>
+	</bean>
+
+	<!-- Transform Beans -->
+	<bean id="naturalPersonRimacBean" class="com.bbva.rbvd.lib.r041.transform.bean.NaturalPersonRimacBean">
+	</bean>
+	<bean id="legalPersonRimacBean" class="com.bbva.rbvd.lib.r041.transform.bean.LegalPersonRimacBean">
+	</bean>
+
+	<!-- Post validation -->
+	<bean id="validationEnrichByProduct" class="com.bbva.rbvd.lib.r041.pattern.decorator.impl.ValidationEnrichByProduct">
+	</bean>
+</beans>

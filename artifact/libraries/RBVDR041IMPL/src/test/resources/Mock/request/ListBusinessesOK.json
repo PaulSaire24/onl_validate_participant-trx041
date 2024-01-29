@@ -1,0 +1,60 @@
+{
+  "data": [
+    {
+      "businessDocuments": [
+        {
+          "businessDocumentType": {
+            "id": "RUC",
+            "name": "R.U.C."
+          },
+          "documentNumber": "20414766308"
+        }
+      ],
+      "id": "97165567",
+      "formation": {
+        "date": "2017-11-01",
+        "country": {
+          "id": "PER",
+          "name": "PERU"
+        }
+      },
+      "membershipDate": "2018-11-16",
+      "legalName": "SODEXO PERU SAC",
+      "businessGroup": {
+        "id": "M20",
+        "name": "PERS.JURID.PYMES"
+      },
+      "bank": {
+        "branch": {
+          "id": "0486",
+          "name": "OF.SAN ISIDRO",
+          "territorial": {
+            "id": "0737",
+            "name": "DIVISION MIRAFLORES"
+          }
+        }
+      },
+      "unitManagement": "001285",
+      "employeesNumber": 465,
+      "annualSales": {
+        "amount": 47360,
+        "currency": "PEN",
+        "startDate": "2017-12-21"
+      },
+      "economicActivity": {
+        "id": "00000005629",
+        "name": "OTRAS ACTIVIDADES DE SERVICIO",
+        "startDate": "1998-08-26"
+      },
+      "businessAgent": {
+        "id": "PM4C517",
+        "fullName": "GESTOR MASA"
+      },
+      "socialCapital": {
+        "amount": "0000000000",
+        "currency": "PEN"
+      },
+      "bankingType": "BPRI"
+    }
+  ]
+}

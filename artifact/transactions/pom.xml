@@ -12,5 +12,7 @@
 	<version>0.1.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<name>TRANSACTIONS-onl_validate_participant-trx041</name>
-	<modules/>
+	<modules>
+		<module>RBVDT041-01-PE</module>
+	</modules>
 </project>

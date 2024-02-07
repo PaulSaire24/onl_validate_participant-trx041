@@ -89,8 +89,10 @@ public class RBVDR041Test {
 				.thenReturn("2");
 		when(this.applicationConfigurationService.getDefaultProperty("CONTRACTOR", ""))
 				.thenReturn("1");
-		when(this.applicationConfigurationService.getProperty("pic.code"))
-				.thenReturn("PC");
+		when(this.applicationConfigurationService.getProperty("DNI"))
+				.thenReturn("L");
+		when(this.applicationConfigurationService.getProperty("RUC"))
+				.thenReturn("R");
 
 	}
 	

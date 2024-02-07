@@ -53,15 +53,15 @@ public class NaturalPersonRimacBean {
                     filter(contactDetail -> contactDetail.getContactType().equals(MOBILE_VALUE)).findFirst().orElse(null);
         }
 
-        persona.setTipoDocumento(customer.getPemsalwu().getNdoi()); //primero bd luego listcustomer
-        persona.setNroDocumento(RUC_ID.equalsIgnoreCase(persona.getTipoDocumento())?customerInformationDb.getQuotation().getParticipantPersonalId():customer.getPemsalwu().getTdoi()); //primero bd luego listcustomer
+        persona.setTipoDocumento(RUC_ID.equalsIgnoreCase(persona.getTipoDocumento())?customerInformationDb.getQuotation().getParticipantPersonalId():customer.getPemsalwu().getTdoi()); //primero bd luego listcustomer
+        persona.setNroDocumento(customer.getPemsalwu().getNdoi()); //primero bd luego listcustomer
         persona.setApePaterno(customer.getPemsalwu().getApellip());
 
         persona.setApeMaterno( StringUtils.defaultString(customer.getPemsalwu().getApellim()).trim().length()  > MAX_CHARACTER ? customer.getPemsalwu().getApellim() : StringUtils.EMPTY);
 
         persona.setNombres(customer.getPemsalwu().getNombres());
         persona.setFechaNacimiento(customer.getPemsalwu().getFechan());
-        if(StringUtils.isEmpty(customer.getPemsalwu().getSexo())) persona.setSexo("MALE".equals(customer.getPemsalwu().getSexo()) ? "M" : "F");
+        if(!StringUtils.isEmpty(customer.getPemsalwu().getSexo())) persona.setSexo("MALE".equals(customer.getPemsalwu().getSexo()) ? "M" : "F");
 
         persona.setCorreoElectronico(Objects.isNull(correoSelect) ? customerInformationDb.getQuotationMod().getContactEmailDesc() : correoSelect.getContact());
 

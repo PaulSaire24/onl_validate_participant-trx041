@@ -26,6 +26,8 @@
 		<property name="participantProperties"                 ref="participantProperties" />
 		<property name="consumerValidatePersonExternalService" ref="consumerValidatePersonExternalService" />
 		<property name="consumerPersonInternalService"         ref="consumerPersonInternalService" />
+		<property name="applicationConfigurationService"       ref="applicationConfigurationService"/>
+		<property name="validationEnrichByProduct"			   ref="validationEnrichByProduct"/>
 	</bean>
 	<bean id="legalParticipantTypeImpl" class="com.bbva.rbvd.lib.r041.pattern.factory.impl.LegalParticipantTypeImpl">
 		<property name="participantProperties"                 ref="participantProperties" />
@@ -66,5 +68,11 @@
 
 	<!-- Transform Beans -->
 	<bean id="naturalPersonRimacBean" class="com.bbva.rbvd.lib.r041.transform.bean.NaturalPersonRimacBean">
+	</bean>
+	<bean id="legalPersonRimacBean" class="com.bbva.rbvd.lib.r041.transform.bean.LegalPersonRimacBean">
+	</bean>
+
+	<!-- Post validation -->
+	<bean id="validationEnrichByProduct" class="com.bbva.rbvd.lib.r041.pattern.decorator.impl.ValidationEnrichByProduct">
 	</bean>
 </beans>

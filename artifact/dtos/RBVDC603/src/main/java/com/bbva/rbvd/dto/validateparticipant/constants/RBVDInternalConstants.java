@@ -39,4 +39,21 @@ public class RBVDInternalConstants {
         NATURAL,
         LEGAL
     }
+
+    public enum TypeInsuranceProduct{
+        VEHICLE(""),
+        HOME(""),
+        PYME(""),
+        CARD(""),
+        UNEMPLOYEEMENT(""),
+        EASY_YES(""),
+        DINAMIC_LIFE(""),
+        INVESTMENT_LIFE("");
+
+        private final String productId;
+
+        TypeInsuranceProduct(String productId) {
+            this.productId = productId;
+        }
+    }
 }

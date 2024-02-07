@@ -52,7 +52,7 @@
 								</dto>
 							</list>
 						</dto>
-						<dto order="3" name="addressType" mandatory="1" package="com.bbva.rbvd.dto.insurance.commons.AddressTypeDTO" artifactId="RBVDC007">
+						<dto order="3" name="addressType" mandatory="0" package="com.bbva.rbvd.dto.insurance.commons.AddressTypeDTO" artifactId="RBVDC007">
 							<parameter order="1" name="id" mandatory="1" type="String" size="20"/>
 						</dto>
 					</dto>

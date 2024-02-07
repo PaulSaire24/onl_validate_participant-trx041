@@ -3,6 +3,8 @@ package com.bbva.rbvd.lib.r041.util;
 import com.bbva.rbvd.dto.insurance.commons.ParticipantsDTO;
 import com.bbva.rbvd.dto.insurance.commons.ValidateParticipantDTO;
 import com.bbva.rbvd.dto.insurance.group.ParticipantGroupDTO;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.util.CollectionUtils;
 
 import java.nio.charset.StandardCharsets;
@@ -13,6 +15,8 @@ import java.util.Optional;
 import java.util.stream.IntStream;
 
 public class FunctionUtils {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(FunctionUtils.class);
     private FunctionUtils(){}
 
     public static <T> Optional<List<T>> isNotEmptyList(List<T> input) {
@@ -46,6 +50,7 @@ public class FunctionUtils {
                 groupParticipants.add(participantGroupDTO);
             }
         });
+        LOGGER.info("groupByDocumentNumberAndDocumentType end ***** {}",groupParticipants);
         return groupParticipants;
     }
 

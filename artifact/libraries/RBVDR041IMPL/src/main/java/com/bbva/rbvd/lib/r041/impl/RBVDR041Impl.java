@@ -6,6 +6,7 @@ import com.bbva.rbvd.dto.insurance.commons.ValidateParticipantDTO;
 import com.bbva.rbvd.lib.r041.pattern.Validate;
 import com.bbva.rbvd.lib.r041.pattern.decorator.impl.ValidationParameter;
 import com.bbva.rbvd.lib.r041.pattern.factory.FactoryProductValidate;
+import com.bbva.rbvd.lib.r041.transfer.PayloadStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,7 +20,7 @@ public class RBVDR041Impl extends RBVDR041Abstract {
 		ValidationParameter validationParameter = new ValidationParameter(pisdR601,pbtqR002);
 		QuotationJoinCustomerInformationDTO quotationInformation = validationParameter.getCustomerBasicInformation(input.getQuotationId());
 		Validate validate = FactoryProductValidate.getProductType(quotationInformation.getInsuranceProduct().getInsuranceProductType(),pisdR352,pbtqR002);
-		return validate.start(input,quotationInformation.getQuotation().getInsuranceCompanyQuotaId(),this.applicationConfigurationService);
+		PayloadStore payloadStore = validate.start(input,quotationInformation.getQuotation().getInsuranceCompanyQuotaId(),this.applicationConfigurationService);
+		return payloadStore.getResponseRimac();
 	}
-
 }

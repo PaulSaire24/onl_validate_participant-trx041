@@ -12,8 +12,14 @@ import java.util.Date;
 import java.util.List;
 import javax.annotation.Resource;
 
-import com.bbva.rbvd.dto.insurance.commons.*;
-import com.bbva.rbvd.dto.validateparticipant.dto.ResponseLibrary;
+import com.bbva.rbvd.dto.insrncsale.bo.emision.AgregarTerceroBO;
+import com.bbva.rbvd.dto.insurance.commons.ParticipantsDTO;
+import com.bbva.rbvd.dto.insurance.commons.ParticipantTypeDTO;
+import com.bbva.rbvd.dto.insurance.commons.PersonDTO;
+import com.bbva.rbvd.dto.insurance.commons.IdentityDocumentDTO;
+import com.bbva.rbvd.dto.insurance.commons.DocumentTypeDTO;
+import com.bbva.rbvd.dto.insurance.commons.ContactDetailsDTO;
+import com.bbva.rbvd.dto.insurance.commons.GenderDTO;
 import com.bbva.rbvd.lib.r041.RBVDR041;
 import org.junit.Assert;
 import org.junit.Before;
@@ -26,9 +32,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-/**
- * Test for transaction RBVDT04101PETransaction
- */
+import static org.junit.Assert.assertEquals;
+
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {
 		"classpath:/META-INF/spring/elara-test.xml",
@@ -68,53 +73,22 @@ public class RBVDT04101PETransactionTest {
 		this.transaction.getContext().setTransactionRequest(transactionRequest);
 	}
 
+
 	@Test
-	public void executeTestInvokeValidateParticipantWithOkResponse(){
-		/**
-		 *  Data de prueba
-		 * */
-		List<ParticipantsDTO> listParticipants = new ArrayList<>();
-		listParticipants.add(buildParticipant());
-
-		/**
-		 *  When
-		 * */
-		ResponseLibrary<Void> responseMock = ResponseLibrary.ResponseServiceBuilder.an().statusIndicatorProcess("SUCCESSFUL", null,null).body(null);
-		Mockito.when(rbvdr041.executeValidateAddParticipant(Mockito.any())).thenReturn(responseMock);
-		/**
-		 *  Execution
-		 * */
-		Assert.assertNotNull(this.transaction);
+	public void executeTestOk(){
+		Mockito.when(rbvdr041.executeValidateAddParticipant(Mockito.anyObject())).thenReturn(new AgregarTerceroBO());
 		this.transaction.execute();
-
 		Assert.assertEquals(Severity.OK.getValue(),this.transaction.getContext().getSeverity().getValue());
-	}
-	/**
-	 * 2.Obtención fallida del inicio de proceso biometrico .
-	 * */
-	@Test
-	public void create_process_biometric_validation_failed_test(){
-		/**
-		 *  Data de prueba
-		 * */
-		List<ParticipantsDTO> listParticipants = new ArrayList<>();
-		listParticipants.add(buildParticipant());
-
-		/**
-		 *  When
-		 * */
-		ResponseLibrary<Void> responseMock = ResponseLibrary.ResponseServiceBuilder.an().statusIndicatorProcess("FAILED", "adviceCode", "errorMessage").body(null);
-		Mockito.when(rbvdr041.executeValidateAddParticipant(Mockito.any())).thenReturn(responseMock);
-		/**
-		 *  Execution
-		 * */
 		Assert.assertNotNull(this.transaction);
-		this.transaction.execute();
-		/**
-		 *  Execution
-		 * */
-		Assert.assertEquals(Severity.ENR.getValue(),this.transaction.getContext().getSeverity().getValue());
 	}
+
+	@Test
+	public void executeTestError(){
+		Mockito.when(rbvdr041.executeValidateAddParticipant(Mockito.anyObject())).thenReturn(null);
+		this.transaction.execute();
+		assertEquals(Severity.EWR.getValue(), this.transaction.getSeverity().getValue());
+	}
+
 
 	// Add Parameter to Transaction
 	private void addParameter(final String parameter, final Object value) {

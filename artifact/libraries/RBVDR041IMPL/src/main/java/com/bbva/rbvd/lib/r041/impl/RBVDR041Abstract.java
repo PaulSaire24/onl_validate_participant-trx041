@@ -10,9 +10,6 @@ import com.bbva.pisd.lib.r601.PISDR601;
 import com.bbva.rbvd.lib.r041.RBVDR041;
 import com.bbva.rbvd.lib.r066.RBVDR066;
 
-/**
- * This class automatically defines the libraries and utilities that it will use.
- */
 public abstract class RBVDR041Abstract extends AbstractLibrary implements RBVDR041 {
 
 	protected ApplicationConfigurationService applicationConfigurationService;
@@ -28,10 +25,6 @@ public abstract class RBVDR041Abstract extends AbstractLibrary implements RBVDR0
 	protected PISDR601 pisdR601;
 
 	protected PISDR012 pisdR012;
-
-	protected IValidateParticipant iValidateParticipant;
-	protected ICustomerInformationDAO iCustomerInformationDAO;
-
 
 	/**
 	* @param applicationConfigurationService the this.applicationConfigurationService to set
@@ -82,19 +75,4 @@ public abstract class RBVDR041Abstract extends AbstractLibrary implements RBVDR0
 		this.pisdR012 = pisdR012;
 	}
 
-	public IValidateParticipant getiValidateParticipant() {
-		return iValidateParticipant;
-	}
-
-	public void setiValidateParticipant(IValidateParticipant iValidateParticipant) {
-		this.iValidateParticipant = iValidateParticipant;
-	}
-
-	public ICustomerInformationDAO getiCustomerInformationDAO() {
-		return iCustomerInformationDAO;
-	}
-
-	public void setiCustomerInformationDAO(ICustomerInformationDAO iCustomerInformationDAO) {
-		this.iCustomerInformationDAO = iCustomerInformationDAO;
-	}
 }

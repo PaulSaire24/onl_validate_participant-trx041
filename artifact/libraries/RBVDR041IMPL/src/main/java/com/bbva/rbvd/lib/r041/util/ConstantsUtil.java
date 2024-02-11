@@ -42,7 +42,6 @@ public class ConstantsUtil {
     }
     public static final class Numero{
         private Numero() {   }
-        public static final Integer CERO = 0;
         public static final int CLIENT_BANK_LENGHT =8;
     }
 

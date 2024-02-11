@@ -8,8 +8,6 @@ import com.bbva.pisd.lib.r012.PISDR012;
 import com.bbva.pisd.lib.r352.PISDR352;
 import com.bbva.pisd.lib.r601.PISDR601;
 import com.bbva.rbvd.lib.r041.RBVDR041;
-import com.bbva.rbvd.lib.r041.pattern.IValidateParticipant;
-import com.bbva.rbvd.lib.r041.service.dao.ICustomerInformationDAO;
 import com.bbva.rbvd.lib.r066.RBVDR066;
 
 /**

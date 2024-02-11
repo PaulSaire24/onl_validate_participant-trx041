@@ -23,8 +23,6 @@ import com.bbva.pisd.lib.r352.PISDR352;
 import com.bbva.pisd.lib.r601.PISDR601;
 import com.bbva.rbvd.dto.insurance.commons.*;
 import com.bbva.rbvd.dto.validateparticipant.dto.ResponseLibrary;
-import com.bbva.rbvd.lib.r041.service.dao.impl.CustomerInformationDAOImpl;
-import com.bbva.rbvd.lib.r041.service.dao.impl.RolDAOImpl;
 import com.bbva.rbvd.lib.r066.RBVDR066;
 import com.bbva.rbvd.util.MockDTO;
 import org.junit.Assert;

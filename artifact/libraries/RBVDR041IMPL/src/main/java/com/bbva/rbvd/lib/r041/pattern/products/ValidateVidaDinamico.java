@@ -25,11 +25,12 @@ public class ValidateVidaDinamico extends ValidateDecorator {
     public PayloadStore start(ValidateParticipantDTO input, String quotationId, ApplicationConfigurationService applicationConfigurationService) {
 
         PayloadConfig payloadConfig = this.getPreValidate().getConfig(input,applicationConfigurationService);
-        LOGGER.info("** start - PayloadConfig {} **",payloadConfig);
         payloadConfig.setQuotationId(quotationId);
+        LOGGER.info("** start - PayloadConfig {} **",payloadConfig);
         ThirdDynamicLifeBusinessImpl thirdDynamicLifeBusiness = new ThirdDynamicLifeBusinessImpl();
         AgregarTerceroBO requestRimac = thirdDynamicLifeBusiness.doDynamicLife(payloadConfig);
         LOGGER.info("** start - request Rimac {} **",requestRimac);
+
         //end
         AgregarTerceroBO responseRimac = this.getPostValidate().end(requestRimac,payloadConfig.getQuotationId(), ConstantsUtil.Product.DYNAMIC_LIFE.getCode(),payloadConfig.getInput().getTraceId());
 

@@ -38,12 +38,12 @@ public class ValidationParameter implements PreValidate {
 
     @Override
     public PayloadConfig getConfig(ValidateParticipantDTO input,ApplicationConfigurationService applicationConfigurationService) {
-
+        LOGGER.info("** getConfig :: start");
         PayloadConfig payloadConfig = new PayloadConfig();
         PayloadProperties payloadProperties = new PayloadProperties();
         List<PayloadProperties> payloadPropertiesList = new ArrayList<>();
         List<ParticipantGroupDTO> groupParticipant = groupByDocumentNumberAndDocumentType(input);
-
+        LOGGER.info("** getConfig :: groupParticipant -> {}",groupParticipant);
         groupParticipant.forEach(part -> {
                 if(ValidationUtil.isBBVAClient(part.getParticipantList().get(0).getPerson().getCustomerId())){
                     String documentTypeHost = applicationConfigurationService.getProperty(part.getDocumentType());

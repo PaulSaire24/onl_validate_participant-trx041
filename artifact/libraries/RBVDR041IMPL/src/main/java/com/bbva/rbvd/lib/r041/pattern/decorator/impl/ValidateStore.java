@@ -18,9 +18,10 @@ public class ValidateStore implements PostValidate {
 
     @Override
     public AgregarTerceroBO end(AgregarTerceroBO requestRimac, String quotationId, String productId, String traceId) {
-
+        LOGGER.info("** end :: quotationId -> {}",quotationId);
+        LOGGER.info("** end :: productId -> {}",productId);
+        LOGGER.info("** end :: traceId -> {}",traceId);
         ConsumerExternalService consumerService = new ConsumerExternalService(pisdr352);
         return consumerService.executeValidateParticipantRimacService(requestRimac,quotationId,productId,traceId);
-
     }
 }

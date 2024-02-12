@@ -1,12 +1,10 @@
 package com.bbva.rbvd.lib.r041.service.api;
 
 import com.bbva.apx.exception.business.BusinessException;
-import com.bbva.ksmk.lib.r002.KSMKR002;
 import com.bbva.pbtq.dto.validatedocument.response.host.pewu.PEWUResponse;
 import com.bbva.pbtq.lib.r002.PBTQR002;
 import com.bbva.rbvd.dto.validateparticipant.utils.TypeErrorControllerEnum;
 import com.bbva.rbvd.dto.validateparticipant.utils.ValidateParticipantErrors;
-import com.bbva.rbvd.lib.r066.RBVDR066;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,15 +13,7 @@ import java.util.Objects;
 public class ConsumerInternalService {
     private static final Logger LOGGER = LoggerFactory.getLogger(ConsumerInternalService.class);
 
-    private KSMKR002 ksmkr002;
-    private RBVDR066 rbvdr066;
     private PBTQR002 pbtqr002;
-
-    public ConsumerInternalService(KSMKR002 ksmkr002, RBVDR066 rbvdr066, PBTQR002 pbtqr002) {
-        this.ksmkr002 = ksmkr002;
-        this.rbvdr066 = rbvdr066;
-        this.pbtqr002 = pbtqr002;
-    }
 
     public ConsumerInternalService(PBTQR002 pbtqr002) {
         this.pbtqr002 = pbtqr002;

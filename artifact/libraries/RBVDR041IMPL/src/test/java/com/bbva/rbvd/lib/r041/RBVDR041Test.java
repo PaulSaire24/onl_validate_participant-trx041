@@ -5,8 +5,6 @@ import com.bbva.elara.domain.transaction.Context;
 import com.bbva.elara.domain.transaction.ThreadContext;
 import javax.annotation.Resource;
 
-import com.bbva.ksmk.dto.caas.OutputDTO;
-import com.bbva.ksmk.lib.r002.KSMKR002;
 import com.bbva.pbtq.dto.validatedocument.response.host.pewu.PEMSALW4;
 import com.bbva.pbtq.dto.validatedocument.response.host.pewu.PEMSALWU;
 import com.bbva.pbtq.dto.validatedocument.response.host.pewu.PEWUResponse;
@@ -27,7 +25,6 @@ import com.bbva.rbvd.dto.insurance.commons.IdentityDocumentDTO;
 import com.bbva.rbvd.dto.insurance.commons.DocumentTypeDTO;
 import com.bbva.rbvd.dto.insurance.commons.ContactDetailsDTO;
 import com.bbva.rbvd.dto.insurance.commons.GenderDTO;
-import com.bbva.rbvd.lib.r066.RBVDR066;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -70,12 +67,8 @@ public class RBVDR041Test {
 	private PBTQR002 pbtqr002;
 	@Resource(name = "pisdR352")
 	private PISDR352 pisdr352;
-	@Resource(name = "ksmkR002")
-	private KSMKR002 ksmkr002;
 	@Resource(name = "pisdR601")
 	private PISDR601 pisdr601;
-	@Resource(name = "rbvdR066")
-	private RBVDR066 rbvdr066;
 	@Resource(name = "applicationConfigurationService")
 	private ApplicationConfigurationService applicationConfigurationService;
 
@@ -1103,12 +1096,5 @@ public class RBVDR041Test {
 		return pewuResponse;
 	}
 
-	private static List<OutputDTO> getKSMKResponseOkMock(){
-		List<OutputDTO> listDataOut = new ArrayList<>();
-		OutputDTO outputDTO = new OutputDTO();
-		outputDTO.setData("ksmkEncryptedDocument");
-		listDataOut.add(outputDTO);
-		return listDataOut;
-	}
 
 }

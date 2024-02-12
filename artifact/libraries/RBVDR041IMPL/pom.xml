@@ -80,19 +80,9 @@
 		</dependency>
 		<!-- End test dependencies -->
 		<dependency>
-			<groupId>com.bbva.rbvd</groupId>
-			<artifactId>RBVDR066</artifactId>
-			<version>0.1.0-SNAPSHOT</version>
-		</dependency>
-		<dependency>
 			<groupId>com.bbva.pbtq</groupId>
 			<artifactId>PBTQR002</artifactId>
 			<version>0.1.4</version>
-		</dependency>
-		<dependency>
-			<groupId>com.bbva.ksmk</groupId>
-			<artifactId>KSMKR002</artifactId>
-			<version>1.18.0</version>
 		</dependency>
 		<dependency>
 			<groupId>com.bbva.pisd</groupId>
@@ -103,11 +93,6 @@
 			<groupId>com.bbva.pisd</groupId>
 			<artifactId>PISDR601</artifactId>
 			<version>0.1.0-SNAPSHOT</version>
-		</dependency>
-		<dependency>
-			<groupId>com.bbva.pisd</groupId>
-			<artifactId>PISDR012</artifactId>
-			<version>0.32.0-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
 	<build>
@@ -125,6 +110,7 @@
 							!*;version="${osgi.version.manifest}"
 						</Export-Package>
 						<Import-Package>
+
 							com.bbva.elara.aspect;version="${osgi.version.manifest}",
 							org.aopalliance.aop;version="${osgi.version.manifest}",
 							org.osgi.framework;version="${osgi.version.manifest}",

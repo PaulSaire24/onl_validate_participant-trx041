@@ -1,7 +1,6 @@
 package com.bbva.rbvd.lib.r041.pattern.products;
 
 import com.bbva.elara.configuration.manager.application.ApplicationConfigurationService;
-import com.bbva.pisd.lib.r352.PISDR352;
 import com.bbva.rbvd.dto.insrncsale.bo.emision.AgregarTerceroBO;
 import com.bbva.rbvd.dto.insurance.commons.ValidateParticipantDTO;
 import com.bbva.rbvd.lib.r041.business.impl.ThirdDynamicLifeBusinessImpl;
@@ -14,10 +13,10 @@ import com.bbva.rbvd.lib.r041.util.ConstantsUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ValidateVidaDinamico extends ValidateDecorator {
+public class ValidateDynamicLife extends ValidateDecorator {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ValidateVidaDinamico.class);
-    public ValidateVidaDinamico(PreValidate preValidate, PostValidate postValidate) {
+    private static final Logger LOGGER = LoggerFactory.getLogger(ValidateDynamicLife.class);
+    public ValidateDynamicLife(PreValidate preValidate, PostValidate postValidate) {
         super(preValidate, postValidate);
     }
 
@@ -61,8 +60,8 @@ public class ValidateVidaDinamico extends ValidateDecorator {
         }
 
 
-        public ValidateVidaDinamico build() {
-            return new ValidateVidaDinamico(preValidate, postValidate);
+        public ValidateDynamicLife build() {
+            return new ValidateDynamicLife(preValidate, postValidate);
         }
     }
 }

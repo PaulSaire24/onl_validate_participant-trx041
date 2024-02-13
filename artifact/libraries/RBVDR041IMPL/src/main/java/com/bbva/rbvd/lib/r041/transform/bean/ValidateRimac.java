@@ -35,6 +35,7 @@ public class ValidateRimac {
                 personaBO.setCelular(parPewu.getCustomer().getPemsalwu().getNroclie());
                 personaBO.setTipoVia(parPewu.getCustomer().getPemsalwu().getIdendi1());
                 personaBO.setNombreVia(parPewu.getCustomer().getPemsalwu().getNombdi1());
+                personaBO.setNumeroVia(parPewu.getCustomer().getPemsalwu().getNroext1());
                 personaBO.setDistrito(parPewu.getCustomer().getPemsalw4().getDesdist());
                 personaBO.setProvincia(parPewu.getCustomer().getPemsalw4().getDesdist());
                 personaBO.setDepartamento(parPewu.getCustomer().getPemsalw4().getDesdept());

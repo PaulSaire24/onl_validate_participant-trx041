@@ -13,8 +13,7 @@ import java.util.Map;
 
 public class AddPersonRimac {
 
-    public static List<PersonaBO>  addPerson(List<PersonaBO> personaList, List<ParticipantsDTO> participants){
-        List<PersonaBO> listNewPersona = new ArrayList<>();
+    public static void  addPerson(List<PersonaBO> personaList, List<ParticipantsDTO> participants){
         if(personaList.size()==1){
             PersonaBO personaContractor = personaList.get(0);
             personaContractor.setRol(ConstantsUtil.Rol.CONTRACTOR.getValue());
@@ -40,8 +39,8 @@ public class AddPersonRimac {
             personaInsured.setDepartamento(personaContractor.getDepartamento());
             personaInsured.setDireccion(personaContractor.getDireccion());
 
-            listNewPersona.add(personaContractor);
-            listNewPersona.add(personaInsured);
+            personaList.add(personaContractor);
+            personaList.add(personaInsured);
 
         } else if (personaList.size()==2) {
             ParticipantsDTO participans = participants.get(0);
@@ -61,13 +60,13 @@ public class AddPersonRimac {
 
             personaInsured.setTipoVia(personaList.get(0).getTipoVia());
             personaInsured.setNombreVia(personaList.get(0).getNombreVia());
+            personaInsured.setNumeroVia(personaList.get(0).getNumeroVia());
             personaInsured.setDistrito(personaList.get(0).getDistrito());
             personaInsured.setProvincia(personaList.get(0).getProvincia());
             personaInsured.setDepartamento(personaList.get(0).getDepartamento());
             personaInsured.setDireccion(personaList.get(0).getDireccion());
-            listNewPersona.add(personaInsured);
+            personaList.add(personaInsured);
         }
-        return listNewPersona;
     }
 
     private static Map<String,Object> getContactGroup(List<ContactDetailsDTO> contacts){

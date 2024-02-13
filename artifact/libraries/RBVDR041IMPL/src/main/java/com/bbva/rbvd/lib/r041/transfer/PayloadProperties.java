@@ -3,9 +3,19 @@ package com.bbva.rbvd.lib.r041.transfer;
 import com.bbva.pbtq.dto.validatedocument.response.host.pewu.PEWUResponse;
 
 public class PayloadProperties {
+
+    private String customerId;
     private String documetType;
     private String documetNumber;
     private PEWUResponse customer;
+
+    public String getCustomerId() {
+        return customerId;
+    }
+
+    public void setCustomerId(String customerId) {
+        this.customerId = customerId;
+    }
 
     public String getDocumetType() {
         return documetType;
@@ -34,7 +44,8 @@ public class PayloadProperties {
     @Override
     public String toString() {
         return "PayloadProperties{" +
-                "documetType='" + documetType + '\'' +
+                "customerId='" + customerId + '\'' +
+                ", documetType='" + documetType + '\'' +
                 ", documetNumber='" + documetNumber + '\'' +
                 ", customer=" + customer +
                 '}';

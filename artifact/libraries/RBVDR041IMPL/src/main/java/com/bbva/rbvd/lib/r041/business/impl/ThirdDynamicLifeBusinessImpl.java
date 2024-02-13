@@ -5,12 +5,14 @@ import com.bbva.rbvd.dto.insrncsale.bo.emision.PayloadAgregarTerceroBO;
 import com.bbva.rbvd.dto.insrncsale.bo.emision.PersonaBO;
 import com.bbva.rbvd.lib.r041.business.IThirdDynamicLifeBusiness;
 import com.bbva.rbvd.lib.r041.transfer.PayloadConfig;
+import com.bbva.rbvd.lib.r041.transform.bean.AddPersonRimac;
 import com.bbva.rbvd.lib.r041.transform.bean.ValidateRimac;
 import com.bbva.rbvd.lib.r041.util.ConstantsUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
+import java.util.Objects;
 
 public class ThirdDynamicLifeBusinessImpl implements IThirdDynamicLifeBusiness {
 
@@ -22,6 +24,13 @@ public class ThirdDynamicLifeBusinessImpl implements IThirdDynamicLifeBusiness {
         AgregarTerceroBO requestRimac = new AgregarTerceroBO();
         PayloadAgregarTerceroBO  agregarTercero = new PayloadAgregarTerceroBO();
         List<PersonaBO> personaList = ValidateRimac.mapInRequestRimacDynamicLife(payloadConfig);
+        System.out.println(personaList);
+        List<PersonaBO> personaNewList = AddPersonRimac.addPerson(personaList,payloadConfig.getInput().getParticipants());
+        personaList.add(personaNewList.get(0));
+        if(personaNewList.size()==2){
+            personaList.add(personaNewList.get(1));
+        }
+        System.out.println(personaList);
         agregarTercero.setPersona(personaList);
         agregarTercero.setProducto(ConstantsUtil.Product.DYNAMIC_LIFE.getName());
         requestRimac.setPayload(agregarTercero);

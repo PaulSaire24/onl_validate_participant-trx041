@@ -6,9 +6,7 @@ import com.bbva.pbtq.dto.validatedocument.response.host.pewu.PEWUResponse;
 import com.bbva.pbtq.lib.r002.PBTQR002;
 import com.bbva.pisd.dto.insurancedao.join.QuotationJoinCustomerInformationDTO;
 import com.bbva.pisd.lib.r601.PISDR601;
-import com.bbva.rbvd.dto.insurance.commons.ParticipantsDTO;
 import com.bbva.rbvd.dto.insurance.commons.ValidateParticipantDTO;
-import com.bbva.rbvd.dto.insurance.group.ParticipantGroupDTO;
 import com.bbva.rbvd.dto.validateparticipant.utils.TypeErrorControllerEnum;
 import com.bbva.rbvd.lib.r041.pattern.PreValidate;
 import com.bbva.rbvd.lib.r041.service.api.ConsumerInternalService;
@@ -20,7 +18,6 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.IntStream;
 
 public class ValidationParameter implements PreValidate {
     private static final Logger LOGGER = LoggerFactory.getLogger(ValidationParameter.class);
@@ -40,19 +37,19 @@ public class ValidationParameter implements PreValidate {
     public PayloadConfig getConfig(ValidateParticipantDTO input,ApplicationConfigurationService applicationConfigurationService) {
         LOGGER.info("** getConfig :: start");
         PayloadConfig payloadConfig = new PayloadConfig();
-        PayloadProperties payloadProperties = new PayloadProperties();
         List<PayloadProperties> payloadPropertiesList = new ArrayList<>();
-        List<ParticipantGroupDTO> groupParticipant = groupByDocumentNumberAndDocumentType(input);
-        LOGGER.info("** getConfig :: groupParticipant -> {}",groupParticipant);
-        groupParticipant.forEach(part -> {
-                if(ValidationUtil.isBBVAClient(part.getParticipantList().get(0).getPerson().getCustomerId())){
-                    String documentTypeHost = applicationConfigurationService.getProperty(part.getDocumentType());
-                    PEWUResponse customer = executeGetCustomer(documentTypeHost,part.getDocumentNumber());
-                    payloadProperties.setDocumetType(part.getDocumentType());
-                    payloadProperties.setDocumetNumber(part.getDocumentNumber());
-                    payloadProperties.setCustomer(customer);
-                    payloadPropertiesList.add(payloadProperties);
-                }
+        input.getParticipants().forEach(part -> {
+            PayloadProperties payloadProperties = new PayloadProperties();
+            String documentTypeHost = applicationConfigurationService.getProperty(part.getIdentityDocuments().get(0).getDocumentType().getId());
+            part.getIdentityDocuments().get(0).getDocumentType().setId(documentTypeHost);
+            if(ValidationUtil.isBBVAClient(part.getPerson().getCustomerId())){
+                payloadProperties.setDocumetType(documentTypeHost);
+                payloadProperties.setCustomerId(part.getPerson().getCustomerId());
+                payloadProperties.setDocumetNumber(part.getIdentityDocuments().get(0).getValue());
+                PEWUResponse customer = executeGetCustomer(documentTypeHost,part.getIdentityDocuments().get(0).getValue());
+                payloadProperties.setCustomer(customer);
+                payloadPropertiesList.add(payloadProperties);
+            }
 
         });
         payloadConfig.setProperties(payloadPropertiesList);
@@ -75,33 +72,6 @@ public class ValidationParameter implements PreValidate {
     public PEWUResponse executeGetCustomer(String documentNumber,String documentType){
         ConsumerInternalService consumerInternalService = new ConsumerInternalService(pbtqr002);
          return consumerInternalService.executeGetCustomerService(documentNumber,documentType);
-    }
-    public  List<ParticipantGroupDTO> groupByDocumentNumberAndDocumentType(ValidateParticipantDTO participant){
-        List<ParticipantGroupDTO> groupParticipants = new ArrayList<>();
-        IntStream.range(0,participant.getParticipants().size()).forEach(i ->{
-            ParticipantsDTO participantPrimary = participant.getParticipants().get(i);
-            List<ParticipantsDTO> participantMemory = new ArrayList<>();
-            participantMemory.add(participantPrimary);
-            IntStream.range(i+1,participant.getParticipants().size()).forEach(j ->{
-                ParticipantsDTO participantSecond = participant.getParticipants().get(j);
-
-                if(participantPrimary.getIdentityDocuments().get(0).getDocumentType().getId().equalsIgnoreCase(participantSecond.getIdentityDocuments().get(0).getDocumentType().getId())
-                        && participantPrimary.getIdentityDocuments().get(0).getValue().equalsIgnoreCase(participantSecond.getIdentityDocuments().get(0).getValue())){
-                    participantMemory.add(participantSecond);
-                }
-            });
-            boolean isNotGrouped = groupParticipants.stream().noneMatch(groupParticipant -> groupParticipant.getDocumentType().equalsIgnoreCase(participantPrimary.getIdentityDocuments().get(0).getDocumentType().getId()) &&
-                    groupParticipant.getDocumentNumber().equalsIgnoreCase(participantPrimary.getIdentityDocuments().get(0).getValue()));
-            if(isNotGrouped){
-                ParticipantGroupDTO participantGroupDTO = new ParticipantGroupDTO();
-                participantGroupDTO.setDocumentNumber(participantPrimary.getIdentityDocuments().get(0).getValue());
-                participantGroupDTO.setDocumentType(participantPrimary.getIdentityDocuments().get(0).getDocumentType().getId());
-                participantGroupDTO.setParticipantList(participantMemory);
-                groupParticipants.add(participantGroupDTO);
-            }
-        });
-        LOGGER.info("groupByDocumentNumberAndDocumentType end ***** {}",groupParticipants);
-        return groupParticipants;
     }
 
 

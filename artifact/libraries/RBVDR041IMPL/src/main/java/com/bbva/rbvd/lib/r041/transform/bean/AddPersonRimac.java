@@ -6,16 +6,36 @@ import com.bbva.rbvd.dto.insurance.commons.ParticipantsDTO;
 import com.bbva.rbvd.lib.r041.util.ConstantsUtil;
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 import java.util.Map;
+import java.util.HashMap;
 
 public class AddPersonRimac {
 
-    public static void  addPerson(List<PersonaBO> personaList, List<ParticipantsDTO> participants){
+    public static void  addPerson(final List<PersonaBO> personaList, List<ParticipantsDTO> participants){
         if(personaList.size()==1){
-            PersonaBO personaContractor = personaList.get(0);
-            personaContractor.setRol(ConstantsUtil.Rol.CONTRACTOR.getValue());
+            PersonaBO personMnager = personaList.stream().filter(per-> Objects.nonNull(per)).findFirst().get();
+            PersonaBO personContractor = new PersonaBO();
+            personContractor.setNombres(personMnager.getNombres());
+            personContractor.setApePaterno(personMnager.getApePaterno());
+            personContractor.setApeMaterno(personMnager.getApeMaterno());
+            personContractor.setTipoDocumento(personMnager.getTipoDocumento());
+            personContractor.setNroDocumento(personMnager.getNroDocumento());
+            personContractor.setFechaNacimiento(personMnager.getFechaNacimiento());
+            personContractor.setSexo(personMnager.getSexo());
+            personContractor.setCorreoElectronico(personMnager.getCorreoElectronico());
+            personContractor.setRol(ConstantsUtil.Rol.CONTRACTOR.getValue());
+            personContractor.setCelular(personMnager.getCelular());
+
+            personContractor.setTipoVia(personMnager.getTipoVia());
+            personContractor.setNombreVia(personMnager.getNombreVia());
+            personContractor.setNumeroVia(personMnager.getNumeroVia());
+            personContractor.setDistrito(personMnager.getDistrito());
+            personContractor.setProvincia(personMnager.getProvincia());
+            personContractor.setDepartamento(personMnager.getDepartamento());
+            personContractor.setDireccion(personMnager.getDireccion());
+            //set insured
             ParticipantsDTO participans = participants.get(0);
             PersonaBO personaInsured = new PersonaBO();
             String nomb = participans.getPerson().getFirstName().concat(StringUtils.isEmpty(participans.getPerson().getMiddleName())?"":" ".concat(participans.getPerson().getMiddleName()));
@@ -31,15 +51,16 @@ public class AddPersonRimac {
             personaInsured.setRol(ConstantsUtil.Rol.INSURED.getValue());
             personaInsured.setCelular((String) contacDetails.get(ConstantsUtil.ContactDetails.MOBILE_NUMBER));
 
-            personaInsured.setTipoVia(personaContractor.getTipoVia());
-            personaInsured.setNombreVia(personaContractor.getNombreVia());
-            personaInsured.setDistrito(personaContractor.getDistrito());
-            personaInsured.setProvincia(personaContractor.getProvincia());
-            personaInsured.setDepartamento(personaContractor.getDepartamento());
-            personaInsured.setDireccion(personaContractor.getDireccion());
+            personaInsured.setTipoVia(personContractor.getTipoVia());
+            personaInsured.setNombreVia(personContractor.getNombreVia());
+            personaInsured.setDistrito(personContractor.getDistrito());
+            personaInsured.setProvincia(personContractor.getProvincia());
+            personaInsured.setDepartamento(personContractor.getDepartamento());
+            personaInsured.setDireccion(personContractor.getDireccion());
 
-            personaList.add(personaContractor);
+            personaList.add(personContractor);
             personaList.add(personaInsured);
+
 
         } else if (personaList.size()==2) {
             ParticipantsDTO participans = participants.get(0);

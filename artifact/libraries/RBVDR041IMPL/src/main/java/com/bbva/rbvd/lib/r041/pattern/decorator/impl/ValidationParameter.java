@@ -46,7 +46,7 @@ public class ValidationParameter implements PreValidate {
                 payloadProperties.setDocumetType(documentTypeHost);
                 payloadProperties.setCustomerId(part.getPerson().getCustomerId());
                 payloadProperties.setDocumetNumber(part.getIdentityDocuments().get(0).getValue());
-                PEWUResponse customer = executeGetCustomer(documentTypeHost,part.getIdentityDocuments().get(0).getValue());
+                PEWUResponse customer = executeGetCustomer(part.getPerson().getCustomerId());
                 payloadProperties.setCustomer(customer);
                 payloadPropertiesList.add(payloadProperties);
             }
@@ -69,9 +69,9 @@ public class ValidationParameter implements PreValidate {
         }
     }
 
-    public PEWUResponse executeGetCustomer(String documentNumber,String documentType){
+    public PEWUResponse executeGetCustomer(String customerId){
         ConsumerInternalService consumerInternalService = new ConsumerInternalService(pbtqr002);
-         return consumerInternalService.executeGetCustomerService(documentNumber,documentType);
+         return consumerInternalService.executeGetCustomerService(customerId);
     }
 
 

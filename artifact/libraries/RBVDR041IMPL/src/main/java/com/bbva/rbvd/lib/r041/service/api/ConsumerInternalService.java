@@ -19,10 +19,10 @@ public class ConsumerInternalService {
         this.pbtqr002 = pbtqr002;
     }
 
-    public PEWUResponse executeGetCustomerService(String documentNumber, String documentType){
+    public PEWUResponse executeGetCustomerService(String customerId){
         LOGGER.info("***** RBVDR041Impl - executeGetCustomerService Start *****");
-        LOGGER.info("***** RBVDR041Impl - executeGetCustomerService documentNumber {} - documentType {} *****", documentNumber, documentType);
-        PEWUResponse result = pbtqr002.executeSearchInHostByDocument(documentType,documentNumber);
+        LOGGER.info("***** RBVDR041Impl - executeGetCustomerService customerId {} *****", customerId);
+        PEWUResponse result = pbtqr002.executeSearchInHostByCustomerId(customerId);
         LOGGER.info("***** RBVDR041Impl - executeGetCustomerService  ***** Response Host: {}", result);
         if( Objects.isNull(result.getHostAdviceCode()) || result.getHostAdviceCode().isEmpty()){
             return result;

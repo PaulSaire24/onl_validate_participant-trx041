@@ -114,7 +114,7 @@ public class RBVDR041Test {
 		when(this.applicationConfigurationService.getProperty(anyString())).thenReturn("L");
 		when(pisdr601.executeFindQuotationJoinByPolicyQuotaInternalId(anyString())).thenReturn(quotationJoinCustomerInformation);
 		when(pisdr352.executeAddParticipantsService(anyObject(),anyString(),anyString(),anyString())).thenReturn(new AgregarTerceroBO());
-		when(pbtqr002.executeSearchInHostByDocument(anyString(),anyString())).thenReturn(buildPersonHostDataResponseCase3());
+		when(pbtqr002.executeSearchInHostByCustomerId(anyString())).thenReturn(buildPersonHostDataResponseCase3());
 		AgregarTerceroBO response = rbvdR041.executeValidateAddParticipant(request);
 		Assert.assertNotNull(response);
 		Assert.assertEquals(0,this.context.getAdviceList().size());
@@ -133,7 +133,7 @@ public class RBVDR041Test {
 		when(this.applicationConfigurationService.getProperty(anyString())).thenReturn("L");
 		when(pisdr601.executeFindQuotationJoinByPolicyQuotaInternalId(anyString())).thenReturn(quotationJoinCustomerInformation);
 		when(pisdr352.executeAddParticipantsService(anyObject(),anyString(),anyString(),anyString())).thenReturn(new AgregarTerceroBO());
-		when(pbtqr002.executeSearchInHostByDocument(anyString(),anyString())).thenReturn(buildPersonHostDataResponseCase3());
+		when(pbtqr002.executeSearchInHostByCustomerId(anyString())).thenReturn(buildPersonHostDataResponseCase3());
 		AgregarTerceroBO response = rbvdR041.executeValidateAddParticipant(request);
 		Assert.assertNotNull(response);
 		Assert.assertEquals(0,this.context.getAdviceList().size());

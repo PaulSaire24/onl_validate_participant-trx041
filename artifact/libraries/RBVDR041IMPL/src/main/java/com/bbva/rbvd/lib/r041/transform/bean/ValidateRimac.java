@@ -8,7 +8,6 @@ import com.bbva.rbvd.lib.r041.util.ConstantsUtil;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 public class ValidateRimac {
 
@@ -33,13 +32,15 @@ public class ValidateRimac {
                 personaBO.setCorreoElectronico(parPewu.getCustomer().getPemsalwu().getContac3());
                 personaBO.setRol(ConstantsUtil.getValueByName(partInput.getParticipantType().getId()));
                 personaBO.setCelular(parPewu.getCustomer().getPemsalwu().getNroclie());
+
                 personaBO.setTipoVia(parPewu.getCustomer().getPemsalwu().getIdendi1());
                 personaBO.setNombreVia(parPewu.getCustomer().getPemsalwu().getNombdi1());
                 personaBO.setNumeroVia(parPewu.getCustomer().getPemsalwu().getNroext1());
                 personaBO.setDistrito(parPewu.getCustomer().getPemsalw4().getDesdist());
-                personaBO.setProvincia(parPewu.getCustomer().getPemsalw4().getDesdist());
+                personaBO.setProvincia(parPewu.getCustomer().getPemsalw4().getDesprov());
                 personaBO.setDepartamento(parPewu.getCustomer().getPemsalw4().getDesdept());
                 personaBO.setDireccion(parPewu.getCustomer().getPemsalwu().getIdendi1().concat(" ").concat(parPewu.getCustomer().getPemsalwu().getNombdi1()));
+
                 personaList.add(personaBO);
             }
         }));

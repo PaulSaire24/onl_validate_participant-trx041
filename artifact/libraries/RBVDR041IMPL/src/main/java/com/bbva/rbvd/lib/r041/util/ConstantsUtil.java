@@ -45,7 +45,7 @@ public class ConstantsUtil {
         private RegularExpression() {   }
         public static final String CONTAIN_ONLY_LETTERS=".*[a-zA-Z].*";
         public static final String CONTAIN_ONLY_NUMBERS=".*[0-9].*";
-        public static final String DELIMITER = "|";
+        public static final String UNSPECIFIED = "N/A";
     }
     public static final class Numero{
         private Numero() {   }

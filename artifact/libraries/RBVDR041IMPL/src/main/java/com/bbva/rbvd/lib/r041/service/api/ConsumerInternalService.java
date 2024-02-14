@@ -19,32 +19,10 @@ public class ConsumerInternalService {
         this.pbtqr002 = pbtqr002;
     }
 
-    /*public String executeKsmkCryptographyService(String customerId){
-        LOGGER.info("***** RBVDR041Impl - executeKsmkCryptographyService Start *****");
-        String b64CustomerId =  FunctionUtils.encodeB64(customerId);
-        List<OutputDTO> output = ksmkr002.executeKSMKR002(Collections.singletonList(new InputDTO(b64CustomerId, ConstantsUtil.Crypto.B64URL)), "", ConstantsUtil.Crypto.INPUT_TEXT_SECURITY, new CredentialsDTO(ConstantsUtil.Crypto.APP_NAME, "", ConstantsUtil.Crypto.CRE_EXTRA_PARAMS));
-        LOGGER.info("***** RBVDR041Impl - executeKsmkCryptographyService  ***** Response: {}", output);
-        if (CollectionUtils.isEmpty(output)){
-            throw new BusinessException(ValidateParticipantErrors.ERROR_INTERNAL_SERVICE_INVOKATION.getAdviceCode(), false, TypeErrorControllerEnum.ERROR_KSMK_ENCRYPT_SERVICE.getValue());
-        }
-
-        return output.get(0).getData();
-    }*/
-
-    /*public ListBusinessesASO executeListBusinessService(String encryptedCustomerId){
-        LOGGER.info("***** RBVDR041Impl - executeKsmkCryptographyService Start *****");
-        ListBusinessesASO listBusinesses = rbvdr066.executeGetListBusinesses(encryptedCustomerId, null);
-        if(CollectionUtils.isEmpty(listBusinesses.getData())){
-            throw new BusinessException(ValidateParticipantErrors.ERROR_INTERNAL_SERVICE_INVOKATION.getAdviceCode(), false, TypeErrorControllerEnum.ERROR_LIST_BUSINESS_SERVICE.getValue());
-        }
-
-        return listBusinesses;
-    }*/
-
     public PEWUResponse executeGetCustomerService(String documentNumber, String documentType){
         LOGGER.info("***** RBVDR041Impl - executeGetCustomerService Start *****");
         LOGGER.info("***** RBVDR041Impl - executeGetCustomerService documentNumber {} - documentType {} *****", documentNumber, documentType);
-        PEWUResponse result = pbtqr002.executeSearchInHostByDocument(documentNumber,documentType);
+        PEWUResponse result = pbtqr002.executeSearchInHostByDocument(documentType,documentNumber);
         LOGGER.info("***** RBVDR041Impl - executeGetCustomerService  ***** Response Host: {}", result);
         if( Objects.isNull(result.getHostAdviceCode()) || result.getHostAdviceCode().isEmpty()){
             return result;

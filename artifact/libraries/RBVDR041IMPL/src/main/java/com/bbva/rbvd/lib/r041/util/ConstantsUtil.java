@@ -1,7 +1,12 @@
 package com.bbva.rbvd.lib.r041.util;
 
+import java.time.ZoneId;
+
 public class ConstantsUtil {
 
+    public static final class Zone {
+        public static final ZoneId ZONE_ID_GTM = ZoneId.of("GMT");
+    }
     public enum Product {
 
         DYNAMIC_LIFE("VIDADINAMICO","841"),

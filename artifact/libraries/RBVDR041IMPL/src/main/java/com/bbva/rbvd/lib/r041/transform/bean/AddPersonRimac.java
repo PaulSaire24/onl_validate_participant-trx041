@@ -10,6 +10,8 @@ import java.util.Map;
 import java.util.List;
 import java.util.HashMap;
 
+import static com.bbva.rbvd.lib.r041.util.ConvertUtil.toLocalDate;
+
 public class AddPersonRimac {
 
     public static void  addPerson(final List<PersonaBO> personaList, List<ParticipantsDTO> participants){
@@ -35,7 +37,7 @@ public class AddPersonRimac {
             personContractor.setDepartamento(personMnager.getDepartamento());
             personContractor.setDireccion(personMnager.getDireccion());
             //set insured
-            ParticipantsDTO participans = participants.get(0);
+            ParticipantsDTO participans = participants.get(1);
             PersonaBO personaInsured = new PersonaBO();
             String nomb = participans.getPerson().getFirstName().concat(StringUtils.isEmpty(participans.getPerson().getMiddleName())?"":" ".concat(participans.getPerson().getMiddleName()));
             Map<String,Object> contacDetails = getContactGroup(participans.getContactDetails());
@@ -44,7 +46,7 @@ public class AddPersonRimac {
             personaInsured.setApeMaterno(participans.getPerson().getSecondLastName());
             personaInsured.setTipoDocumento(participans.getIdentityDocuments().get(0).getDocumentType().getId());
             personaInsured.setNroDocumento(participans.getIdentityDocuments().get(0).getValue());
-            personaInsured.setFechaNacimiento(String.valueOf(participans.getPerson().getBirthDate()));
+            personaInsured.setFechaNacimiento(String.valueOf(toLocalDate(participans.getPerson().getBirthDate())));
             personaInsured.setSexo(participans.getPerson().getGender().getId().equalsIgnoreCase("MALE")?"M":"L");
             personaInsured.setCorreoElectronico((String) contacDetails.get(ConstantsUtil.ContactDetails.EMAIL));
             personaInsured.setRol(ConstantsUtil.Rol.INSURED.getValue());
@@ -54,6 +56,7 @@ public class AddPersonRimac {
             personaInsured.setNombreVia(personContractor.getNombreVia());
             personaInsured.setDistrito(personContractor.getDistrito());
             personaInsured.setProvincia(personContractor.getProvincia());
+            personaInsured.setNumeroVia(personContractor.getNumeroVia());
             personaInsured.setDepartamento(personContractor.getDepartamento());
             personaInsured.setDireccion(personContractor.getDireccion());
 

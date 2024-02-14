@@ -24,6 +24,7 @@ public class ThirdDynamicLifeBusinessImpl implements IThirdDynamicLifeBusiness {
         PayloadAgregarTerceroBO  agregarTercero = new PayloadAgregarTerceroBO();
         List<PersonaBO> personaList = ValidateRimac.mapInRequestRimacDynamicLife(payloadConfig);
         AddPersonRimac.addPerson(personaList,payloadConfig.getInput().getParticipants());
+        System.out.println(personaList);
         agregarTercero.setPersona(personaList);
         agregarTercero.setProducto(ConstantsUtil.Product.DYNAMIC_LIFE.getName());
         requestRimac.setPayload(agregarTercero);

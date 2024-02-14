@@ -31,7 +31,7 @@ public class ValidateRimac {
                 personaBO.setSexo(parPewu.getCustomer().getPemsalwu().getSexo());
                 personaBO.setCorreoElectronico(parPewu.getCustomer().getPemsalwu().getContac3());
                 personaBO.setRol(ConstantsUtil.getValueByName(partInput.getParticipantType().getId()));
-                personaBO.setCelular(parPewu.getCustomer().getPemsalwu().getNroclie());
+                personaBO.setCelular(parPewu.getCustomer().getPemsalwu().getContac2());
 
                 personaBO.setTipoVia(parPewu.getCustomer().getPemsalwu().getIdendi1());
                 personaBO.setNombreVia(parPewu.getCustomer().getPemsalwu().getNombdi1());

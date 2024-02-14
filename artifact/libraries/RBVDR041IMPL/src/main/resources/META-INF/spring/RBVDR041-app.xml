@@ -8,5 +8,14 @@
 		<property name="pisdR352" ref="pisdR352"/>
 		<property name="pisdR601" ref="pisdR601"/>
 		<property name="pisdR012" ref="pisdR012"/>
+		<property name="participantProperties" ref="participantProperties" />
+	</bean>
+
+	<!-- Properties -->
+	<bean id="participantProperties" class="com.bbva.rbvd.lib.r041.properties.ParticipantProperties" parent="properties">
+	</bean>
+
+	<bean id="properties" class="com.bbva.rbvd.lib.r041.properties.Properties">
+		<property name="applicationConfigurationService" ref="applicationConfigurationService"/>
 	</bean>
 </beans>

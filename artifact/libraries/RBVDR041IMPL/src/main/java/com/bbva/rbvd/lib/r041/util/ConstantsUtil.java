@@ -27,7 +27,7 @@ public class ConstantsUtil {
         public static final String APP_NAME = "apx-pe";
         public static final String OAUTH_TOKEN = "";
         public static final String CRE_EXTRA_PARAMS = "user=KSMK;country=PE";
-        public static final String INPUT_TEXT_SECURITY = "operation=DO;type=customerId;origin=ASO;endpoint=ASO;securityLevel=5";
+        public static final String INPUT_TEXT_SECURITY = "operation=DO;type=fpextff1;origin=ASO;endpoint=ASO;securityLevel=5";
         public static final String B64URL = "B64URL";
 
         private Crypto() {

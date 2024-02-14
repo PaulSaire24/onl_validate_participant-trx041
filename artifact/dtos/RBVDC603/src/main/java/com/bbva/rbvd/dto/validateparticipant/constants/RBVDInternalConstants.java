@@ -56,4 +56,9 @@ public class RBVDInternalConstants {
             this.productId = productId;
         }
     }
+
+    public enum ParticipantType{
+        CUSTOMER,
+        NON_CUSTOMER;
+    }
 }

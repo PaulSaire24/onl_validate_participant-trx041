@@ -2,14 +2,14 @@ package com.bbva.rbvd.lib.r041.pattern.decorator.impl;
 
 import com.bbva.rbvd.lib.r041.pattern.PostValidate;
 import com.bbva.rbvd.lib.r041.pattern.PreValidate;
-import com.bbva.rbvd.lib.r041.pattern.Validate;
+import com.bbva.rbvd.lib.r041.pattern.InsuranceProduct;
 
-public abstract class ValidateDecorator implements Validate {
+public abstract class InsuranceProductDecorator implements InsuranceProduct {
 
     private PreValidate preValidate;
     private PostValidate postValidate;
 
-    protected ValidateDecorator(PreValidate preValidate, PostValidate postValidate) {
+    protected InsuranceProductDecorator(PreValidate preValidate, PostValidate postValidate) {
         this.preValidate = preValidate;
         this.postValidate = postValidate;
     }

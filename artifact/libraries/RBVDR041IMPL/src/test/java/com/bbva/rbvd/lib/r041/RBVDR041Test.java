@@ -1,5 +1,6 @@
 package com.bbva.rbvd.lib.r041;
 
+import com.bbva.apx.exception.business.BusinessException;
 import com.bbva.elara.configuration.manager.application.ApplicationConfigurationService;
 import com.bbva.elara.domain.transaction.Context;
 import com.bbva.elara.domain.transaction.ThreadContext;
@@ -11,27 +12,26 @@ import com.bbva.pbtq.dto.validatedocument.response.host.pewu.PEMSALW4;
 import com.bbva.pbtq.dto.validatedocument.response.host.pewu.PEMSALWU;
 import com.bbva.pbtq.dto.validatedocument.response.host.pewu.PEWUResponse;
 import com.bbva.pbtq.lib.r002.PBTQR002;
+import com.bbva.pisd.dto.insurancedao.constants.PISDInsuranceErrors;
 import com.bbva.pisd.dto.insurancedao.entities.InsuranceBusinessEntity;
 import com.bbva.pisd.dto.insurancedao.entities.InsuranceProductEntity;
 import com.bbva.pisd.dto.insurancedao.entities.QuotationEntity;
 import com.bbva.pisd.dto.insurancedao.entities.QuotationModEntity;
 import com.bbva.pisd.dto.insurancedao.join.QuotationJoinCustomerInformationDTO;
+import com.bbva.pisd.lib.r012.PISDR012;
 import com.bbva.pisd.lib.r352.PISDR352;
 import com.bbva.pisd.lib.r601.PISDR601;
 import com.bbva.rbvd.dto.insrncsale.bo.emision.AgregarTerceroBO;
-import com.bbva.rbvd.dto.insurance.commons.ParticipantsDTO;
-import com.bbva.rbvd.dto.insurance.commons.ValidateParticipantDTO;
-import com.bbva.rbvd.dto.insurance.commons.ParticipantTypeDTO;
-import com.bbva.rbvd.dto.insurance.commons.PersonDTO;
-import com.bbva.rbvd.dto.insurance.commons.IdentityDocumentDTO;
-import com.bbva.rbvd.dto.insurance.commons.DocumentTypeDTO;
-import com.bbva.rbvd.dto.insurance.commons.ContactDetailsDTO;
-import com.bbva.rbvd.dto.insurance.commons.GenderDTO;
+import com.bbva.rbvd.dto.insrncsale.bo.emision.PayloadAgregarTerceroBO;
+import com.bbva.rbvd.dto.insurance.commons.*;
+import com.bbva.rbvd.dto.validateparticipant.dto.ResponseLibrary;
 import com.bbva.rbvd.lib.r066.RBVDR066;
+import com.bbva.rbvd.util.MockDTO;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
 import org.springframework.aop.framework.Advised;
@@ -39,6 +39,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.ArrayList;
@@ -47,8 +48,7 @@ import java.util.HashMap;
 import java.util.Date;
 import java.util.Collections;
 
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.anyObject;
+import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.when;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -76,6 +76,8 @@ public class RBVDR041Test {
 	private PISDR601 pisdr601;
 	@Resource(name = "rbvdR066")
 	private RBVDR066 rbvdr066;
+	@Resource(name = "pisdR012")
+	private PISDR012 pisdr012;
 	@Resource(name = "applicationConfigurationService")
 	private ApplicationConfigurationService applicationConfigurationService;
 
@@ -109,261 +111,215 @@ public class RBVDR041Test {
 	}
 
 	@Test
-	public void executeTestOk(){
-		QuotationJoinCustomerInformationDTO quotationJoinCustomerInformation = new QuotationJoinCustomerInformationDTO();
-		quotationJoinCustomerInformation.setInsuranceProduct(new InsuranceProductEntity());
-		quotationJoinCustomerInformation.setQuotation(new QuotationEntity());
-		quotationJoinCustomerInformation.getInsuranceProduct().setInsuranceProductType("841");
-		quotationJoinCustomerInformation.getQuotation().setInsuranceCompanyQuotaId("0814000038990");
-		//request of trx
-
-		ValidateParticipantDTO request = getMockRequestBodyValidateLegalParticipants();
-		when(pisdr601.executeFindQuotationJoinByPolicyQuotaInternalId(anyString())).thenReturn(quotationJoinCustomerInformation);
-		when(pisdr352.executeAddParticipantsService(anyObject(),anyString(),anyString(),anyString())).thenReturn(new AgregarTerceroBO());
+	public void executeNaturalPersonTestOkNonLifeProduct(){
+		ValidateParticipantDTO request = getMockRequestBodyValidateNaturalParticipants();
+		when(pisdr601.executeFindQuotationJoinByPolicyQuotaInternalId(anyString())).thenReturn(buildFindQuotationJoinByPolicyQuotaInternalId("789956435"));
+		when(pisdr012.executeGetParticipantRolesByCompany(anyMap())).thenReturn(buildRolByParticipantTypeResponse());
+		AgregarTerceroBO agregarTerceroBO = new AgregarTerceroBO();
+		PayloadAgregarTerceroBO payloadAgregarTerceroBO = new PayloadAgregarTerceroBO();
+		payloadAgregarTerceroBO.setCotizacion("cotizacion");
+		agregarTerceroBO.setPayload(payloadAgregarTerceroBO);
+		when(pisdr352.executeAddParticipantsService(anyObject(),anyString(),anyString(),anyString())).thenReturn(agregarTerceroBO);
 		when(pbtqr002.executeSearchInHostByDocument(anyString(),anyString())).thenReturn(buildPersonHostDataResponseCase3());
 		AgregarTerceroBO response = rbvdR041.executeValidateAddParticipant(request);
 		Assert.assertNotNull(response);
 		Assert.assertEquals(0,this.context.getAdviceList().size());
 	}
 
+	@Test
+	public void executeNaturalPersonTestOkLifeProduct(){
+		QuotationJoinCustomerInformationDTO quotation = buildFindQuotationJoinByPolicyQuotaInternalId("789956435");
+		quotation.getInsuranceProduct().setInsuranceProductType("841");
+		when(pisdr601.executeFindQuotationJoinByPolicyQuotaInternalId(anyString())).thenReturn(quotation);
+		when(pisdr012.executeGetParticipantRolesByCompany(anyMap())).thenReturn(buildRolByParticipantTypeResponse());
+		AgregarTerceroBO agregarTerceroBO = new AgregarTerceroBO();
+		PayloadAgregarTerceroBO payloadAgregarTerceroBO = new PayloadAgregarTerceroBO();
+		payloadAgregarTerceroBO.setCotizacion("cotizacion");
+		agregarTerceroBO.setPayload(payloadAgregarTerceroBO);
+		when(pisdr352.executeAddParticipantsService(anyObject(),anyString(),anyString(),anyString())).thenReturn(agregarTerceroBO);
+		when(pbtqr002.executeSearchInHostByDocument(anyString(),anyString())).thenReturn(buildPersonHostDataResponseCase3());
+		AgregarTerceroBO response = rbvdR041.executeValidateAddParticipant(getMockRequestBodyValidateNaturalParticipants());
+		Assert.assertNotNull(response);
+		Assert.assertEquals(0,this.context.getAdviceList().size());
+	}
 
-	
-	/*@Test
-	public void executeValidationWithNaturalPersonDataTypeOk(){
+	@Test
+	public void executeNaturalPersonTestOkWithNonCustomer(){
+		ValidateParticipantDTO request = getMockRequestBodyValidateNaturalParticipants();
+		request.getParticipants().get(2).getPerson().setCustomerId(null);
+		when(pisdr601.executeFindQuotationJoinByPolicyQuotaInternalId(anyString())).thenReturn(buildFindQuotationJoinByPolicyQuotaInternalId("789956435"));
+		when(pisdr012.executeGetParticipantRolesByCompany(anyMap())).thenReturn(buildRolByParticipantTypeResponse());
+		AgregarTerceroBO agregarTerceroBO = new AgregarTerceroBO();
+		PayloadAgregarTerceroBO payloadAgregarTerceroBO = new PayloadAgregarTerceroBO();
+		payloadAgregarTerceroBO.setCotizacion("cotizacion");
+		agregarTerceroBO.setPayload(payloadAgregarTerceroBO);
+		when(pisdr352.executeAddParticipantsService(anyObject(),anyString(),anyString(),anyString())).thenReturn(agregarTerceroBO);
+		when(pbtqr002.executeSearchInHostByDocument(anyString(),anyString())).thenReturn(buildPersonHostDataResponseCase3());
+		AgregarTerceroBO response = rbvdR041.executeValidateAddParticipant(request);
+		Assert.assertNotNull(response);
+		Assert.assertEquals(0,this.context.getAdviceList().size());
+	}
 
-		*//**
-		 *  When
-		 **//*
-		PISDR601 pisdr601 = Mockito.mock(PISDR601.class);
-		PISDR012 pisdr012 = Mockito.mock(PISDR012.class);
-		this.customerInformationDAO.setPisdr601(pisdr601);
-		this.rolDAO.setPisdr012(pisdr012);
-		Mockito.when(pisdr601.executeFindQuotationJoinByPolicyQuotaInternalId(Mockito.eq("0123489304"))).thenReturn(buildFindQuotationJoinByPolicyQuotaInternalId("71998384"));
-		Mockito.when(pisdr012.executeGetParticipantRolesByCompany(Mockito.anyMap())).thenReturn(buildRolByParticipantTypeResponse());
-		Mockito.when(pbtqr002.executeSearchInHostByDocument(Mockito.anyString(),Mockito.anyString())).thenReturn(buildPersonHostDataResponse());
-
-		*//**
-		 *  Execution
-		 **//*
-
-		ResponseLibrary<Void> response =  rbvdR041.executeValidateAddParticipant(getMockRequestBodyValidateNaturalParticipants());
-		Assert.assertEquals(0, context.getAdviceList().size());
-
-	}*/
-
-	/*@Test
+	@Test
 	public void executeValidationWithNaturalPersonDataTypeOkCase2(){
 
-		*//**
-		 *  When
-		 **//*
-		PISDR601 pisdr601 = Mockito.mock(PISDR601.class);
-		PISDR012 pisdr012 = Mockito.mock(PISDR012.class);
-		this.customerInformationDAO.setPisdr601(pisdr601);
-		this.rolDAO.setPisdr012(pisdr012);
 		Mockito.when(pisdr601.executeFindQuotationJoinByPolicyQuotaInternalId(Mockito.eq("0123489304"))).thenReturn(buildFindQuotationJoinByPolicyQuotaInternalId("71998384"));
 		Mockito.when(pisdr012.executeGetParticipantRolesByCompany(Mockito.anyMap())).thenReturn(buildRolByParticipantTypeResponse());
 		Mockito.when(pbtqr002.executeSearchInHostByDocument(Mockito.anyString(),Mockito.anyString())).thenReturn(buildPersonHostDataResponseCase2());
+		AgregarTerceroBO agregarTerceroBO = new AgregarTerceroBO();
+		PayloadAgregarTerceroBO payloadAgregarTerceroBO = new PayloadAgregarTerceroBO();
+		payloadAgregarTerceroBO.setCotizacion("cotizacion");
+		agregarTerceroBO.setPayload(payloadAgregarTerceroBO);
+		when(pisdr352.executeAddParticipantsService(anyObject(),anyString(),anyString(),anyString())).thenReturn(agregarTerceroBO);
 
-		*//**
-		 *  Execution
-		 **//*
 		ValidateParticipantDTO validateParticipantDTO =  getMockRequestBodyValidateNaturalParticipants();
-		validateParticipantDTO.setChannelId("BI");
-		ResponseLibrary<Void> response =  rbvdR041.executeValidateAddParticipant(validateParticipantDTO);
-		Assert.assertEquals(0, context.getAdviceList().size());
-
-	}*/
-
-	/*@Test
-	public void executeValidationWithNaturalPersonDataTypeOkCase3(){
-
-		*//**
-		 *  When
-		 **//*
-		PISDR601 pisdr601 = Mockito.mock(PISDR601.class);
-		PISDR012 pisdr012 = Mockito.mock(PISDR012.class);
-		this.customerInformationDAO.setPisdr601(pisdr601);
-		this.rolDAO.setPisdr012(pisdr012);
-		Mockito.when(pisdr601.executeFindQuotationJoinByPolicyQuotaInternalId(Mockito.eq("0123489304"))).thenReturn(buildFindQuotationJoinByPolicyQuotaInternalId("71998384"));
-		Mockito.when(pisdr012.executeGetParticipantRolesByCompany(Mockito.anyMap())).thenReturn(buildRolByParticipantTypeResponse());
-		Mockito.when(pbtqr002.executeSearchInHostByDocument(Mockito.anyString(),Mockito.anyString())).thenReturn(buildPersonHostDataResponseCase3());
-
-		*//**
-		 *  Execution
-		 **//*
-		ValidateParticipantDTO validateParticipantDTO =  getMockRequestBodyValidateNaturalParticipants();
-		validateParticipantDTO.setChannelId("BI");
-		ResponseLibrary<Void> response =  rbvdR041.executeValidateAddParticipant(validateParticipantDTO);
-		Assert.assertEquals(0, context.getAdviceList().size());
-
-	}*/
-
-	/*@Test
-	public void executeValidationWithNaturalPersonDataTypeOkCase4(){
-
-		*//**
-		 *  When
-		 **//*
-		PISDR601 pisdr601 = Mockito.mock(PISDR601.class);
-		PISDR012 pisdr012 = Mockito.mock(PISDR012.class);
-		this.customerInformationDAO.setPisdr601(pisdr601);
-		this.rolDAO.setPisdr012(pisdr012);
-		Mockito.when(pisdr601.executeFindQuotationJoinByPolicyQuotaInternalId(Mockito.eq("0123489304"))).thenReturn(buildFindQuotationJoinByPolicyQuotaInternalId("71998384"));
-		Mockito.when(pisdr012.executeGetParticipantRolesByCompany(Mockito.anyMap())).thenReturn(buildRolByParticipantTypeResponse());
-		Mockito.when(pbtqr002.executeSearchInHostByDocument(Mockito.anyString(),Mockito.anyString())).thenReturn(buildPersonHostDataResponseCase4());
-
-		*//**
-		 *  Execution
-		 **//*
-		ResponseLibrary<Void> response =  rbvdR041.executeValidateAddParticipant(getMockRequestBodyValidateNaturalParticipants());
-		Assert.assertEquals(0, context.getAdviceList().size());
-
-	}*/
-
-	/*@Test
-	public void executeValidationWithNaturalPersonDataTypeOkCase5(){
-
-		*//**
-		 *  When
-		 **//*
-		PISDR601 pisdr601 = Mockito.mock(PISDR601.class);
-		PISDR012 pisdr012 = Mockito.mock(PISDR012.class);
-		this.customerInformationDAO.setPisdr601(pisdr601);
-		this.rolDAO.setPisdr012(pisdr012);
-		Mockito.when(pisdr601.executeFindQuotationJoinByPolicyQuotaInternalId(Mockito.eq("0123489304"))).thenReturn(buildFindQuotationJoinByPolicyQuotaInternalId("71998384"));
-		Mockito.when(pisdr012.executeGetParticipantRolesByCompany(Mockito.anyMap())).thenReturn(buildRolByParticipantTypeResponse());
-		Mockito.when(pbtqr002.executeSearchInHostByDocument(Mockito.anyString(),Mockito.anyString())).thenReturn(buildPersonHostDataResponseCase5());
-
-		*//**
-		 *  Execution
-		 **//*
-		ResponseLibrary<Void> response =  rbvdR041.executeValidateAddParticipant(getMockRequestBodyValidateNaturalParticipants());
-		Assert.assertEquals(0, context.getAdviceList().size());
-
-	}*/
-
-	/*@Test
-	public void executeValidationWithNaturalPersonDataTypeOkCase6(){
-
-		*//**
-		 *  When
-		 **//*
-		PISDR601 pisdr601 = Mockito.mock(PISDR601.class);
-		PISDR012 pisdr012 = Mockito.mock(PISDR012.class);
-		this.customerInformationDAO.setPisdr601(pisdr601);
-		this.rolDAO.setPisdr012(pisdr012);
-		Mockito.when(pisdr601.executeFindQuotationJoinByPolicyQuotaInternalId(Mockito.eq("0123489304"))).thenReturn(buildFindQuotationJoinByPolicyQuotaInternalId("71998384"));
-		Mockito.when(pisdr012.executeGetParticipantRolesByCompany(Mockito.anyMap())).thenReturn(buildRolByParticipantTypeResponse());
-		Mockito.when(pbtqr002.executeSearchInHostByDocument(Mockito.anyString(),Mockito.anyString())).thenReturn(buildPersonHostDataResponseCase6());
-
-		*//**
-		 *  Execution
-		 **//*
-		ResponseLibrary<Void> response =  rbvdR041.executeValidateAddParticipant(getMockRequestBodyValidateNaturalParticipants());
-		Assert.assertEquals(0, context.getAdviceList().size());
-
-	}*/
-
-/*	@Test
-	public void executeValidationWithNaturalPersonDataTypeOkCase7(){
-
-		*//**
-		 *  When
-		 **//*
-		PISDR601 pisdr601 = Mockito.mock(PISDR601.class);
-		PISDR012 pisdr012 = Mockito.mock(PISDR012.class);
-		this.customerInformationDAO.setPisdr601(pisdr601);
-		this.rolDAO.setPisdr012(pisdr012);
-		Mockito.when(pisdr601.executeFindQuotationJoinByPolicyQuotaInternalId(Mockito.eq("0123489304"))).thenReturn(buildFindQuotationJoinByPolicyQuotaInternalId("71998384"));
-		Mockito.when(pisdr012.executeGetParticipantRolesByCompany(Mockito.anyMap())).thenReturn(buildRolByParticipantTypeResponse());
-		Mockito.when(pbtqr002.executeSearchInHostByDocument(Mockito.anyString(),Mockito.anyString())).thenReturn(buildPersonHostDataResponseCase7());
-
-		*//**
-		 *  Execution
-		 **//*
-		ResponseLibrary<Void> response =  rbvdR041.executeValidateAddParticipant(getMockRequestBodyValidateNaturalParticipants());
+		AgregarTerceroBO response =  rbvdR041.executeValidateAddParticipant(validateParticipantDTO);
+		Assert.assertNotNull(response);
 		Assert.assertEquals(0, context.getAdviceList().size());
 
 	}
 
 	@Test
+	public void executeValidationWithNaturalPersonDataTypeOkCase3(){
+
+		Mockito.when(pisdr601.executeFindQuotationJoinByPolicyQuotaInternalId(anyString())).thenReturn(buildFindQuotationJoinByPolicyQuotaInternalId("71998384"));
+		Mockito.when(pisdr012.executeGetParticipantRolesByCompany(Mockito.anyMap())).thenReturn(buildRolByParticipantTypeResponse());
+		Mockito.when(pbtqr002.executeSearchInHostByDocument(Mockito.anyString(),Mockito.anyString())).thenReturn(buildPersonHostDataResponseCase3());
+		AgregarTerceroBO agregarTerceroBO = new AgregarTerceroBO();
+		PayloadAgregarTerceroBO payloadAgregarTerceroBO = new PayloadAgregarTerceroBO();
+		payloadAgregarTerceroBO.setCotizacion("cotizacion");
+		agregarTerceroBO.setPayload(payloadAgregarTerceroBO);
+		when(pisdr352.executeAddParticipantsService(anyObject(),anyString(),anyString(),anyString())).thenReturn(agregarTerceroBO);
+
+		ValidateParticipantDTO validateParticipantDTO =  getMockRequestBodyValidateNaturalParticipants();
+		AgregarTerceroBO response =  rbvdR041.executeValidateAddParticipant(validateParticipantDTO);
+		Assert.assertNotNull(response);
+		Assert.assertEquals(0, context.getAdviceList().size());
+
+	}
+
+	@Test
+	public void executeValidationWithNaturalPersonDataTypeOkCase4(){
+		AgregarTerceroBO agregarTerceroBO = new AgregarTerceroBO();
+		PayloadAgregarTerceroBO payloadAgregarTerceroBO = new PayloadAgregarTerceroBO();
+		payloadAgregarTerceroBO.setCotizacion("cotizacion");
+		agregarTerceroBO.setPayload(payloadAgregarTerceroBO);
+		when(pisdr352.executeAddParticipantsService(anyObject(),anyString(),anyString(),anyString())).thenReturn(agregarTerceroBO);
+		Mockito.when(pisdr601.executeFindQuotationJoinByPolicyQuotaInternalId(Mockito.eq("0123489304"))).thenReturn(buildFindQuotationJoinByPolicyQuotaInternalId("71998384"));
+		Mockito.when(pisdr012.executeGetParticipantRolesByCompany(Mockito.anyMap())).thenReturn(buildRolByParticipantTypeResponse());
+		Mockito.when(pbtqr002.executeSearchInHostByDocument(Mockito.anyString(),Mockito.anyString())).thenReturn(buildPersonHostDataResponseCase4());
+
+
+		AgregarTerceroBO response =  rbvdR041.executeValidateAddParticipant(getMockRequestBodyValidateNaturalParticipants());
+		Assert.assertNotNull(response);
+		Assert.assertEquals(0, context.getAdviceList().size());
+
+	}
+
+	@Test
+	public void executeValidationWithNaturalPersonDataTypeOkCase5(){
+		AgregarTerceroBO agregarTerceroBO = new AgregarTerceroBO();
+		PayloadAgregarTerceroBO payloadAgregarTerceroBO = new PayloadAgregarTerceroBO();
+		payloadAgregarTerceroBO.setCotizacion("cotizacion");
+		agregarTerceroBO.setPayload(payloadAgregarTerceroBO);
+		when(pisdr352.executeAddParticipantsService(anyObject(),anyString(),anyString(),anyString())).thenReturn(agregarTerceroBO);
+		Mockito.when(pisdr601.executeFindQuotationJoinByPolicyQuotaInternalId(Mockito.eq("0123489304"))).thenReturn(buildFindQuotationJoinByPolicyQuotaInternalId("71998384"));
+		Mockito.when(pisdr012.executeGetParticipantRolesByCompany(Mockito.anyMap())).thenReturn(buildRolByParticipantTypeResponse());
+		Mockito.when(pbtqr002.executeSearchInHostByDocument(Mockito.anyString(),Mockito.anyString())).thenReturn(buildPersonHostDataResponseCase5());
+
+		AgregarTerceroBO response =  rbvdR041.executeValidateAddParticipant(getMockRequestBodyValidateNaturalParticipants());
+		Assert.assertNotNull(response);
+		Assert.assertEquals(0, context.getAdviceList().size());
+
+	}
+
+	@Test
+	public void executeValidationWithNaturalPersonDataTypeOkCase6(){
+		AgregarTerceroBO agregarTerceroBO = new AgregarTerceroBO();
+		PayloadAgregarTerceroBO payloadAgregarTerceroBO = new PayloadAgregarTerceroBO();
+		payloadAgregarTerceroBO.setCotizacion("cotizacion");
+		agregarTerceroBO.setPayload(payloadAgregarTerceroBO);
+		when(pisdr352.executeAddParticipantsService(anyObject(),anyString(),anyString(),anyString())).thenReturn(agregarTerceroBO);
+		Mockito.when(pisdr601.executeFindQuotationJoinByPolicyQuotaInternalId(Mockito.eq("0123489304"))).thenReturn(buildFindQuotationJoinByPolicyQuotaInternalId("71998384"));
+		Mockito.when(pisdr012.executeGetParticipantRolesByCompany(Mockito.anyMap())).thenReturn(buildRolByParticipantTypeResponse());
+		Mockito.when(pbtqr002.executeSearchInHostByDocument(Mockito.anyString(),Mockito.anyString())).thenReturn(buildPersonHostDataResponseCase6());
+
+
+		AgregarTerceroBO response =  rbvdR041.executeValidateAddParticipant(getMockRequestBodyValidateNaturalParticipants());
+		Assert.assertNotNull(response);
+		Assert.assertEquals(0, context.getAdviceList().size());
+
+	}
+
+	@Test
+	public void executeValidationWithNaturalPersonDataTypeOkCase7(){
+		AgregarTerceroBO agregarTerceroBO = new AgregarTerceroBO();
+		PayloadAgregarTerceroBO payloadAgregarTerceroBO = new PayloadAgregarTerceroBO();
+		payloadAgregarTerceroBO.setCotizacion("cotizacion");
+		agregarTerceroBO.setPayload(payloadAgregarTerceroBO);
+		when(pisdr352.executeAddParticipantsService(anyObject(),anyString(),anyString(),anyString())).thenReturn(agregarTerceroBO);
+		Mockito.when(pisdr601.executeFindQuotationJoinByPolicyQuotaInternalId(Mockito.eq("0123489304"))).thenReturn(buildFindQuotationJoinByPolicyQuotaInternalId("71998384"));
+		Mockito.when(pisdr012.executeGetParticipantRolesByCompany(Mockito.anyMap())).thenReturn(buildRolByParticipantTypeResponse());
+		Mockito.when(pbtqr002.executeSearchInHostByDocument(Mockito.anyString(),Mockito.anyString())).thenReturn(buildPersonHostDataResponseCase7());
+
+		AgregarTerceroBO response =  rbvdR041.executeValidateAddParticipant(getMockRequestBodyValidateNaturalParticipants());
+		Assert.assertNotNull(response);
+		Assert.assertEquals(0, context.getAdviceList().size());
+
+	}
+
+	@Test
+	public void executeLegalPersonTestOk() throws IOException {
+		ValidateParticipantDTO request = getMockRequestBodyValidateLegalParticipants();
+		when(pisdr601.executeFindQuotationJoinByPolicyQuotaInternalId(anyString())).thenReturn(buildFindQuotationJoinByPolicyQuotaInternalId("20123453922"));
+		when(pisdr012.executeGetParticipantRolesByCompany(anyMap())).thenReturn(buildRolByParticipantTypeResponse());
+		Mockito.when(ksmkr002.executeKSMKR002(Mockito.anyList(),Mockito.anyString(),Mockito.anyString(),Mockito.anyObject())).thenReturn(getKSMKResponseOkMock());
+		Mockito.when(rbvdr066.executeGetListBusinesses(Mockito.anyString(),Mockito.anyString())).thenReturn(MockDTO.getInstance().getListBusinessesOkMock());
+		AgregarTerceroBO agregarTerceroBO = new AgregarTerceroBO();
+		PayloadAgregarTerceroBO payloadAgregarTerceroBO = new PayloadAgregarTerceroBO();
+		payloadAgregarTerceroBO.setCotizacion("cotizacion");
+		agregarTerceroBO.setPayload(payloadAgregarTerceroBO);
+		when(pisdr352.executeAddParticipantsService(anyObject(),anyString(),anyString(),anyString())).thenReturn(agregarTerceroBO);
+		when(pbtqr002.executeSearchInHostByDocument(anyString(),anyString())).thenReturn(buildPersonHostDataResponseCase3());
+		AgregarTerceroBO response = rbvdR041.executeValidateAddParticipant(request);
+		Assert.assertNotNull(response);
+		Assert.assertEquals(0,this.context.getAdviceList().size());
+	}
+
+	@Test
 	public void executeValidationWithWrongClientQuotationId(){
-
-		*//**
-		 *  When
-		 **//*
-		PISDR601 pisdr601 = Mockito.mock(PISDR601.class);
-		PISDR012 pisdr012 = Mockito.mock(PISDR012.class);
-		this.customerInformationDAO.setPisdr601(pisdr601);
-		this.rolDAO.setPisdr012(pisdr012);
+		when(pisdr601.executeFindQuotationJoinByPolicyQuotaInternalId(anyString())).thenReturn(buildFindQuotationJoinByPolicyQuotaInternalId("20123453922"));
 		Mockito.when(pisdr601.executeFindQuotationJoinByPolicyQuotaInternalId(Mockito.eq("0123489304"))).thenThrow(new BusinessException(PISDInsuranceErrors.PARAMETERS_INVALIDATE.getAdviceCode(), false, PISDInsuranceErrors.PARAMETERS_INVALIDATE.getMessage()));
-
-
-		*//**
-		 *  Execution
-		 **//*
-		ResponseLibrary<Void> response =  rbvdR041.executeValidateAddParticipant(getMockRequestBodyValidateNaturalParticipants());
-		Assert.assertEquals(response.getStatusProcess(), "FAILED");
+		AgregarTerceroBO response =  rbvdR041.executeValidateAddParticipant(getMockRequestBodyValidateNaturalParticipants());
+		Assert.assertNull(response);
+		Assert.assertEquals(1,this.context.getAdviceList().size());
 
 	}
 
 	@Test
 	public void executeValidationWithWrongPlansConfiguredForProductModality(){
 
-		*//**
-		 *  When
-		 **//*
-		PISDR601 pisdr601 = Mockito.mock(PISDR601.class);
-		PISDR012 pisdr012 = Mockito.mock(PISDR012.class);
-		this.customerInformationDAO.setPisdr601(pisdr601);
-		this.rolDAO.setPisdr012(pisdr012);
 		Mockito.when(pisdr601.executeFindQuotationJoinByPolicyQuotaInternalId(Mockito.eq("0123489304"))).thenReturn(buildFindQuotationJoinByPolicyQuotaInternalId("71998384"));
 		Mockito.when(pisdr012.executeGetParticipantRolesByCompany(anyMap())).thenThrow(new BusinessException(PISDInsuranceErrors.QUERY_EMPTY_RESULT.getAdviceCode(), false, PISDInsuranceErrors.QUERY_EMPTY_RESULT.getMessage()));
 
-
-		*//**
-		 *  Execution
-		 **//*
-		ResponseLibrary<Void> response =  rbvdR041.executeValidateAddParticipant(getMockRequestBodyValidateNaturalParticipants());
-		Assert.assertEquals(response.getStatusProcess(), "FAILED");
+		AgregarTerceroBO response =  rbvdR041.executeValidateAddParticipant(getMockRequestBodyValidateNaturalParticipants());
+		Assert.assertNull(response);
+		Assert.assertEquals(1,this.context.getAdviceList().size());
 
 	}
 
 	@Test
-	public void executeValidationWithLegalPersonDataTypeOk() throws IOException {
+	public void executeValidationWithWrongPersonTypeListFormatted(){
 
-		*//**
-		 *  When
-		 * *//*
-		PISDR601 pisdr601 = Mockito.mock(PISDR601.class);
-		PISDR012 pisdr012 = Mockito.mock(PISDR012.class);
-		this.customerInformationDAO.setPisdr601(pisdr601);
-		this.rolDAO.setPisdr012(pisdr012);
-		Mockito.when(pisdr601.executeFindQuotationJoinByPolicyQuotaInternalId(Mockito.eq("0123489304"))).thenReturn(buildFindQuotationJoinByPolicyQuotaInternalId("20123453922"));
-		Mockito.when(pisdr012.executeGetParticipantRolesByCompany(Mockito.anyMap())).thenReturn(buildRolByParticipantTypeResponse());
-		Mockito.when(pbtqr002.executeSearchInHostByDocument(Mockito.anyString(),Mockito.anyString())).thenReturn(buildPersonHostDataResponse());
-		Mockito.when(ksmkr002.executeKSMKR002(Mockito.anyList(),Mockito.anyString(),Mockito.anyString(),Mockito.anyObject())).thenReturn(getKSMKResponseOkMock());
-		Mockito.when(rbvdr066.executeGetListBusinesses(Mockito.anyString(),Mockito.anyString())).thenReturn(MockDTO.getInstance().getListBusinessesOkMock());
+		ValidateParticipantDTO validateParticipantDTO = getMockRequestBodyValidateNaturalParticipants();
+		validateParticipantDTO.getParticipants().get(0).getPerson().setPersonType("LEGAL");
+		AgregarTerceroBO response =  rbvdR041.executeValidateAddParticipant(validateParticipantDTO);
+		Assert.assertNull(response);
+		Assert.assertEquals(1,this.context.getAdviceList().size());
 
-		*//**
-		 *  Execution
-		 * *//*
+	}
 
-		ResponseLibrary<Void> response =  rbvdR041.executeValidateAddParticipant(getMockRequestBodyValidateLegalParticipants());
-		Assert.assertEquals(0, context.getAdviceList().size());
-
-		//case 2
-		ValidateParticipantDTO validateParticipantDTO =  getMockRequestBodyValidateLegalParticipants();
-		validateParticipantDTO.setChannelId("BI");
-		Mockito.when(rbvdr066.executeGetListBusinesses(Mockito.anyString(),Mockito.anyString())).thenReturn(MockDTO.getInstance().getListBusinessesOkMockCase2());
-		ResponseLibrary<Void> response2 =  rbvdR041.executeValidateAddParticipant(validateParticipantDTO);
-
-		//case 3
-
-	}*/
-
-	/*public static ValidateParticipantDTO getMockRequestBodyValidateNaturalParticipants(){
+	public static ValidateParticipantDTO getMockRequestBodyValidateNaturalParticipants(){
 		ValidateParticipantDTO requestBody = new ValidateParticipantDTO();
 		requestBody.setQuotationId("0123489304");
 		requestBody.setChannelId("PC");
@@ -377,7 +333,7 @@ public class RBVDR041Test {
 		participantsList.add(participant3);
 		requestBody.setParticipants(participantsList);
 		return requestBody;
-	}*/
+	}
 
 	public static ValidateParticipantDTO getMockRequestBodyValidateLegalParticipants(){
 		ValidateParticipantDTO requestBody = new ValidateParticipantDTO();
@@ -448,6 +404,45 @@ public class RBVDR041Test {
 			contactDetailList.add(contactDetail3);
 			participant.setContactDetails(contactDetailList);
 		}
+
+		AddressesDTO addressesDTO = new AddressesDTO();
+		List<AddressesDTO> addressesDTOList = new ArrayList<>();
+		addressesDTO.setFormattedAddress("CAL CIRCUNVALACION BRENA 200, AHH LOS NARANJOS");
+		LocationDTO locationDTO = new LocationDTO();
+		AddressComponentsDTO addressComponentsDTO1 = new AddressComponentsDTO();
+		addressComponentsDTO1.setComponentTypes(Collections.singletonList("STREET"));
+		addressComponentsDTO1.setName("CIRCUNVALACION BRENA");
+		AddressComponentsDTO addressComponentsDTO2 = new AddressComponentsDTO();
+		addressComponentsDTO2.setComponentTypes(Collections.singletonList("AAHH"));
+		addressComponentsDTO2.setName("LOS NARANJOS");
+		AddressComponentsDTO addressComponentsDTO3 = new AddressComponentsDTO();
+		addressComponentsDTO3.setComponentTypes(Collections.singletonList("DEPARTMENT"));
+		addressComponentsDTO3.setName("LIMA");
+		AddressComponentsDTO addressComponentsDTO4 = new AddressComponentsDTO();
+		addressComponentsDTO4.setComponentTypes(Collections.singletonList("PROVINCE"));
+		addressComponentsDTO4.setName("LIMA");
+		AddressComponentsDTO addressComponentsDTO5 = new AddressComponentsDTO();
+		addressComponentsDTO5.setComponentTypes(Collections.singletonList("DISTRICT"));
+		addressComponentsDTO5.setName("CHORRILLOS");
+		AddressComponentsDTO addressComponentsDTO6 = new AddressComponentsDTO();
+		addressComponentsDTO6.setComponentTypes(Collections.singletonList("EXTERIOR_NUMBER"));
+		addressComponentsDTO6.setName("200");
+		AddressComponentsDTO addressComponentsDTO7 = new AddressComponentsDTO();
+		addressComponentsDTO7.setComponentTypes(Collections.singletonList("UBIGEO"));
+		addressComponentsDTO7.setName("0101009");
+
+		List<AddressComponentsDTO> addressComponentsDTOList = new ArrayList<>();
+		addressComponentsDTOList.add(addressComponentsDTO1);
+		addressComponentsDTOList.add(addressComponentsDTO2);
+		addressComponentsDTOList.add(addressComponentsDTO3);
+		addressComponentsDTOList.add(addressComponentsDTO4);
+		addressComponentsDTOList.add(addressComponentsDTO5);
+		addressComponentsDTOList.add(addressComponentsDTO6);
+		addressComponentsDTOList.add(addressComponentsDTO7);
+		locationDTO.setAddressComponent(addressComponentsDTOList);
+		addressesDTO.setLocation(locationDTO);
+		addressesDTOList.add(addressesDTO);
+		participant.setAddresses(addressesDTOList);
 		return participant;
 
 	}

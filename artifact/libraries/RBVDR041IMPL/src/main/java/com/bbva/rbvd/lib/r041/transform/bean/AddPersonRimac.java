@@ -6,35 +6,32 @@ import com.bbva.rbvd.dto.insurance.commons.ParticipantsDTO;
 import com.bbva.rbvd.lib.r041.util.ConstantsUtil;
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.List;
-import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
+import java.util.*;
 
 public class AddPersonRimac {
 
     public static void  addPerson(final List<PersonaBO> personaList, List<ParticipantsDTO> participants){
         if(personaList.size()==1){
-            PersonaBO personMnager = personaList.stream().filter(per-> Objects.nonNull(per)).findFirst().get();
+            Optional<PersonaBO> personMnager = Optional.of(personaList.stream().filter(per -> Objects.nonNull(per)).findFirst().get());
             PersonaBO personContractor = new PersonaBO();
-            personContractor.setNombres(personMnager.getNombres());
-            personContractor.setApePaterno(personMnager.getApePaterno());
-            personContractor.setApeMaterno(personMnager.getApeMaterno());
-            personContractor.setTipoDocumento(personMnager.getTipoDocumento());
-            personContractor.setNroDocumento(personMnager.getNroDocumento());
-            personContractor.setFechaNacimiento(personMnager.getFechaNacimiento());
-            personContractor.setSexo(personMnager.getSexo());
-            personContractor.setCorreoElectronico(personMnager.getCorreoElectronico());
+            personContractor.setNombres(personMnager.get().getNombres());
+            personContractor.setApePaterno(personMnager.get().getApePaterno());
+            personContractor.setApeMaterno(personMnager.get().getApeMaterno());
+            personContractor.setTipoDocumento(personMnager.get().getTipoDocumento());
+            personContractor.setNroDocumento(personMnager.get().getNroDocumento());
+            personContractor.setFechaNacimiento(personMnager.get().getFechaNacimiento());
+            personContractor.setSexo(personMnager.get().getSexo());
+            personContractor.setCorreoElectronico(personMnager.get().getCorreoElectronico());
             personContractor.setRol(ConstantsUtil.Rol.CONTRACTOR.getValue());
-            personContractor.setCelular(personMnager.getCelular());
+            personContractor.setCelular(personMnager.get().getCelular());
 
-            personContractor.setTipoVia(personMnager.getTipoVia());
-            personContractor.setNombreVia(personMnager.getNombreVia());
-            personContractor.setNumeroVia(personMnager.getNumeroVia());
-            personContractor.setDistrito(personMnager.getDistrito());
-            personContractor.setProvincia(personMnager.getProvincia());
-            personContractor.setDepartamento(personMnager.getDepartamento());
-            personContractor.setDireccion(personMnager.getDireccion());
+            personContractor.setTipoVia(personMnager.get().getTipoVia());
+            personContractor.setNombreVia(personMnager.get().getNombreVia());
+            personContractor.setNumeroVia(personMnager.get().getNumeroVia());
+            personContractor.setDistrito(personMnager.get().getDistrito());
+            personContractor.setProvincia(personMnager.get().getProvincia());
+            personContractor.setDepartamento(personMnager.get().getDepartamento());
+            personContractor.setDireccion(personMnager.get().getDireccion());
             //set insured
             ParticipantsDTO participans = participants.get(0);
             PersonaBO personaInsured = new PersonaBO();

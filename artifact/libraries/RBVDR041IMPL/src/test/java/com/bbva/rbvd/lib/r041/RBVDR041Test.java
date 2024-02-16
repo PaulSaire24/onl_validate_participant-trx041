@@ -14,7 +14,6 @@ import com.bbva.pisd.dto.insurancedao.entities.InsuranceProductEntity;
 import com.bbva.pisd.dto.insurancedao.entities.QuotationEntity;
 import com.bbva.pisd.dto.insurancedao.entities.QuotationModEntity;
 import com.bbva.pisd.dto.insurancedao.join.QuotationJoinCustomerInformationDTO;
-import com.bbva.pisd.lib.r352.PISDR352;
 import com.bbva.pisd.lib.r601.PISDR601;
 import com.bbva.rbvd.dto.insrncsale.bo.emision.AgregarTerceroBO;
 import com.bbva.rbvd.dto.insurance.commons.ParticipantsDTO;
@@ -25,6 +24,7 @@ import com.bbva.rbvd.dto.insurance.commons.IdentityDocumentDTO;
 import com.bbva.rbvd.dto.insurance.commons.DocumentTypeDTO;
 import com.bbva.rbvd.dto.insurance.commons.ContactDetailsDTO;
 import com.bbva.rbvd.dto.insurance.commons.GenderDTO;
+import com.bbva.rbvd.lib.r048.RBVDR048;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -65,8 +65,10 @@ public class RBVDR041Test {
 	private RBVDR041 rbvdR041;
 	@Resource(name = "pbtqR002")
 	private PBTQR002 pbtqr002;
-	@Resource(name = "pisdR352")
-	private PISDR352 pisdr352;
+
+	@Resource(name = "rbvdR048")
+	private RBVDR048 rbvdr048;
+
 	@Resource(name = "pisdR601")
 	private PISDR601 pisdr601;
 	@Resource(name = "applicationConfigurationService")
@@ -113,7 +115,7 @@ public class RBVDR041Test {
 		ValidateParticipantDTO request = getMockRequestBodyValidateLegalParticipants();
 		when(this.applicationConfigurationService.getProperty(anyString())).thenReturn("L");
 		when(pisdr601.executeFindQuotationJoinByPolicyQuotaInternalId(anyString())).thenReturn(quotationJoinCustomerInformation);
-		when(pisdr352.executeAddParticipantsService(anyObject(),anyString(),anyString(),anyString())).thenReturn(new AgregarTerceroBO());
+		when(rbvdr048.executeAddParticipantsDynamicLife(anyObject(),anyString(),anyString(),anyString())).thenReturn(new AgregarTerceroBO());
 		when(pbtqr002.executeSearchInHostByCustomerId(anyString())).thenReturn(buildPersonHostDataResponseCase3());
 		AgregarTerceroBO response = rbvdR041.executeValidateAddParticipant(request);
 		Assert.assertNotNull(response);
@@ -132,7 +134,7 @@ public class RBVDR041Test {
 		ValidateParticipantDTO request = getMockRequestBodyValidateLegalParticipantsTwo();
 		when(this.applicationConfigurationService.getProperty(anyString())).thenReturn("L");
 		when(pisdr601.executeFindQuotationJoinByPolicyQuotaInternalId(anyString())).thenReturn(quotationJoinCustomerInformation);
-		when(pisdr352.executeAddParticipantsService(anyObject(),anyString(),anyString(),anyString())).thenReturn(new AgregarTerceroBO());
+		when(rbvdr048.executeAddParticipantsDynamicLife(anyObject(),anyString(),anyString(),anyString())).thenReturn(new AgregarTerceroBO());
 		when(pbtqr002.executeSearchInHostByCustomerId(anyString())).thenReturn(buildPersonHostDataResponseCase3());
 		AgregarTerceroBO response = rbvdR041.executeValidateAddParticipant(request);
 		Assert.assertNotNull(response);

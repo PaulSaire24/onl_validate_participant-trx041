@@ -13,6 +13,7 @@ import java.util.List;
 import javax.annotation.Resource;
 
 import com.bbva.rbvd.dto.insrncsale.bo.emision.AgregarTerceroBO;
+import com.bbva.rbvd.dto.insrncsale.bo.emision.PayloadAgregarTerceroBO;
 import com.bbva.rbvd.dto.insurance.commons.ParticipantsDTO;
 import com.bbva.rbvd.dto.insurance.commons.ParticipantTypeDTO;
 import com.bbva.rbvd.dto.insurance.commons.PersonDTO;
@@ -76,7 +77,9 @@ public class RBVDT04101PETransactionTest {
 
 	@Test
 	public void executeTestOk(){
-		Mockito.when(rbvdr041.executeValidateAddParticipant(Mockito.anyObject())).thenReturn(new AgregarTerceroBO());
+		AgregarTerceroBO res = new AgregarTerceroBO();
+		res.setPayload(new PayloadAgregarTerceroBO());
+		Mockito.when(rbvdr041.executeValidateAddParticipant(Mockito.anyObject())).thenReturn(res);
 		this.transaction.execute();
 		Assert.assertEquals(Severity.OK.getValue(),this.transaction.getContext().getSeverity().getValue());
 		Assert.assertNotNull(this.transaction);
@@ -84,7 +87,8 @@ public class RBVDT04101PETransactionTest {
 
 	@Test
 	public void executeTestError(){
-		Mockito.when(rbvdr041.executeValidateAddParticipant(Mockito.anyObject())).thenReturn(null);
+		AgregarTerceroBO response = new AgregarTerceroBO();
+		Mockito.when(rbvdr041.executeValidateAddParticipant(Mockito.anyObject())).thenReturn(response);
 		this.transaction.execute();
 		assertEquals(Severity.EWR.getValue(), this.transaction.getSeverity().getValue());
 	}

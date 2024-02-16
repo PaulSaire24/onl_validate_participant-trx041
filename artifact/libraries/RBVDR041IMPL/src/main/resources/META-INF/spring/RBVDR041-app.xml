@@ -3,7 +3,7 @@
 		http://www.springframework.org/schema/osgi http://www.springframework.org/schema/osgi/spring-osgi.xsd">
 	<bean id="rbvdR041" class="com.bbva.rbvd.lib.r041.impl.RBVDR041Impl" parent="rbvdR041Abstract">
 		<property name="pbtqR002" ref="pbtqR002"/>
-		<property name="pisdR352" ref="pisdR352"/>
 		<property name="pisdR601" ref="pisdR601"/>
+		<property name="rbvdR048" ref="rbvdR048"/>
 	</bean>
 </beans>

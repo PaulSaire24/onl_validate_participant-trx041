@@ -12,4 +12,5 @@ public class ConvertUtil {
         }
         return date.toInstant().atZone(ConstantsUtil.Zone.ZONE_ID_GTM).toLocalDate();
     }
+
 }

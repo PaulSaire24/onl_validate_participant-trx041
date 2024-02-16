@@ -20,7 +20,7 @@ public class RBVDR041Impl extends RBVDR041Abstract {
 		ValidationParameter validationParameter = new ValidationParameter(pisdR601,pbtqR002);
 		QuotationJoinCustomerInformationDTO quotationInformation = validationParameter.getCustomerBasicInformation(input.getQuotationId());
 		LOGGER.info(" :: executeValidateAddParticipant :: productId -> {}",quotationInformation.getInsuranceProduct().getInsuranceProductType());
-		Validate validate = FactoryProductValidate.getProductType(quotationInformation.getInsuranceProduct().getInsuranceProductType(),pisdR352,pbtqR002);
+		Validate validate = FactoryProductValidate.getProductType(quotationInformation.getInsuranceProduct().getInsuranceProductType(),rbvdR048,pbtqR002);
 		LOGGER.info(" :: executeValidateAddParticipant :: quotationId -> {}",quotationInformation.getQuotation().getInsuranceCompanyQuotaId());
 		PayloadStore payloadStore = validate.start(input,quotationInformation.getQuotation().getInsuranceCompanyQuotaId(),this.applicationConfigurationService);
 		LOGGER.info(" :: executeValidateAddParticipant :: PayloadStore -> {}",payloadStore);

@@ -1,6 +1,5 @@
 package com.bbva.rbvd.dto.validateparticipant.dto;
 
-import java.math.BigDecimal;
 
 public class RolDTO {
     private Integer participantRoleId;

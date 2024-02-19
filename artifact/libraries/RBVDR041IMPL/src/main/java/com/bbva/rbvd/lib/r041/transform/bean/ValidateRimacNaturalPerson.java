@@ -6,17 +6,18 @@ import com.bbva.rbvd.dto.insrncsale.bo.emision.PersonaBO;
 import com.bbva.rbvd.dto.insurance.commons.AddressComponentsDTO;
 import com.bbva.rbvd.dto.insurance.commons.ContactDetailsDTO;
 import com.bbva.rbvd.dto.insurance.commons.ParticipantsDTO;
-import com.bbva.rbvd.lib.r041.transfer.PayloadConfig;
-import com.bbva.rbvd.lib.r041.transfer.PayloadProperties;
-import com.bbva.rbvd.lib.r041.util.ConstantsUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.CollectionUtils;
 
-import java.util.*;
-import java.util.stream.Collectors;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+
+import static com.bbva.rbvd.lib.r041.util.ConvertUtil.toLocalDate;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 
@@ -32,41 +33,6 @@ public class ValidateRimacNaturalPerson {
 
     private static final String INTERIOR_NUMBER_ID = "DPTO.";
     ValidateRimacNaturalPerson() {}
-
-    public static List<PersonaBO> mapInRequestRimacDynamicLife(PayloadConfig payloadConfig){
-
-        List<PersonaBO> personaList = new ArrayList<>();
-
-        List<ParticipantsDTO> participantsInputList = payloadConfig.getInput().getParticipants();
-        List<PayloadProperties> participantsPewuList = payloadConfig.getProperties();
-        participantsInputList.forEach(partInput->{
-            participantsPewuList.forEach(parPewu->{
-                if(parPewu.getDocumetType().equalsIgnoreCase(partInput.getIdentityDocuments().get(0).getDocumentType().getId())
-                    && parPewu.getDocumetNumber().equalsIgnoreCase(partInput.getIdentityDocuments().get(0).getValue())){
-                    PersonaBO personaBO = new PersonaBO();
-                    personaBO.setNombres(parPewu.getCustomer().getPemsalwu().getNombres());
-                    personaBO.setApePaterno(parPewu.getCustomer().getPemsalwu().getApellip());
-                    personaBO.setApeMaterno(parPewu.getCustomer().getPemsalwu().getApellim());
-                    personaBO.setTipoDocumento(parPewu.getCustomer().getPemsalwu().getTdoi());
-                    personaBO.setNroDocumento(parPewu.getCustomer().getPemsalwu().getNdoi());
-                    personaBO.setFechaNacimiento(parPewu.getCustomer().getPemsalwu().getFechan());
-                    personaBO.setSexo(parPewu.getCustomer().getPemsalwu().getSexo());
-                    personaBO.setCorreoElectronico(parPewu.getCustomer().getPemsalwu().getContac3());
-                    personaBO.setRol(ConstantsUtil.getValueByName(partInput.getParticipantType().getId()));
-                    personaBO.setCelular(parPewu.getCustomer().getPemsalwu().getNroclie());
-                    personaBO.setTipoVia(parPewu.getCustomer().getPemsalwu().getIdendi1());
-                    personaBO.setNombreVia(parPewu.getCustomer().getPemsalwu().getNombdi1());
-                    personaBO.setDistrito(parPewu.getCustomer().getPemsalw4().getDesdist());
-                    personaBO.setProvincia(parPewu.getCustomer().getPemsalw4().getDesdist());
-                    personaBO.setDepartamento(parPewu.getCustomer().getPemsalw4().getDesdept());
-                    personaBO.setDireccion(parPewu.getCustomer().getPemsalwu().getIdendi1().concat(" ").concat(parPewu.getCustomer().getPemsalwu().getNombdi1()));
-                    personaList.add(personaBO);
-                }
-            });
-        });
-
-        return personaList;
-    }
 
     public static PersonaBO mapInRequestRimacNonLife(PEWUResponse personInput, ParticipantsDTO participants, QuotationJoinCustomerInformationDTO customerInformationDb, Integer roleId){
         PersonaBO persona = constructPerson(participants,personInput,customerInformationDb, roleId);
@@ -91,7 +57,7 @@ public class ValidateRimacNaturalPerson {
                     filter(contactDetail -> contactDetail.getContactType().equals(MOBILE_VALUE)).findFirst().orElse(null);
         }
 
-        persona.setTipoDocumento(RUC_ID.equalsIgnoreCase(persona.getTipoDocumento())?customerInformationDb.getQuotation().getParticipantPersonalId():customer.getPemsalwu().getTdoi()); //primero bd luego listcustomer
+        persona.setTipoDocumento(RUC_ID.equalsIgnoreCase(customer.getPemsalwu().getTdoi())?customerInformationDb.getQuotation().getParticipantPersonalId():customer.getPemsalwu().getTdoi()); //primero bd luego listcustomer
         persona.setNroDocumento(customer.getPemsalwu().getNdoi()); //primero bd luego listcustomer
         persona.setApePaterno(customer.getPemsalwu().getApellip());
 
@@ -287,31 +253,28 @@ public class ValidateRimacNaturalPerson {
         personaBO.setApePaterno(participantsDTO.getPerson().getLastName());
         personaBO.setApeMaterno(participantsDTO.getPerson().getSecondLastName());
         personaBO.setNombres(participantsDTO.getPerson().getFirstName().concat(" ").concat(participantsDTO.getPerson().getMiddleName()));
-        personaBO.setFechaNacimiento(participantsDTO.getPerson().getBirthDate().toString());
+        personaBO.setFechaNacimiento(String.valueOf(toLocalDate(participantsDTO.getPerson().getBirthDate())));
         personaBO.setSexo(participantsDTO.getPerson().getGender().getId().equals("MALE") ? "M" : "F");
         personaBO.setCorreoElectronico(participantsDTO.getContactDetails().stream().
-                filter(contactDetail -> contactDetail.getContactType().equals(EMAIL_VALUE)).findFirst().orElse(null).getContact());
+                filter(contactDetail -> contactDetail.getContactType().equals(EMAIL_VALUE)).map(ContactDetailsDTO::getContact).findFirst().orElse(StringUtils.EMPTY));
         personaBO.setCelular(participantsDTO.getContactDetails().stream().
-                filter(contactDetail -> contactDetail.getContactType().equals(MOBILE_VALUE)).findFirst().orElse(null).getContact());
+                filter(contactDetail -> contactDetail.getContactType().equals(MOBILE_VALUE)).map(ContactDetailsDTO::getContact).findFirst().orElse(StringUtils.EMPTY));
         personaBO.setDireccion(participantsDTO.getAddresses().get(0).getFormattedAddress());
         personaBO.setRol(rolId);
         personaBO.setDistrito(participantsDTO.getAddresses().get(0).getLocation().getAddressComponent().stream().
-                filter(component -> component.getComponentTypes().get(0).equals("DISTRICT")).findFirst().orElse(null).getName());
+                filter(component -> component.getComponentTypes().get(0).equals("DISTRICT")).map(AddressComponentsDTO::getName).findFirst().orElse(StringUtils.EMPTY));
         personaBO.setProvincia(participantsDTO.getAddresses().get(0).getLocation().getAddressComponent().stream().
-                filter(component -> component.getComponentTypes().get(0).equals("PROVINCE")).findFirst().orElse(null).getName());
+                filter(component -> component.getComponentTypes().get(0).equals("PROVINCE")).map(AddressComponentsDTO::getName).findFirst().orElse(StringUtils.EMPTY));
         personaBO.setDepartamento(participantsDTO.getAddresses().get(0).getLocation().getAddressComponent().stream().
-                filter(component -> component.getComponentTypes().get(0).equals("DEPARTMENT")).findFirst().orElse(null).getName());
+                filter(component -> component.getComponentTypes().get(0).equals("DEPARTMENT")).map(AddressComponentsDTO::getName).findFirst().orElse(StringUtils.EMPTY));
         personaBO.setUbigeo(participantsDTO.getAddresses().get(0).getLocation().getAddressComponent().stream().
-                filter(component -> component.getComponentTypes().get(0).equals("UBIGEO")).findFirst().orElse(null).getName());
-        AddressComponentsDTO addressComponent = participantsDTO.getAddresses().get(0).getLocation().getAddressComponent().stream().
-                filter(component -> filterViaType(component.getComponentTypes().get(0)))
-                .findFirst().orElse(null);
-        personaBO.setTipoVia(tipeListDir().get(addressComponent.getComponentTypes().get(0)));
+                filter(component -> component.getComponentTypes().get(0).equals("UBIGEO")).map(AddressComponentsDTO::getName).findFirst().orElse(StringUtils.EMPTY));
+        personaBO.setTipoVia(filterViaTypeName(participantsDTO.getAddresses().get(0).getLocation().getAddressComponent()));
         personaBO.setNombreVia(participantsDTO.getAddresses().get(0).getLocation().getAddressComponent().stream().
-                filter(component -> filterViaType(component.getComponentTypes().get(0)))
-                .findFirst().orElse(null).getName());
+                filter(component -> filterViaTypeCondition(component.getComponentTypes().get(0))).map(AddressComponentsDTO::getName)
+                .findFirst().orElse(StringUtils.EMPTY));
         personaBO.setNumeroVia(participantsDTO.getAddresses().get(0).getLocation().getAddressComponent().stream().
-                filter(component -> component.getComponentTypes().get(0).equals("EXTERIOR_NUMBER")).findFirst().orElse(null).getName());
+                filter(component -> component.getComponentTypes().get(0).equals("EXTERIOR_NUMBER")).map(AddressComponentsDTO::getName).findFirst().orElse(StringUtils.EMPTY));
         return personaBO;
     }
 
@@ -356,9 +319,21 @@ public class ValidateRimacNaturalPerson {
 
     }
 
-    private static boolean filterViaType(final String geographicGroupTyeId) {
-        Map<String, String> mapTypeListDir1 = tipeListDir();
-        return mapTypeListDir1.entrySet().stream().anyMatch(element -> element.getKey().equals(geographicGroupTyeId));
+    private static boolean filterViaTypeCondition(final String geographicGroupTyeId) {
+        Map<String, String> mapTypeListDir = tipeListDir();
+        return mapTypeListDir.entrySet().stream().anyMatch(element -> element.getKey().equals(geographicGroupTyeId));
+    }
+
+    private static String filterViaTypeName(List<AddressComponentsDTO> addressComponents) {
+        Map<String, String> mapTypeListDir = tipeListDir();
+        String viaTypeName = StringUtils.EMPTY;
+        for(AddressComponentsDTO address : addressComponents){
+            if(mapTypeListDir.entrySet().stream().anyMatch(element -> element.getKey().equals(address.getComponentTypes().get(0)))){
+                    viaTypeName = mapTypeListDir.get(address.getComponentTypes().get(0));
+                }
+        }
+
+        return viaTypeName;
     }
 
 }

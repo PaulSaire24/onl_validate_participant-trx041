@@ -31,11 +31,13 @@ public class RBVDT04101PETransaction extends AbstractRBVDT04101PETransaction {
 		validateParticipant.setTraceId(traceId);
 		validateParticipant.setChannelId(channelCode);
 		AgregarTerceroBO result = rbvdR041.executeValidateAddParticipant(validateParticipant);
-
+		LOGGER.info(" :: executeValidateAddParticipant :: response rimac -> {}", result);
 		if(Objects.nonNull(result) && CollectionUtils.isEmpty(this.getAdviceList())){
+			LOGGER.info(" :: execute trx -> OK");
 			this.setHttpResponseCode(HttpResponseCode.HTTP_CODE_200, Severity.OK);
 		}else{
-			this.setSeverity(Severity.EWR);
+			LOGGER.info(" :: execute trx with errors -> :_(");
+			this.setSeverity(Severity.ENR);
 		}
 	}
 

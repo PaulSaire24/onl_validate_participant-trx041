@@ -1,19 +1,12 @@
 package com.bbva.rbvd.lib.r041.validation;
 
 import com.bbva.apx.exception.business.BusinessException;
-import com.bbva.ksmk.lib.r002.KSMKR002;
-import com.bbva.pbtq.lib.r002.PBTQR002;
-import com.bbva.pisd.lib.r012.PISDR012;
-import com.bbva.pisd.lib.r601.PISDR601;
 import com.bbva.rbvd.dto.insurance.commons.ParticipantsDTO;
-import com.bbva.rbvd.dto.validateparticipant.constants.RBVDInternalConstants;
 import com.bbva.rbvd.dto.validateparticipant.dto.RolDTO;
 import com.bbva.rbvd.dto.validateparticipant.utils.TypeErrorControllerEnum;
 import com.bbva.rbvd.dto.validateparticipant.utils.ValidateParticipantErrors;
-import com.bbva.rbvd.lib.r041.pattern.decorator.impl.ValidationParameter;
 import com.bbva.rbvd.lib.r041.properties.ParticipantProperties;
 import com.bbva.rbvd.lib.r041.util.ConstantsUtil;
-import com.bbva.rbvd.lib.r066.RBVDR066;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;

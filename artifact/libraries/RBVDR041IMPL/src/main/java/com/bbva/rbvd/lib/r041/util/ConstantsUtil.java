@@ -1,11 +1,19 @@
 package com.bbva.rbvd.lib.r041.util;
 
+import java.time.ZoneId;
+
 public class ConstantsUtil {
 
+    public static final class Zone {
+        public static final ZoneId ZONE_ID_GTM = ZoneId.of("GMT");
+
+        private Zone() {
+        }
+    }
     public enum Product {
 
         DYNAMIC_LIFE("VIDADINAMICO","841"),
-        EASY_YES("VIDAXXXXXX","840");
+        EASY_YES("EASYYES","840");
         private final String name;
         private final String code;
 
@@ -34,11 +42,18 @@ public class ConstantsUtil {
         }
     }
 
+    public static final class ContactDetails{
+        private ContactDetails() {}
+        public static final String MOBILE_NUMBER="MOBILE_NUMBER";
+        public static final String EMAIL="EMAIL";
+        public static final String PHONE_NUMBER="PHONE_NUMBER";
+    }
+
     public static final class RegularExpression{
         private RegularExpression() {   }
         public static final String CONTAIN_ONLY_LETTERS=".*[a-zA-Z].*";
         public static final String CONTAIN_ONLY_NUMBERS=".*[0-9].*";
-        public static final String DELIMITER = "|";
+        public static final String UNSPECIFIED = "N/A";
     }
     public static final class Numero{
         private Numero() {   }

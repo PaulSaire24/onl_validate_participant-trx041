@@ -13,6 +13,11 @@
 	<packaging>bundle</packaging>
 	<description>dto orientado al manejo interno de entidades.</description>
 	<properties>
+		<sonar.coverage.exclusions>
+			/src/main/java/com/bbva/rbvd/dto/validateparticipant/constants/**.java,
+			/src/main/java/com/bbva/rbvd/dto/validateparticipant/dto/**.java,
+			/src/main/java/com/bbva/rbvd/dto/validateparticipant/utils/**.java
+		</sonar.coverage.exclusions>
 		<osgi.version.manifest>0.0</osgi.version.manifest>
 	</properties>
 	<dependencies>

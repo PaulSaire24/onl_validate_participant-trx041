@@ -66,6 +66,7 @@ public class NonLifeProductBusinessImpl implements INonLifeProductBusiness {
             });
             addTerceroByCompany.setOrganizacion(organizacionList);
             requestCompany.setPayload(addTerceroByCompany);
+            ProductFactory.enrichPayloadByProduct(addTerceroByCompany,payloadConfig.getQuotationInformation());
         }
 
         return requestCompany;

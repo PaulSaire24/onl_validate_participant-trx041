@@ -5,7 +5,4 @@ import com.bbva.rbvd.lib.r041.transfer.PayloadConfig;
 
 public interface INonLifeProductBusiness {
     AgregarTerceroBO createRequestByCompany(PayloadConfig payloadConfig);
-
-
-
 }

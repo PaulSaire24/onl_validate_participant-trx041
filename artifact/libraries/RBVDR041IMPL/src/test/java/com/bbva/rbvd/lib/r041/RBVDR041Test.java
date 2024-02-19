@@ -8,7 +8,6 @@ import javax.annotation.Resource;
 import com.bbva.pbtq.dto.validatedocument.response.host.pewu.PEMSALW4;
 import com.bbva.pbtq.dto.validatedocument.response.host.pewu.PEMSALWU;
 import com.bbva.pbtq.dto.validatedocument.response.host.pewu.PEWUResponse;
-import com.bbva.pbtq.lib.r002.PBTQR002;
 import com.bbva.pisd.dto.insurancedao.entities.InsuranceBusinessEntity;
 import com.bbva.pisd.dto.insurancedao.entities.InsuranceProductEntity;
 import com.bbva.pisd.dto.insurancedao.entities.QuotationEntity;
@@ -63,9 +62,6 @@ public class RBVDR041Test {
 
 	@Resource(name = "rbvdR041")
 	private RBVDR041 rbvdR041;
-	@Resource(name = "pbtqR002")
-	private PBTQR002 pbtqr002;
-
 	@Resource(name = "rbvdR048")
 	private RBVDR048 rbvdr048;
 
@@ -116,7 +112,7 @@ public class RBVDR041Test {
 		when(this.applicationConfigurationService.getProperty(anyString())).thenReturn("L");
 		when(pisdr601.executeFindQuotationJoinByPolicyQuotaInternalId(anyString())).thenReturn(quotationJoinCustomerInformation);
 		when(rbvdr048.executeAddParticipantsDynamicLife(anyObject(),anyString(),anyString(),anyString())).thenReturn(new AgregarTerceroBO());
-		when(pbtqr002.executeSearchInHostByCustomerId(anyString())).thenReturn(buildPersonHostDataResponseCase3());
+		when(rbvdr048.executeGetCustomerService(anyString(),anyString())).thenReturn(buildPersonHostDataResponseCase3());
 		AgregarTerceroBO response = rbvdR041.executeValidateAddParticipant(request);
 		Assert.assertNotNull(response);
 		Assert.assertEquals(0,this.context.getAdviceList().size());
@@ -135,7 +131,26 @@ public class RBVDR041Test {
 		when(this.applicationConfigurationService.getProperty(anyString())).thenReturn("L");
 		when(pisdr601.executeFindQuotationJoinByPolicyQuotaInternalId(anyString())).thenReturn(quotationJoinCustomerInformation);
 		when(rbvdr048.executeAddParticipantsDynamicLife(anyObject(),anyString(),anyString(),anyString())).thenReturn(new AgregarTerceroBO());
-		when(pbtqr002.executeSearchInHostByCustomerId(anyString())).thenReturn(buildPersonHostDataResponseCase3());
+		when(rbvdr048.executeGetCustomerService(anyString(),anyString())).thenReturn(buildPersonHostDataResponseCase3());
+		AgregarTerceroBO response = rbvdR041.executeValidateAddParticipant(request);
+		Assert.assertNotNull(response);
+		Assert.assertEquals(0,this.context.getAdviceList().size());
+	}
+
+	@Test
+	public void executeTestOkAnotherOne(){
+		QuotationJoinCustomerInformationDTO quotationJoinCustomerInformation = new QuotationJoinCustomerInformationDTO();
+		quotationJoinCustomerInformation.setInsuranceProduct(new InsuranceProductEntity());
+		quotationJoinCustomerInformation.setQuotation(new QuotationEntity());
+		quotationJoinCustomerInformation.getInsuranceProduct().setInsuranceProductType("841");
+		quotationJoinCustomerInformation.getQuotation().setInsuranceCompanyQuotaId("0814000038990");
+		//request of trx
+
+		ValidateParticipantDTO request = getMockRequestBodyValidateLegalParticipantsOne();
+		when(this.applicationConfigurationService.getProperty(anyString())).thenReturn("L");
+		when(pisdr601.executeFindQuotationJoinByPolicyQuotaInternalId(anyString())).thenReturn(quotationJoinCustomerInformation);
+		when(rbvdr048.executeAddParticipantsDynamicLife(anyObject(),anyString(),anyString(),anyString())).thenReturn(new AgregarTerceroBO());
+		when(rbvdr048.executeGetCustomerService(anyString(),anyString())).thenReturn(buildPersonHostDataResponseCase3());
 		AgregarTerceroBO response = rbvdR041.executeValidateAddParticipant(request);
 		Assert.assertNotNull(response);
 		Assert.assertEquals(0,this.context.getAdviceList().size());
@@ -167,6 +182,18 @@ public class RBVDR041Test {
 		ParticipantsDTO participant3 = buildParticipant("INSURED","DNI", "00002023","LEGAL",false);
 		participantsList.add(participant1);
 		participantsList.add(participant3);
+		requestBody.setParticipants(participantsList);
+		return requestBody;
+	}
+
+	public static ValidateParticipantDTO getMockRequestBodyValidateLegalParticipantsOne(){
+		ValidateParticipantDTO requestBody = new ValidateParticipantDTO();
+		requestBody.setQuotationId("0123489304");
+		requestBody.setChannelId("PC");
+		requestBody.setTraceId("c05ed2bd-1a7c-47ca-b7c9-fc639f47790a");
+		List<ParticipantsDTO> participantsList = new ArrayList<>();
+		ParticipantsDTO participant1 = buildParticipant("PAYMENT_MANAGER","DNI", "46716129","LEGAL", true);
+		participantsList.add(participant1);
 		requestBody.setParticipants(participantsList);
 		return requestBody;
 	}

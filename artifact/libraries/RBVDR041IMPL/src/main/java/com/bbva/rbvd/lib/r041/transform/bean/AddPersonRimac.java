@@ -37,7 +37,7 @@ public class AddPersonRimac {
             personContractor.setDepartamento(personMnager.getDepartamento());
             personContractor.setDireccion(personMnager.getDireccion());
             //set insured
-            ParticipantsDTO participans = participants.get(1);
+            ParticipantsDTO participans = participants.size()<=1?participants.get(0):participants.get(1);
             PersonaBO personaInsured = new PersonaBO();
             String nomb = participans.getPerson().getFirstName().concat(StringUtils.isEmpty(participans.getPerson().getMiddleName())?"":" ".concat(participans.getPerson().getMiddleName()));
             Map<String,Object> contacDetails = getContactGroup(participans.getContactDetails());

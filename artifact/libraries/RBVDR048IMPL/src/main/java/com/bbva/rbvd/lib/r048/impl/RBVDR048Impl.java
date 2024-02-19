@@ -1,10 +1,13 @@
 package com.bbva.rbvd.lib.r048.impl;
 
 import com.bbva.apx.exception.business.BusinessException;
+import com.bbva.pbtq.dto.validatedocument.response.host.pewu.PEWUResponse;
 import com.bbva.pisd.dto.insurance.amazon.SignatureAWS;
 import com.bbva.rbvd.dto.insrncsale.bo.emision.AgregarTerceroBO;
 import com.bbva.rbvd.dto.insuranceroyal.error.ErrorRequestDTO;
 import com.bbva.rbvd.dto.insuranceroyal.error.ErrorResponseDTO;
+import com.bbva.rbvd.dto.validateparticipant.utils.TypeErrorControllerEnum;
+import com.bbva.rbvd.dto.validateparticipant.utils.ValidateParticipantErrors;
 import com.bbva.rbvd.lib.r048.impl.util.Constans;
 import com.bbva.rbvd.lib.r048.impl.util.JsonHelper;
 import com.bbva.rbvd.lib.r048.impl.util.RimacUrlForker;
@@ -68,6 +71,20 @@ public class RBVDR048Impl extends RBVDR048Abstract {
 			}
 			throw new BusinessException(Constans.COD_ERROR_NOT_FOUND, false, Constans.NON_EXISTENT_MESSAGE);
 		}
+	}
+
+	@Override
+	public PEWUResponse executeGetCustomerService(String numDoc, String typeDoc) {
+		LOGGER.info("***** RBVDR041Impl - executeGetCustomerService Start *****");
+		LOGGER.info("***** RBVDR041Impl - executeGetCustomerService numDoc {} *****", numDoc);
+		LOGGER.info("***** RBVDR041Impl - executeGetCustomerService typeDoc {} *****", typeDoc);
+		PEWUResponse result = this.pbtqR002.executeSearchInHostByDocument(numDoc,typeDoc);
+		LOGGER.info("***** RBVDR041Impl - executeGetCustomerService  ***** Response Host: {}", result);
+		if( Objects.isNull(result.getHostAdviceCode()) || result.getHostAdviceCode().isEmpty()){
+			return result;
+		}
+		LOGGER.info("***** RBVDR041Impl - executeGetListCustomer ***** with error: {}", result.getHostMessage());
+		throw new BusinessException(ValidateParticipantErrors.ERROR_INTERNAL_SERVICE_INVOKATION.getAdviceCode(), false, TypeErrorControllerEnum.ERROR_PBTQ_CLIENT_INFORMATION_SERVICE.getValue());
 	}
 
 	private String getRequestJson(Object o) {

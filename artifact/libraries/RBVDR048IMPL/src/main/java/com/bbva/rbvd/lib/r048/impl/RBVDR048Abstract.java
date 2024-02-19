@@ -4,10 +4,14 @@ import com.bbva.elara.configuration.manager.application.ApplicationConfiguration
 import com.bbva.elara.library.AbstractLibrary;
 import com.bbva.elara.utility.api.connector.APIConnector;
 import com.bbva.elara.utility.api.connector.APIConnectorBuilder;
+import com.bbva.pbtq.lib.r002.PBTQR002;
 import com.bbva.pisd.lib.r014.PISDR014;
 import com.bbva.pisd.lib.r403.PISDR403;
 import com.bbva.rbvd.lib.r048.RBVDR048;
 
+/**
+ * This class automatically defines the libraries and utilities that it will use.
+ */
 public abstract class RBVDR048Abstract extends AbstractLibrary implements RBVDR048 {
 
 	protected ApplicationConfigurationService applicationConfigurationService;
@@ -19,6 +23,8 @@ public abstract class RBVDR048Abstract extends AbstractLibrary implements RBVDR0
 	protected PISDR014 pisdR014;
 
 	protected PISDR403 pisdR403;
+
+	protected PBTQR002 pbtqR002;
 
 
 	/**
@@ -54,6 +60,13 @@ public abstract class RBVDR048Abstract extends AbstractLibrary implements RBVDR0
 	*/
 	public void setPisdR403(PISDR403 pisdR403) {
 		this.pisdR403 = pisdR403;
+	}
+
+	/**
+	* @param pbtqR002 the this.pbtqR002 to set
+	*/
+	public void setPbtqR002(PBTQR002 pbtqR002) {
+		this.pbtqR002 = pbtqR002;
 	}
 
 }

@@ -2,9 +2,9 @@ package com.bbva.rbvd.lib.r041.service.api;
 
 import com.bbva.apx.exception.business.BusinessException;
 import com.bbva.pbtq.dto.validatedocument.response.host.pewu.PEWUResponse;
-import com.bbva.pbtq.lib.r002.PBTQR002;
 import com.bbva.rbvd.dto.validateparticipant.utils.TypeErrorControllerEnum;
 import com.bbva.rbvd.dto.validateparticipant.utils.ValidateParticipantErrors;
+import com.bbva.rbvd.lib.r048.RBVDR048;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -13,16 +13,18 @@ import java.util.Objects;
 public class ConsumerInternalService {
     private static final Logger LOGGER = LoggerFactory.getLogger(ConsumerInternalService.class);
 
-    private PBTQR002 pbtqr002;
+    private RBVDR048 rbvdr048;
 
-    public ConsumerInternalService(PBTQR002 pbtqr002) {
-        this.pbtqr002 = pbtqr002;
+    public ConsumerInternalService(RBVDR048 rbvdr048) {
+        this.rbvdr048 = rbvdr048;
     }
 
-    public PEWUResponse executeGetCustomerService(String customerId){
+    public PEWUResponse executeGetCustomerService(String numDoc, String typeDoc){
         LOGGER.info("***** RBVDR041Impl - executeGetCustomerService Start *****");
-        LOGGER.info("***** RBVDR041Impl - executeGetCustomerService customerId {} *****", customerId);
-        PEWUResponse result = pbtqr002.executeSearchInHostByCustomerId(customerId);
+        LOGGER.info("***** RBVDR041Impl - executeGetCustomerService numDoc {} *****", numDoc);
+        LOGGER.info("***** RBVDR041Impl - executeGetCustomerService typeDoc {} *****", typeDoc);
+
+        PEWUResponse result = rbvdr048.executeGetCustomerService(numDoc,typeDoc);
         LOGGER.info("***** RBVDR041Impl - executeGetCustomerService  ***** Response Host: {}", result);
         if( Objects.isNull(result.getHostAdviceCode()) || result.getHostAdviceCode().isEmpty()){
             return result;

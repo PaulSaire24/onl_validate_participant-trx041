@@ -9,8 +9,7 @@ public class ConstantsUtil {
     }
     public enum Product {
 
-        DYNAMIC_LIFE("VIDADINAMICO","841"),
-        EASY_YES("VIDAXXXXXX","840");
+        DYNAMIC_LIFE("VIDADINAMICO","841");
         private final String name;
         private final String code;
 

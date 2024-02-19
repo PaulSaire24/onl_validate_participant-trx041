@@ -17,10 +17,10 @@ public class RBVDR041Impl extends RBVDR041Abstract {
 	public AgregarTerceroBO executeValidateAddParticipant(ValidateParticipantDTO input) {
 		LOGGER.info(" :: executeValidateAddParticipant :: [ START ] ");
 		LOGGER.info(" :: executeValidateAddParticipant :: [ ValidateParticipant :: {} ] ",input);
-		ValidationParameter validationParameter = new ValidationParameter(pisdR601,pbtqR002);
+		ValidationParameter validationParameter = new ValidationParameter(pisdR601,rbvdR048);
 		QuotationJoinCustomerInformationDTO quotationInformation = validationParameter.getCustomerBasicInformation(input.getQuotationId());
 		LOGGER.info(" :: executeValidateAddParticipant :: productId -> {}",quotationInformation.getInsuranceProduct().getInsuranceProductType());
-		Validate validate = FactoryProductValidate.getProductType(quotationInformation.getInsuranceProduct().getInsuranceProductType(),rbvdR048,pbtqR002);
+		Validate validate = FactoryProductValidate.getProductType(quotationInformation.getInsuranceProduct().getInsuranceProductType(),rbvdR048);
 		LOGGER.info(" :: executeValidateAddParticipant :: quotationId -> {}",quotationInformation.getQuotation().getInsuranceCompanyQuotaId());
 		PayloadStore payloadStore = validate.start(input,quotationInformation.getQuotation().getInsuranceCompanyQuotaId(),this.applicationConfigurationService);
 		LOGGER.info(" :: executeValidateAddParticipant :: PayloadStore -> {}",payloadStore);

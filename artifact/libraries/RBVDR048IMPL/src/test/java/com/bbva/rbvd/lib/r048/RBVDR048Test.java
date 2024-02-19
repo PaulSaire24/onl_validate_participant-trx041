@@ -7,6 +7,10 @@ import com.bbva.elara.domain.transaction.ThreadContext;
 import javax.annotation.Resource;
 
 import com.bbva.elara.utility.api.connector.APIConnector;
+import com.bbva.pbtq.dto.validatedocument.response.host.pewu.PEMSALW4;
+import com.bbva.pbtq.dto.validatedocument.response.host.pewu.PEMSALWU;
+import com.bbva.pbtq.dto.validatedocument.response.host.pewu.PEWUResponse;
+import com.bbva.pbtq.lib.r002.PBTQR002;
 import com.bbva.pisd.dto.insurance.amazon.SignatureAWS;
 import com.bbva.pisd.lib.r014.PISDR014;
 import com.bbva.pisd.lib.r403.PISDR403;
@@ -57,6 +61,9 @@ public class RBVDR048Test {
 	private PISDR014 pisdr014;
 	@Resource(name = "pisdR403")
 	private PISDR403 pisdr403;
+
+	@Resource(name = "pbtqR002")
+	private PBTQR002 pbtqr002;
 
 	private MockData mockData;
 
@@ -139,6 +146,82 @@ public class RBVDR048Test {
 		AgregarTerceroBO validation = this.rbvdR048.executeAddParticipantsDynamicLife(new AgregarTerceroBO(),"quotationId","productId","traceId");
 
 		assertNotNull(validation);
+	}
+
+	@Test
+	public void testExecutegetCustomerok() {
+		LOGGER.info("RBVDR048 - Executing executeGetCustomerService ...");
+		when(this.pbtqr002.executeSearchInHostByDocument(anyString(),anyString())).thenReturn(buildPersonHostDataResponseCase3());
+		PEWUResponse response = this.rbvdR048.executeGetCustomerService(anyString(),anyString());
+		assertNotNull(response);
+
+	}
+
+	private static PEWUResponse buildPersonHostDataResponseCase3(){
+		PEWUResponse pewuResponse = new PEWUResponse();
+		PEMSALWU pemsalwu = new PEMSALWU();
+		pemsalwu.setTdoi("L");
+		pemsalwu.setNdoi("00932622");
+		pemsalwu.setNroclie("77809762");
+		pemsalwu.setFechav("2022-02-17");
+		pemsalwu.setFechaal("2002-01-02");
+		pemsalwu.setTipoper("F00");
+		pemsalwu.setOficina("0199");
+		pemsalwu.setTiponac("N");
+		pemsalwu.setTipores("R");
+		pemsalwu.setApellip("SALAS");
+		pemsalwu.setApellim("FASABI");
+		pemsalwu.setNombres("NATIVIDAD");
+		pemsalwu.setTitulo("ARQ.");
+		pemsalwu.setEstadoc("S");
+		pemsalwu.setSexo("F");
+		pemsalwu.setFechan("1968-02-05");
+		pemsalwu.setPaisn("PER");
+		pemsalwu.setPaisd1("paisd1");
+		pemsalwu.setPaisre("PER");
+		pemsalwu.setPaisna("PER");
+		pemsalwu.setFechare("2010-12-0");
+		pemsalwu.setCodact("");
+		pemsalwu.setOcupaci("ASA");
+		pemsalwu.setCentro("BBVA");
+		pemsalwu.setSegment("80500");
+		pemsalwu.setDescseg("PRIVADA");
+		pemsalwu.setIdencon("");
+		pemsalwu.setTipocon("");
+		pemsalwu.setContact("");
+		pemsalwu.setTipoco2("MV");
+		pemsalwu.setContac2("969100232");
+		pemsalwu.setIdenco3("EMAIL");
+		pemsalwu.setTipoco3("MA");
+		pemsalwu.setContac3("CLAUDI3_HUACHES@HOTMAIL.COM");
+		pemsalwu.setTipodir("H");
+		pemsalwu.setIdendi1("AV.");
+		pemsalwu.setNombdi1("LAS FLORES");
+		pemsalwu.setIdendi2("AGR");
+		pemsalwu.setNombdi2("TEST");
+		pemsalwu.setDetalle("OCVALO");
+		pemsalwu.setCodigod("01");
+		pemsalwu.setCodigop("01");
+		pemsalwu.setCodigdi("025");
+		pemsalwu.setFedocac("2010-12-01");
+		pemsalwu.setNroext1("");
+		pemsalwu.setNroint1("");
+		pemsalwu.setManzana("D");
+		pemsalwu.setLote("4");
+		pemsalwu.setCuadran("");
+		pewuResponse.setPemsalwu(pemsalwu);
+
+		PEMSALW4 pemsalw4 = new PEMSALW4();
+		pemsalw4.setDepetdo("HOGAR");
+		pemsalw4.setDescvia("AVENIDA");
+		pemsalw4.setDescurb("AGRUPACION");
+		pemsalw4.setDesdept("LIMA");
+		pemsalw4.setDesprov("LIMA");
+		pemsalw4.setDesdist("RIMAC");
+
+		pewuResponse.setPemsalw4(pemsalw4);
+
+		return pewuResponse;
 	}
 	
 }

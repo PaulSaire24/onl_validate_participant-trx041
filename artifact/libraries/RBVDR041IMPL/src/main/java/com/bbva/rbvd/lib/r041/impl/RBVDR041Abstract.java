@@ -2,7 +2,6 @@ package com.bbva.rbvd.lib.r041.impl;
 
 import com.bbva.elara.configuration.manager.application.ApplicationConfigurationService;
 import com.bbva.elara.library.AbstractLibrary;
-import com.bbva.pbtq.lib.r002.PBTQR002;
 import com.bbva.pisd.lib.r601.PISDR601;
 import com.bbva.rbvd.lib.r041.RBVDR041;
 import com.bbva.rbvd.lib.r048.RBVDR048;
@@ -10,8 +9,6 @@ import com.bbva.rbvd.lib.r048.RBVDR048;
 public abstract class RBVDR041Abstract extends AbstractLibrary implements RBVDR041 {
 
 	protected ApplicationConfigurationService applicationConfigurationService;
-
-	protected PBTQR002 pbtqR002;
 
 	protected PISDR601 pisdR601;
 
@@ -23,13 +20,6 @@ public abstract class RBVDR041Abstract extends AbstractLibrary implements RBVDR0
 	*/
 	public void setApplicationConfigurationService(ApplicationConfigurationService applicationConfigurationService) {
 		this.applicationConfigurationService = applicationConfigurationService;
-	}
-
-	/**
-	* @param pbtqR002 the this.pbtqR002 to set
-	*/
-	public void setPbtqR002(PBTQR002 pbtqR002) {
-		this.pbtqR002 = pbtqR002;
 	}
 
 	/**

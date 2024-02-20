@@ -90,7 +90,7 @@ public class RBVDT04101PETransactionTest {
 		AgregarTerceroBO response = new AgregarTerceroBO();
 		Mockito.when(rbvdr041.executeValidateAddParticipant(Mockito.anyObject())).thenReturn(response);
 		this.transaction.execute();
-		assertEquals(Severity.EWR.getValue(), this.transaction.getSeverity().getValue());
+		assertEquals(Severity.ENR.getValue(), this.transaction.getSeverity().getValue());
 	}
 
 

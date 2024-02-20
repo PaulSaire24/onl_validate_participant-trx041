@@ -37,7 +37,7 @@ public class RBVDT04101PETransaction extends AbstractRBVDT04101PETransaction {
 			this.setHttpResponseCode(HttpResponseCode.HTTP_CODE_200, Severity.OK);
 		}else{
 			LOGGER.info(" :: execute trx with errors -> :_(");
-			this.setSeverity(Severity.EWR);
+			this.setSeverity(Severity.ENR);
 		}
 	}
 

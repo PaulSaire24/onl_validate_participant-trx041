@@ -75,15 +75,15 @@ public class RBVDR048Impl extends RBVDR048Abstract {
 
 	@Override
 	public PEWUResponse executeGetCustomerService(String numDoc, String typeDoc) {
-		LOGGER.info("***** RBVDR041Impl - executeGetCustomerService Start *****");
-		LOGGER.info("***** RBVDR041Impl - executeGetCustomerService numDoc {} *****", numDoc);
-		LOGGER.info("***** RBVDR041Impl - executeGetCustomerService typeDoc {} *****", typeDoc);
-		PEWUResponse result = this.pbtqR002.executeSearchInHostByDocument(numDoc,typeDoc);
-		LOGGER.info("***** RBVDR041Impl - executeGetCustomerService  ***** Response Host: {}", result);
+		LOGGER.info("***** RBVDR048Impl - executeGetCustomerService Start *****");
+		LOGGER.info("***** RBVDR048Impl - executeGetCustomerService numDoc {} *****", numDoc);
+		LOGGER.info("***** RBVDR048Impl - executeGetCustomerService typeDoc {} *****", typeDoc);
+		PEWUResponse result = this.pbtqR002.executeSearchInHostByDocument(typeDoc,numDoc);
+		LOGGER.info("***** RBVDR048Impl - executeGetCustomerService  ***** Response Host: {}", result);
 		if( Objects.isNull(result.getHostAdviceCode()) || result.getHostAdviceCode().isEmpty()){
 			return result;
 		}
-		LOGGER.info("***** RBVDR041Impl - executeGetListCustomer ***** with error: {}", result.getHostMessage());
+		LOGGER.info("***** RBVDR048Impl - executeGetListCustomer ***** with error: {}", result.getHostMessage());
 		throw new BusinessException(ValidateParticipantErrors.ERROR_INTERNAL_SERVICE_INVOKATION.getAdviceCode(), false, TypeErrorControllerEnum.ERROR_PBTQ_CLIENT_INFORMATION_SERVICE.getValue());
 	}
 

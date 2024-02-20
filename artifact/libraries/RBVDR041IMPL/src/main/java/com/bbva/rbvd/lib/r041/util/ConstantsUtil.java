@@ -39,14 +39,12 @@ public class ConstantsUtil {
     }
 
     public static final class ContactDetails{
-        private ContactDetails() {}
         public static final String MOBILE_NUMBER="MOBILE_NUMBER";
         public static final String EMAIL="EMAIL";
         public static final String PHONE_NUMBER="PHONE_NUMBER";
     }
 
     public static final class RegularExpression{
-        private RegularExpression() {   }
         public static final String CONTAIN_ONLY_LETTERS=".*[a-zA-Z].*";
         public static final String CONTAIN_ONLY_NUMBERS=".*[0-9].*";
         public static final String UNSPECIFIED = "N/A";

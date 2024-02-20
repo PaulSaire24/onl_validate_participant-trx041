@@ -157,6 +157,16 @@ public class RBVDR048Test {
 
 	}
 
+	@Test(expected = BusinessException.class)
+	public void testExecutegetCustomerError() {
+		LOGGER.info("RBVDR048 - Executing executeGetCustomerService ...");
+		PEWUResponse pemsalwu = new PEWUResponse();
+		pemsalwu.setHostAdviceCode("124567");
+		when(this.pbtqr002.executeSearchInHostByDocument(anyString(),anyString())).thenReturn(pemsalwu);
+		PEWUResponse response = this.rbvdR048.executeGetCustomerService(anyString(),anyString());
+		assertNotNull(response);
+	}
+
 	private static PEWUResponse buildPersonHostDataResponseCase3(){
 		PEWUResponse pewuResponse = new PEWUResponse();
 		PEMSALWU pemsalwu = new PEMSALWU();

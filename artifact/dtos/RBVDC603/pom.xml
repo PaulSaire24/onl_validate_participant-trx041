@@ -5,11 +5,11 @@
 	<parent>
 		<groupId>com.bbva.rbvd</groupId>
 		<artifactId>DTOS-onl_validate_participant-trx041</artifactId>
-		<version>0.1.0-SNAPSHOT</version>
+		<version>0.2.0-SNAPSHOT</version>
 	</parent>
 	<groupId>com.bbva.rbvd.dto.validateparticipant</groupId>
 	<artifactId>RBVDC603</artifactId>
-	<version>0.1.0-SNAPSHOT</version>
+	<version>0.2.0-SNAPSHOT</version>
 	<packaging>bundle</packaging>
 	<description>dto orientado al manejo interno de entidades.</description>
 	<properties>

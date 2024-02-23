@@ -12,5 +12,10 @@
 	<version>0.1.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<name>LIBRARIES-onl_validate_participant-trx041</name>
-	<modules/>
+	<modules>
+		<module>RBVDR041</module>
+		<module>RBVDR041IMPL</module>
+		<module>RBVDR048</module>
+		<module>RBVDR048IMPL</module>
+	</modules>
 </project>

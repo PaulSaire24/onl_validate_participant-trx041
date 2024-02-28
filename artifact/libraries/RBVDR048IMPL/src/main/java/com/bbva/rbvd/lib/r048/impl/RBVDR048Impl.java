@@ -84,7 +84,7 @@ public class RBVDR048Impl extends RBVDR048Abstract {
 			}
 			throw new BusinessException(Constans.COD_ERROR_NOT_FOUND, false, Constans.NON_EXISTENT_MESSAGE);
 		}catch (TimeoutException toex) {
-			throw new BusinessException(Constans.TIMEOUT_ERROR_CODE, false, toex.getMessage());
+			throw new BusinessException(Constans.TIMEOUT_ERROR_CODE, false, Constans.TIMEOUT_ERROR_MESSAGE);
 		}
 	}
 

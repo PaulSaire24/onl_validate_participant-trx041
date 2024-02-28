@@ -1,21 +1,26 @@
 package com.bbva.rbvd.lib.r041.transform.bean;
 
+import com.bbva.apx.exception.business.BusinessException;
 import com.bbva.pbtq.dto.validatedocument.response.host.pewu.PEWUResponse;
 import com.bbva.pisd.dto.insurancedao.join.QuotationJoinCustomerInformationDTO;
 import com.bbva.rbvd.dto.insrncsale.bo.emision.PersonaBO;
 import com.bbva.rbvd.dto.insurance.commons.AddressComponentsDTO;
 import com.bbva.rbvd.dto.insurance.commons.ContactDetailsDTO;
 import com.bbva.rbvd.dto.insurance.commons.ParticipantsDTO;
+import com.bbva.rbvd.dto.validateparticipant.utils.TypeErrorControllerEnum;
+import com.bbva.rbvd.dto.validateparticipant.utils.ValidateParticipantErrors;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.CollectionUtils;
 
 
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
+import java.util.List;
+import java.util.HashMap;
+
 
 import static com.bbva.rbvd.lib.r041.util.ConvertUtil.toLocalDate;
 import static java.util.Objects.isNull;
@@ -28,13 +33,15 @@ public class ValidateRimacNaturalPerson {
     private static final String EMAIL_VALUE = "EMAIL";
     private static final String MOBILE_VALUE = "MOBILE_NUMBER";
     private static final Integer MAX_CHARACTER = 1;
-    private static final String SIN_ESPECIFICAR = "N/A";
+    private static final String SIN_ESPECIFICAR = "NA";
     private static final String NO_EXIST = "NotExist";
 
     private static final String INTERIOR_NUMBER_ID = "DPTO.";
     ValidateRimacNaturalPerson() {}
 
     public static PersonaBO mapInRequestRimacNonLife(PEWUResponse personInput, ParticipantsDTO participants, QuotationJoinCustomerInformationDTO customerInformationDb, Integer roleId){
+        validatePewuResponsePersonData(personInput);
+
         PersonaBO persona = constructPerson(participants,personInput,customerInformationDb, roleId);
 
         StringBuilder stringAddress  = new StringBuilder();
@@ -57,15 +64,15 @@ public class ValidateRimacNaturalPerson {
                     filter(contactDetail -> contactDetail.getContactType().equals(MOBILE_VALUE)).findFirst().orElse(null);
         }
 
-        persona.setTipoDocumento(RUC_ID.equalsIgnoreCase(customer.getPemsalwu().getTdoi())?customerInformationDb.getQuotation().getParticipantPersonalId():customer.getPemsalwu().getTdoi()); //primero bd luego listcustomer
-        persona.setNroDocumento(customer.getPemsalwu().getNdoi()); //primero bd luego listcustomer
+        persona.setTipoDocumento(RUC_ID.equalsIgnoreCase(customer.getPemsalwu().getTdoi())?customerInformationDb.getQuotation().getParticipantPersonalId():customer.getPemsalwu().getTdoi());
+        persona.setNroDocumento(customer.getPemsalwu().getNdoi());
         persona.setApePaterno(customer.getPemsalwu().getApellip());
 
-        persona.setApeMaterno( StringUtils.defaultString(customer.getPemsalwu().getApellim()).trim().length()  > MAX_CHARACTER ? customer.getPemsalwu().getApellim() : StringUtils.EMPTY);
+        persona.setApeMaterno(StringUtils.defaultString(customer.getPemsalwu().getApellim()).trim().length()  > MAX_CHARACTER ? customer.getPemsalwu().getApellim() : StringUtils.EMPTY);
 
         persona.setNombres(customer.getPemsalwu().getNombres());
         persona.setFechaNacimiento(customer.getPemsalwu().getFechan());
-        if(!StringUtils.isEmpty(customer.getPemsalwu().getSexo())) persona.setSexo("MALE".equals(customer.getPemsalwu().getSexo()) ? "M" : "F");
+        if(!StringUtils.isEmpty(customer.getPemsalwu().getSexo())) persona.setSexo(customer.getPemsalwu().getSexo());
 
         persona.setCorreoElectronico(Objects.isNull(correoSelect) ? customerInformationDb.getQuotationMod().getContactEmailDesc() : correoSelect.getContact());
 
@@ -101,16 +108,16 @@ public class ValidateRimacNaturalPerson {
     }
 
     private static void fillAddressUbigeo(final PEWUResponse geographicGroups, final PersonaBO persona) {
+        String ubigeo = StringUtils.defaultString(geographicGroups.getPemsalwu().getCodigod()) +
+                        StringUtils.defaultString(geographicGroups.getPemsalwu().getCodigop()) +
+                        StringUtils.defaultString(geographicGroups.getPemsalwu().getCodigdi());
 
-        String department = "";
-        String province = "";
-        String district = "";
-        String ubigeo = "";
-
-        ubigeo = geographicGroups.getPemsalwu().getCodigod() + geographicGroups.getPemsalwu().getCodigop() + geographicGroups.getPemsalwu().getCodigdi();
-        department = geographicGroups.getPemsalw4().getDesdept();
-        province = geographicGroups.getPemsalw4().getDesprov();
-        district = geographicGroups.getPemsalw4().getDesdist();
+        String department = Optional.ofNullable(geographicGroups.getPemsalw4()).map(pemsalw4 ->
+                StringUtils.defaultString(pemsalw4.getDesdept())).orElse(StringUtils.EMPTY);
+        String province = Optional.ofNullable(geographicGroups.getPemsalw4()).map(pemsalw4 ->
+                StringUtils.defaultString(pemsalw4.getDesprov())).orElse(StringUtils.EMPTY);
+        String district = Optional.ofNullable(geographicGroups.getPemsalw4()).map(pemsalw4 ->
+                StringUtils.defaultString(pemsalw4.getDesdist())).orElse(StringUtils.EMPTY);
 
         persona.setDepartamento(department);
         persona.setProvincia(province);
@@ -124,13 +131,13 @@ public class ValidateRimacNaturalPerson {
         String viaType = "";
         String viaName = "";
 
-        if(!StringUtils.isEmpty (geographicGroupsAddress.getPemsalwu().getIdendi1())
+        if(!StringUtils.isEmpty(geographicGroupsAddress.getPemsalwu().getIdendi1())
                 && !geographicGroupsAddress.getPemsalwu().getIdendi1().equals("NA")) {
             viaType = geographicGroupsAddress.getPemsalwu().getIdendi1();
-            viaName = geographicGroupsAddress.getPemsalwu().getNombdi1();
+            viaName = StringUtils.defaultString(geographicGroupsAddress.getPemsalwu().getNombdi1());
 
-            persona.setTipoVia(geographicGroupsAddress.getPemsalwu().getIdendi1());
-            persona.setNombreVia(geographicGroupsAddress.getPemsalwu().getNombdi1());
+            persona.setTipoVia(viaType);
+            persona.setNombreVia(viaName);
 
             nombreDir1 = viaType.concat(" ").concat(viaName);
         }
@@ -148,14 +155,13 @@ public class ValidateRimacNaturalPerson {
         if(!StringUtils.isEmpty(geographicGroupsAddress.getPemsalwu().getIdendi2())
                 && !geographicGroupsAddress.getPemsalwu().getIdendi2().equals("NA")){
             groupType = geographicGroupsAddress.getPemsalwu().getIdendi2();
-            groupName = geographicGroupsAddress.getPemsalwu().getNombdi2();
+            groupName = StringUtils.defaultString(geographicGroupsAddress.getPemsalwu().getNombdi2());
+            nombreDir2 = groupType.concat(" ").concat(groupName);
+        }
 
-            if(nonNull(addressViaList)){
-                nombreDir2 = groupType.concat(" ").concat(groupName);
-            }else{
-                persona.setTipoVia(groupType);
-                persona.setNombreVia(groupName);
-            }
+        if(isNull(addressViaList)) {
+            persona.setTipoVia(groupType);
+            persona.setNombreVia(groupName);
         }
 
         return nombreDir2;
@@ -334,6 +340,14 @@ public class ValidateRimacNaturalPerson {
         }
 
         return viaTypeName;
+    }
+
+    private static void validatePewuResponsePersonData(PEWUResponse pewuResponse){
+        if (Objects.isNull(pewuResponse.getPemsalwu())){
+            throw new BusinessException(ValidateParticipantErrors.ERROR_INTERNAL_SERVICE_INVOKATION.getAdviceCode(), false,
+                    ValidateParticipantErrors.ERROR_INTERNAL_SERVICE_INVOKATION.getMessage()
+                            .concat(TypeErrorControllerEnum.ERROR_PBTQ_INCOMPLETE_CLIENT_INFORMATION.getValue()));
+        }
     }
 
 }

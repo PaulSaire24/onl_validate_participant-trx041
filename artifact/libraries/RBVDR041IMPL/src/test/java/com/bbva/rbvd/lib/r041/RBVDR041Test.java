@@ -113,8 +113,10 @@ public class RBVDR041Test {
 		responseInsuredBD.put("USER_EMAIL_PERSONAL_DESC","huhuh@gmail.com");
 		responseInsuredBD.put("PHONE_ID","960675837");
 		responseInsuredBD.put("CUSTOMER_BIRTH_DATE","2023-05-15");
-
 		//request of trx
+		Map<String,Object> responseData = new HashMap<>();
+		responseData.put("INSURANCE_PRODUCT_ID",new BigDecimal(21));
+		responseData.put("INSURANCE_MODALITY_TYPE","02");
 
 		ValidateParticipantDTO request = getMockRequestBodyValidateLegalParticipants();
 		when(this.applicationConfigurationService.getProperty(anyString())).thenReturn("L");
@@ -122,6 +124,7 @@ public class RBVDR041Test {
 		when(rbvdr048.executeAddParticipantsDynamicLife(anyObject(),anyString(),anyString(),anyString())).thenReturn(new AgregarTerceroBO());
 		when(rbvdr048.executeGetCustomerService(anyString(),anyString())).thenReturn(buildPersonHostDataResponseCase3());
 		when(rbvdr048.executeGetDataInsuredBD(anyString(),anyString(),anyString())).thenReturn(responseInsuredBD);
+		when(rbvdr048.executeGetProducAndPlanByQuotation(anyString())).thenReturn(responseData);
 		AgregarTerceroBO response = rbvdR041.executeValidateAddParticipant(request);
 		Assert.assertNotNull(response);
 		Assert.assertEquals(0,this.context.getAdviceList().size());
@@ -143,12 +146,17 @@ public class RBVDR041Test {
 		responseInsuredBD.put("CUSTOMER_BIRTH_DATE","2023-05-15");
 		//request of trx
 
+		Map<String,Object> responseData = new HashMap<>();
+		responseData.put("INSURANCE_PRODUCT_ID",new BigDecimal(21));
+		responseData.put("INSURANCE_MODALITY_TYPE","02");
+
 		ValidateParticipantDTO request = getMockRequestBodyValidateLegalParticipantsTwo();
 		when(this.applicationConfigurationService.getProperty(anyString())).thenReturn("L");
 		when(pisdr601.executeFindQuotationJoinByPolicyQuotaInternalId(anyString())).thenReturn(quotationJoinCustomerInformation);
 		when(rbvdr048.executeAddParticipantsDynamicLife(anyObject(),anyString(),anyString(),anyString())).thenReturn(new AgregarTerceroBO());
 		when(rbvdr048.executeGetDataInsuredBD(anyString(),anyString(),anyString())).thenReturn(responseInsuredBD);
 		when(rbvdr048.executeGetCustomerService(anyString(),anyString())).thenReturn(buildPersonHostDataResponseCase3());
+		when(rbvdr048.executeGetProducAndPlanByQuotation(anyString())).thenReturn(responseData);
 		AgregarTerceroBO response = rbvdR041.executeValidateAddParticipant(request);
 		Assert.assertNotNull(response);
 		Assert.assertEquals(0,this.context.getAdviceList().size());
@@ -171,12 +179,17 @@ public class RBVDR041Test {
 		responseInsuredBD.put("PHONE_ID","960675837");
 		responseInsuredBD.put("CUSTOMER_BIRTH_DATE","2023-05-15");
 
+		Map<String,Object> responseData = new HashMap<>();
+		responseData.put("INSURANCE_PRODUCT_ID",new BigDecimal(21));
+		responseData.put("INSURANCE_MODALITY_TYPE","02");
+
 		ValidateParticipantDTO request = getMockRequestBodyValidateLegalParticipantsOne();
 		when(this.applicationConfigurationService.getProperty(anyString())).thenReturn("L");
 		when(pisdr601.executeFindQuotationJoinByPolicyQuotaInternalId(anyString())).thenReturn(quotationJoinCustomerInformation);
 		when(rbvdr048.executeAddParticipantsDynamicLife(anyObject(),anyString(),anyString(),anyString())).thenReturn(new AgregarTerceroBO());
 		when(rbvdr048.executeGetCustomerService(anyString(),anyString())).thenReturn(buildPersonHostDataResponseCase3());
 		when(rbvdr048.executeGetDataInsuredBD(anyString(),anyString(),anyString())).thenReturn(responseInsuredBD);
+		when(rbvdr048.executeGetProducAndPlanByQuotation(anyString())).thenReturn(responseData);
 		AgregarTerceroBO response = rbvdR041.executeValidateAddParticipant(request);
 		Assert.assertNotNull(response);
 		Assert.assertEquals(0,this.context.getAdviceList().size());

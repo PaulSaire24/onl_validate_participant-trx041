@@ -34,6 +34,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.web.client.HttpClientErrorException;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
@@ -137,6 +138,19 @@ public class RBVDR048Test {
 
 		when(this.pisdr350.executeGetASingleRow(anyString(),anyMap())).thenReturn(responseInsuredBD);
 		Map<String,Object> response = this.rbvdR048.executeGetDataInsuredBD("0814000039658","148","01");
+
+		assertNotNull(response);
+	}
+
+	@Test
+	public void testExecuteGetProductIdAndModalityType() {
+
+		Map<String,Object> responseData = new HashMap<>();
+		responseData.put("INSURANCE_PRODUCT_ID",new BigDecimal(21));
+		responseData.put("INSURANCE_MODALITY_TYPE","02");
+
+		when(this.pisdr350.executeGetASingleRow(anyString(),anyMap())).thenReturn(responseData);
+		Map<String,Object> response = this.rbvdR048.executeGetProducAndPlanByQuotation("0814000039658");
 
 		assertNotNull(response);
 	}

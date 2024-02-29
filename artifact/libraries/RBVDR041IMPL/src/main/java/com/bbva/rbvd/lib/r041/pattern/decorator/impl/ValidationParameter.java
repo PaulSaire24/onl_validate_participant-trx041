@@ -17,6 +17,7 @@ import com.bbva.rbvd.lib.r048.RBVDR048;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -56,7 +57,7 @@ public class ValidationParameter implements PreValidate {
 
         });
         Map<String,Object> result = getProducAndPlanByQuotation(input.getQuotationId());
-        String productId = (String) result.get(ConstantsUtil.INSURANCE_PRODUCT_ID);
+        String productId = result.get(ConstantsUtil.INSURANCE_PRODUCT_ID).toString();
         String planId = (String) result.get(ConstantsUtil.INSURANCE_MODALITY_TYPE);
         Map<String,Object> dataInsures = getDataInsuredBD(input.getQuotationId(),productId,planId);
         LOGGER.info("** getConfig dataInsured -> {}",dataInsures);

@@ -22,6 +22,8 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.web.client.RestClientException;
 
 import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 import static com.bbva.rbvd.lib.r048.impl.util.ErrorUtil.getErrorCode;
@@ -85,6 +87,28 @@ public class RBVDR048Impl extends RBVDR048Abstract {
 		}
 		LOGGER.info("***** RBVDR048Impl - executeGetListCustomer ***** with error: {}", result.getHostMessage());
 		throw new BusinessException(ValidateParticipantErrors.ERROR_INTERNAL_SERVICE_INVOKATION.getAdviceCode(), false, TypeErrorControllerEnum.ERROR_PBTQ_CLIENT_INFORMATION_SERVICE.getValue());
+	}
+
+	@Override
+	public Map<String, Object> getDataInsuredBD(String quotationId,String productId,String planId) {
+		Map<String, Object> arguments = new HashMap<>();
+		arguments.put(Constans.POLICY_QUOTA_INTERNAL_ID,quotationId);
+		arguments.put(Constans.INSURANCE_PRODUCT_ID,productId);
+		arguments.put(Constans.INSURANCE_MODALITY_TYPE,planId);
+		LOGGER.info("***** RBVDR048Impl - getDataInsuredBD ***** arguments: {}", arguments);
+		Map<String, Object> dataInsured = this.pisdR350.executeGetASingleRow(Constans.QUERY_GET_DATA_INSURED_BY_QUOTATION,arguments);
+		LOGGER.info("***** RBVDR048Impl - getDataInsuredBD ***** result: {}", dataInsured);
+		return dataInsured;
+	}
+
+	@Override
+	public Map<String, Object> getProducAndPlanByQuotation(String quotationId) {
+		Map<String, Object> arguments = new HashMap<>();
+		arguments.put(Constans.POLICY_QUOTA_INTERNAL_ID,quotationId);
+		LOGGER.info("***** RBVDR048Impl - getProducAndPlanByQuotation ***** arguments: {}", arguments);
+		Map<String, Object> result = this.pisdR350.executeGetASingleRow(Constans.QUERY_GET_PRODUCT_AND_MODALITY_TYPE_BY_QUOTATION,arguments);
+		LOGGER.info("***** RBVDR048Impl - getDataInsuredBD ***** result: {}", result);
+		return result;
 	}
 
 	private String getRequestJson(Object o) {

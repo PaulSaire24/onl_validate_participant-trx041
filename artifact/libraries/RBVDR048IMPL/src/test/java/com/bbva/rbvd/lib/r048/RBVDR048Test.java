@@ -13,6 +13,7 @@ import com.bbva.pbtq.dto.validatedocument.response.host.pewu.PEWUResponse;
 import com.bbva.pbtq.lib.r002.PBTQR002;
 import com.bbva.pisd.dto.insurance.amazon.SignatureAWS;
 import com.bbva.pisd.lib.r014.PISDR014;
+import com.bbva.pisd.lib.r350.PISDR350;
 import com.bbva.pisd.lib.r403.PISDR403;
 import com.bbva.rbvd.dto.insrncsale.bo.emision.AgregarTerceroBO;
 import com.bbva.rbvd.dto.insrncsale.bo.emision.PayloadAgregarTerceroBO;
@@ -34,6 +35,8 @@ import org.springframework.web.client.HttpClientErrorException;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Matchers.anyString;
@@ -61,6 +64,9 @@ public class RBVDR048Test {
 	private PISDR014 pisdr014;
 	@Resource(name = "pisdR403")
 	private PISDR403 pisdr403;
+
+	@Resource(name = "pisdR350")
+	private PISDR350 pisdr350;
 
 	@Resource(name = "pbtqR002")
 	private PBTQR002 pbtqr002;
@@ -116,6 +122,23 @@ public class RBVDR048Test {
 		assertNotNull(validation.getPayload());
 		assertNotNull(validation.getPayload().getStatus());
 		assertNotNull(validation.getPayload().getMensaje());
+	}
+
+	@Test
+	public void testExecuteGetDataInsured() {
+
+		Map<String,Object> responseInsuredBD = new HashMap<>();
+		responseInsuredBD.put("CLIENT_LAST_NAME","Romero|Aguilar");
+		responseInsuredBD.put("INSURED_CUSTOMER_NAME","Paul");
+		responseInsuredBD.put("GENDER_ID","F");
+		responseInsuredBD.put("USER_EMAIL_PERSONAL_DESC","huhuh@gmail.com");
+		responseInsuredBD.put("PHONE_ID","960675837");
+		responseInsuredBD.put("CUSTOMER_BIRTH_DATE","2023-05-15");
+
+		when(this.pisdr350.executeGetASingleRow(anyString(),anyMap())).thenReturn(responseInsuredBD);
+		Map<String,Object> response = this.rbvdR048.getDataInsuredBD("0814000039658","148","01");
+
+		assertNotNull(response);
 	}
 
 

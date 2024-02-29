@@ -1,34 +1,44 @@
 package com.bbva.rbvd.lib.r041.transform.bean;
 
 import com.bbva.rbvd.dto.insrncsale.bo.emision.PersonaBO;
-import com.bbva.rbvd.dto.insurance.commons.ContactDetailsDTO;
+import com.bbva.rbvd.dto.insrncsale.utils.LifeInsuranceInsuredData;
 import com.bbva.rbvd.dto.insurance.commons.ParticipantsDTO;
 import com.bbva.rbvd.lib.r041.util.ConstantsUtil;
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.bbva.rbvd.lib.r041.util.ConvertUtil.toLocalDate;
-
 public class InsuredBean {
-    public static void builRolInsured(List<PersonaBO> personaList, List<ParticipantsDTO> participants){
+    public static void builRolInsured(List<PersonaBO> personaList, List<ParticipantsDTO> participants,Map dataInsured){
         PersonaBO personManager = personaList.get(0);
         ParticipantsDTO participans = participants.size()==1?participants.get(0):participants.size()==2?participants.get(1):participants.get(2);
         PersonaBO personaInsured = new PersonaBO();
-        String nomb = participans.getPerson().getFirstName().concat(StringUtils.isEmpty(participans.getPerson().getMiddleName())?"":" ".concat(participans.getPerson().getMiddleName()));
-        Map<String,Object> contacDetails = getContactGroup(participans.getContactDetails());
-        personaInsured.setNombres(nomb);
-        personaInsured.setApePaterno(participans.getPerson().getLastName());
-        personaInsured.setApeMaterno(participans.getPerson().getSecondLastName());
+
+        String apellidos = (String) dataInsured.get(LifeInsuranceInsuredData.FIELD_CLIENT_LAST_NAME);
+        String apPaterno="";
+        String apMaterno="";
+
+        if(StringUtils.isNotEmpty(apellidos)){
+            int index = apellidos.indexOf(ConstantsUtil.Delimeter.VERTICAL_BAR);
+            apPaterno = apellidos.substring(ConstantsUtil.Number.CERO,index);
+            apMaterno = apellidos.substring(index+ConstantsUtil.Number.UNO);
+        }
+        String fechaNacimiento = String.valueOf(dataInsured.get(LifeInsuranceInsuredData.FIELD_CUSTOMER_BIRTH_DATE));
+        if(StringUtils.isNotEmpty(fechaNacimiento)){
+            fechaNacimiento = fechaNacimiento.substring(ConstantsUtil.Number.CERO,ConstantsUtil.Number.DIEZ);
+        }
+
+        personaInsured.setNombres((String) dataInsured.get(LifeInsuranceInsuredData.FIELD_INSURED_CUSTOMER_NAME));
+        personaInsured.setApePaterno(apPaterno);
+        personaInsured.setApeMaterno(apMaterno);
         personaInsured.setTipoDocumento(participans.getIdentityDocuments().get(0).getDocumentType().getId());
         personaInsured.setNroDocumento(participans.getIdentityDocuments().get(0).getValue());
-        personaInsured.setFechaNacimiento(String.valueOf(toLocalDate(participans.getPerson().getBirthDate())));
-        personaInsured.setSexo(participans.getPerson().getGender().getId().equalsIgnoreCase("MALE")?"M":"L");
-        personaInsured.setCorreoElectronico((String) contacDetails.get(ConstantsUtil.ContactDetails.EMAIL));
+        personaInsured.setFechaNacimiento(fechaNacimiento);
+        personaInsured.setSexo((String) dataInsured.get(LifeInsuranceInsuredData.FIELD_GENDER_ID));
+        personaInsured.setCorreoElectronico((String) dataInsured.get(LifeInsuranceInsuredData.FIELD_USER_EMAIL_PERSONAL_DESC));
         personaInsured.setRol(ConstantsUtil.Rol.INSURED.getValue());
-        personaInsured.setCelular((String) contacDetails.get(ConstantsUtil.ContactDetails.MOBILE_NUMBER));
+        personaInsured.setCelular((String) dataInsured.get(LifeInsuranceInsuredData.FIELD_PHONE_ID));
 
         personaInsured.setTipoVia(personManager.getTipoVia());
         personaInsured.setNombreVia(personManager.getNombreVia());
@@ -39,19 +49,5 @@ public class InsuredBean {
         personaInsured.setDireccion(personManager.getDireccion());
 
         personaList.add(personaInsured);
-    }
-
-    private static Map<String,Object> getContactGroup(List<ContactDetailsDTO> contacts){
-        Map<String,Object> mapContac = new HashMap<>();
-        contacts.forEach(contact -> {
-            if(ConstantsUtil.ContactDetails.EMAIL.equalsIgnoreCase(contact.getContactType())){
-                mapContac.put(ConstantsUtil.ContactDetails.EMAIL,contact.getContact());
-            } else if (ConstantsUtil.ContactDetails.MOBILE_NUMBER.equalsIgnoreCase(contact.getContactType())) {
-                mapContac.put(ConstantsUtil.ContactDetails.MOBILE_NUMBER,contact.getContact());
-            } else if (ConstantsUtil.ContactDetails.PHONE_NUMBER.equalsIgnoreCase(contact.getContactType())) {
-                mapContac.put(ConstantsUtil.ContactDetails.PHONE_NUMBER,contact.getContact());
-            }
-        });
-        return mapContac;
     }
 }

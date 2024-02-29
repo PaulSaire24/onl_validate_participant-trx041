@@ -11,6 +11,7 @@ import com.bbva.rbvd.lib.r041.pattern.PreValidate;
 import com.bbva.rbvd.lib.r041.service.api.ConsumerInternalService;
 import com.bbva.rbvd.lib.r041.transfer.PayloadConfig;
 import com.bbva.rbvd.lib.r041.transfer.PayloadProperties;
+import com.bbva.rbvd.lib.r041.util.ConstantsUtil;
 import com.bbva.rbvd.lib.r041.validation.ValidationUtil;
 import com.bbva.rbvd.lib.r048.RBVDR048;
 import org.slf4j.Logger;
@@ -18,6 +19,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class ValidationParameter implements PreValidate {
     private static final Logger LOGGER = LoggerFactory.getLogger(ValidationParameter.class);
@@ -48,10 +50,17 @@ public class ValidationParameter implements PreValidate {
                 payloadProperties.setDocumetNumber(part.getIdentityDocuments().get(0).getValue());
                 PEWUResponse customer = executeGetCustomer(part.getIdentityDocuments().get(0).getValue(),documentTypeHost);
                 payloadProperties.setCustomer(customer);
+                LOGGER.info("** getConfig payloadProperties -> {}",payloadProperties);
                 payloadPropertiesList.add(payloadProperties);
             }
 
         });
+        Map<String,Object> result = getProducAndPlanByQuotation(input.getQuotationId());
+        String productId = (String) result.get(ConstantsUtil.INSURANCE_PRODUCT_ID);
+        String planId = (String) result.get(ConstantsUtil.INSURANCE_MODALITY_TYPE);
+        Map<String,Object> dataInsures = getDataInsuredBD(input.getQuotationId(),productId,planId);
+        LOGGER.info("** getConfig dataInsured -> {}",dataInsures);
+        payloadConfig.setDataInsuredBD(dataInsures);
         payloadConfig.setProperties(payloadPropertiesList);
         payloadConfig.setInput(input);
         return payloadConfig;
@@ -69,9 +78,19 @@ public class ValidationParameter implements PreValidate {
         }
     }
 
-    public PEWUResponse executeGetCustomer(String numDoc,String typeDoc){
+    private PEWUResponse executeGetCustomer(String numDoc,String typeDoc){
         ConsumerInternalService consumerInternalService = new ConsumerInternalService(rbvdr048);
          return consumerInternalService.executeGetCustomerService(numDoc,typeDoc);
+    }
+
+    private Map<String,Object> getProducAndPlanByQuotation(String quotationId){
+        ConsumerInternalService consumerInternalService = new ConsumerInternalService(rbvdr048);
+        return consumerInternalService.getProducAndPlanByQuotation(quotationId);
+    }
+
+    private Map<String,Object> getDataInsuredBD(String quotationId,String productId, String planId){
+        ConsumerInternalService consumerInternalService = new ConsumerInternalService(rbvdr048);
+        return consumerInternalService.getDataInsuredBD(quotationId,productId,planId);
     }
 
 

@@ -37,11 +37,12 @@ public class ThirdDynamicLifeBusinessImpl implements IThirdDynamicLifeBusiness {
                         personaList.add(PersonaBean.mapInRequestRimacDynamicLife(partInput,parPewu));
                     }
                 }));
+
         if(personaList.size()==1){
             ContractorBean.builRolContractor(personaList);
-            InsuredBean.builRolInsured(personaList,payloadConfig.getInput().getParticipants());
+            InsuredBean.builRolInsured(personaList,payloadConfig.getInput().getParticipants(),payloadConfig.getDataInsuredBD());
         } else if (personaList.size()==2) {
-            InsuredBean.builRolInsured(personaList,payloadConfig.getInput().getParticipants());
+            InsuredBean.builRolInsured(personaList,payloadConfig.getInput().getParticipants(),payloadConfig.getDataInsuredBD());
         }
 
         agregarTercero.setPersona(personaList);

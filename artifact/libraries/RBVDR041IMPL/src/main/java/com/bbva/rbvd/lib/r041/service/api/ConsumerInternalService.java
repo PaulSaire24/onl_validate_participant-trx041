@@ -5,6 +5,8 @@ import com.bbva.rbvd.lib.r048.RBVDR048;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Map;
+
 
 public class ConsumerInternalService {
     private static final Logger LOGGER = LoggerFactory.getLogger(ConsumerInternalService.class);
@@ -21,5 +23,15 @@ public class ConsumerInternalService {
         LOGGER.info("***** ConsumerInternalService - executeGetCustomerService typeDoc {} *****", typeDoc);
         return  rbvdr048.executeGetCustomerService(numDoc,typeDoc);
 
+    }
+
+   public Map<String,Object> getDataInsuredBD(String quotationId,String productId,String planId){
+        LOGGER.info("***** ConsumerInternalService - getDataInsuredBD quotationId {}",quotationId);
+        return rbvdr048.getDataInsuredBD(quotationId,productId,planId);
+   }
+
+    public Map<String,Object> getProducAndPlanByQuotation(String quotationId){
+        LOGGER.info("***** ConsumerInternalService - getDataInsuredBD quotationId {}",quotationId);
+        return rbvdr048.getProducAndPlanByQuotation(quotationId);
     }
 }

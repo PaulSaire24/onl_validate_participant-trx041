@@ -99,7 +99,12 @@
 			<artifactId>PBTQR002</artifactId>
 			<version>0.1.4</version>
 		</dependency>
-    </dependencies>
+		<dependency>
+			<groupId>com.bbva.pisd</groupId>
+			<artifactId>PISDR350</artifactId>
+			<version>0.2.8</version>
+		</dependency>
+	</dependencies>
 	<build>
 		<finalName>${project.artifactId}</finalName>
 		<plugins>

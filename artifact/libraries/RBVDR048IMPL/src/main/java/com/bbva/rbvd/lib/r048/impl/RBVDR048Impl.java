@@ -82,9 +82,9 @@ public class RBVDR048Impl extends RBVDR048Abstract {
 				ErrorResponseDTO responseErr = this.pisdR403.executeFindError(err);
 				throw new BusinessException(responseErr.getCode(), false, responseErr.getMessage());
 			}
-			throw new BusinessException(Constans.COD_ERROR_NOT_FOUND, false, Constans.NON_EXISTENT_MESSAGE);
+			throw new BusinessException(ValidateParticipantErrors.ERROR_NOT_FOUND.getAdviceCode(), false, ValidateParticipantErrors.ERROR_NOT_FOUND.getMessage());
 		}catch (TimeoutException toex) {
-			throw new BusinessException(Constans.TIMEOUT_ERROR_CODE, false, Constans.TIMEOUT_ERROR_MESSAGE);
+			throw new BusinessException(ValidateParticipantErrors.TIMEOUT_ADD_PARTICIPANTS_RIMAC_ERROR.getAdviceCode(), false, ValidateParticipantErrors.TIMEOUT_ADD_PARTICIPANTS_RIMAC_ERROR.getMessage());
 		}
 	}
 

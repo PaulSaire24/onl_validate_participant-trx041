@@ -8,6 +8,6 @@ import java.util.Map;
 public interface RBVDR048 {
 	AgregarTerceroBO executeAddParticipantsDynamicLife(AgregarTerceroBO requestBody, String quotationId, String productId, String traceId);
 	PEWUResponse executeGetCustomerService(String numDoc, String typeDoc);
-	Map<String,Object> getDataInsuredBD(String quotationId,String productId,String planId);
-	Map<String,Object>getProducAndPlanByQuotation(String quotationId);
+	Map<String,Object> executeGetDataInsuredBD(String quotationId, String productId, String planId);
+	Map<String,Object> executeGetProducAndPlanByQuotation(String quotationId);
 }

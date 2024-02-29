@@ -27,11 +27,11 @@ public class ConsumerInternalService {
 
    public Map<String,Object> getDataInsuredBD(String quotationId,String productId,String planId){
         LOGGER.info("***** ConsumerInternalService - getDataInsuredBD quotationId {}",quotationId);
-        return rbvdr048.getDataInsuredBD(quotationId,productId,planId);
+        return rbvdr048.executeGetDataInsuredBD(quotationId,productId,planId);
    }
 
     public Map<String,Object> getProducAndPlanByQuotation(String quotationId){
         LOGGER.info("***** ConsumerInternalService - getDataInsuredBD quotationId {}",quotationId);
-        return rbvdr048.getProducAndPlanByQuotation(quotationId);
+        return rbvdr048.executeGetProducAndPlanByQuotation(quotationId);
     }
 }

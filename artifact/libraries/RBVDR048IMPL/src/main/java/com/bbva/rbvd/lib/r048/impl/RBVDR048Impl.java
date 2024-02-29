@@ -90,7 +90,7 @@ public class RBVDR048Impl extends RBVDR048Abstract {
 	}
 
 	@Override
-	public Map<String, Object> getDataInsuredBD(String quotationId,String productId,String planId) {
+	public Map<String, Object> executeGetDataInsuredBD(String quotationId, String productId, String planId) {
 		Map<String, Object> arguments = new HashMap<>();
 		arguments.put(Constans.POLICY_QUOTA_INTERNAL_ID,quotationId);
 		arguments.put(Constans.INSURANCE_PRODUCT_ID,productId);
@@ -102,7 +102,7 @@ public class RBVDR048Impl extends RBVDR048Abstract {
 	}
 
 	@Override
-	public Map<String, Object> getProducAndPlanByQuotation(String quotationId) {
+	public Map<String, Object> executeGetProducAndPlanByQuotation(String quotationId) {
 		Map<String, Object> arguments = new HashMap<>();
 		arguments.put(Constans.POLICY_QUOTA_INTERNAL_ID,quotationId);
 		LOGGER.info("***** RBVDR048Impl - getProducAndPlanByQuotation ***** arguments: {}", arguments);

@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class ThirdDynamicLifeBusinessImpl implements IThirdDynamicLifeBusiness {
 
@@ -38,10 +39,10 @@ public class ThirdDynamicLifeBusinessImpl implements IThirdDynamicLifeBusiness {
                     }
                 }));
 
-        if(personaList.size()==1){
+        if(personaList.size()==1 && Objects.nonNull(personaList.get(0))){
             ContractorBean.builRolContractor(personaList);
             InsuredBean.builRolInsured(personaList,payloadConfig.getInput().getParticipants(),payloadConfig.getDataInsuredBD());
-        } else if (personaList.size()==2) {
+        } else if (personaList.size()==2 && Objects.nonNull(personaList.get(0))) {
             InsuredBean.builRolInsured(personaList,payloadConfig.getInput().getParticipants(),payloadConfig.getDataInsuredBD());
         }
 

@@ -136,7 +136,7 @@ public class RBVDR048Test {
 		responseInsuredBD.put("CUSTOMER_BIRTH_DATE","2023-05-15");
 
 		when(this.pisdr350.executeGetASingleRow(anyString(),anyMap())).thenReturn(responseInsuredBD);
-		Map<String,Object> response = this.rbvdR048.getDataInsuredBD("0814000039658","148","01");
+		Map<String,Object> response = this.rbvdR048.executeGetDataInsuredBD("0814000039658","148","01");
 
 		assertNotNull(response);
 	}

@@ -14,6 +14,7 @@ import org.springframework.web.client.RestClientException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public class ErrorUtil {
 
@@ -25,26 +26,34 @@ public class ErrorUtil {
             HttpClientErrorException httpClientErrorException = (HttpClientErrorException) exception;
             String requestBody = httpClientErrorException.getResponseBodyAsString();
             LOGGER.info("HttpClientErrorException - Response body: {}", requestBody);
+
             if(StringUtils.isEmpty(requestBody) || requestBody.contains("html")) {
                 LOGGER.info("*** Null or empty error responseBody ***");
                 return error;
             }
+
             JsonObject jsonResponseObject = new JsonParser().parse(requestBody).getAsJsonObject();
-            JsonObject  jsonResponseArray = jsonResponseObject.getAsJsonObject("error").getAsJsonObject("details");
-            int httpCode = jsonResponseObject.getAsJsonObject("error").get("httpStatus").getAsInt();
-            LOGGER.info("HttpClientErrorException - Details arrays: {}", jsonResponseArray);
-            LOGGER.info("HttpClientErrorException - httpCode: {}", httpCode);
-            List<DetailsErrorDTO> detailsListr = new ArrayList<>();
-            for (Map.Entry<String, JsonElement> entry : jsonResponseArray.entrySet()) {
-                DetailsErrorDTO errorDetail = new DetailsErrorDTO();
-                String code = entry.getKey();
-                String message = entry.getValue().getAsString();
-                errorDetail.setCode(code);
-                errorDetail.setValue(message);
-                detailsListr.add(errorDetail);
+            JsonObject jsonErrorObject = jsonResponseObject.getAsJsonObject("error");
+            if (Objects.nonNull(jsonErrorObject)){
+                JsonObject jsonDetailsObject = jsonErrorObject.getAsJsonObject("details");
+                JsonElement httpCode = jsonErrorObject.get("httpStatus");
+                if (Objects.nonNull(jsonDetailsObject) && Objects.nonNull(httpCode)){
+                    LOGGER.info("HttpClientErrorException - Details arrays: {}", jsonDetailsObject);
+                    LOGGER.info("HttpClientErrorException - httpCode: {}", httpCode.getAsInt());
+                    List<DetailsErrorDTO> detailsListr = new ArrayList<>();
+                    for (Map.Entry<String, JsonElement> entry : jsonDetailsObject.entrySet()) {
+                        DetailsErrorDTO errorDetail = new DetailsErrorDTO();
+                        String code = entry.getKey();
+                        String message = entry.getValue().getAsString();
+                        errorDetail.setCode(code);
+                        errorDetail.setValue(message);
+                        detailsListr.add(errorDetail);
+                    }
+                    error.setDetails(detailsListr);
+                    error.setHttpCode((long) httpCode.getAsInt());
+                }
             }
-            error.setDetails(detailsListr);
-            error.setHttpCode((long) httpCode);
+
             LOGGER.info("HttpClientErrorException - error -> {}", error);
 
             return error;

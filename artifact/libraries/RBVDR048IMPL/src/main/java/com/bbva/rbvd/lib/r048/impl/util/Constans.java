@@ -12,10 +12,6 @@ public class Constans {
         }
     }
 
-    public static final String NON_EXISTENT_MESSAGE = "No se encontró mensaje del servidor";
-    public static final String COD_ERROR_NOT_FOUND = "RBVD00000136";
-    public static final String TIMEOUT_ERROR_CODE = "RBVD01020044";
-
     private Constans() {
     }
 }

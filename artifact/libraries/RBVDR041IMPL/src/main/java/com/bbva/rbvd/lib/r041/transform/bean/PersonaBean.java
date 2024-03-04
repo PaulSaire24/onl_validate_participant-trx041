@@ -4,6 +4,7 @@ import com.bbva.rbvd.dto.insrncsale.bo.emision.PersonaBO;
 import com.bbva.rbvd.dto.insurance.commons.ParticipantsDTO;
 import com.bbva.rbvd.lib.r041.transfer.PayloadProperties;
 import com.bbva.rbvd.lib.r041.util.ConstantsUtil;
+import com.bbva.rbvd.lib.r041.validation.ValidationUtil;
 
 public class PersonaBean {
 
@@ -20,9 +21,10 @@ public class PersonaBean {
         personaBO.setRol(ConstantsUtil.getValueByName(participant.getParticipantType().getId()));
         personaBO.setCelular(partPewu.getCustomer().getPemsalwu().getContac2());
 
-        personaBO.setTipoVia(partPewu.getCustomer().getPemsalwu().getIdendi1());
-        personaBO.setNombreVia(partPewu.getCustomer().getPemsalwu().getNombdi1());
-        personaBO.setNumeroVia(partPewu.getCustomer().getPemsalwu().getNroext1());
+        personaBO.setTipoVia(ValidationUtil.validateAllVia(partPewu.getCustomer().getPemsalwu().getIdendi1()));
+        personaBO.setNombreVia(ValidationUtil.validateAllVia(partPewu.getCustomer().getPemsalwu().getNombdi1()));
+        personaBO.setNumeroVia(ValidationUtil.validateAllVia(partPewu.getCustomer().getPemsalwu().getNroext1()));
+
         personaBO.setDistrito(partPewu.getCustomer().getPemsalw4().getDesdist());
         personaBO.setProvincia(partPewu.getCustomer().getPemsalw4().getDesprov());
         personaBO.setDepartamento(partPewu.getCustomer().getPemsalw4().getDesdept());
@@ -30,4 +32,5 @@ public class PersonaBean {
 
         return personaBO;
     }
+
 }

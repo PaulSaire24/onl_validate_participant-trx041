@@ -9,4 +9,8 @@ public class ValidationUtil {
         return StringUtils.isNotEmpty(clientId) && !(clientId.matches(ConstantsUtil.RegularExpression.CONTAIN_ONLY_LETTERS) && clientId.matches(ConstantsUtil.RegularExpression.CONTAIN_ONLY_NUMBERS) && clientId.length()>ConstantsUtil.Numero.CLIENT_BANK_LENGHT);
     }
 
+    public static String validateAllVia(String via){
+        return !org.apache.cxf.common.util.StringUtils.isEmpty(via)?via:"N/A";
+    }
+
 }

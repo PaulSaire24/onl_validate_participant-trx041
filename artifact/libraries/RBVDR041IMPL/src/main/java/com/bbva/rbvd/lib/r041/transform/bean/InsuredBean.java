@@ -4,13 +4,14 @@ import com.bbva.rbvd.dto.insrncsale.bo.emision.PersonaBO;
 import com.bbva.rbvd.dto.insrncsale.utils.LifeInsuranceInsuredData;
 import com.bbva.rbvd.dto.insurance.commons.ParticipantsDTO;
 import com.bbva.rbvd.lib.r041.util.ConstantsUtil;
+import com.bbva.rbvd.lib.r041.validation.ValidationUtil;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
 import java.util.Map;
 
 public class InsuredBean {
-    public static void builRolInsured(List<PersonaBO> personaList, List<ParticipantsDTO> participants,Map dataInsured){
+    public static void builRolInsured(List<PersonaBO> personaList, List<ParticipantsDTO> participants,Map<String,Object> dataInsured){
         PersonaBO personManager = personaList.get(0);
         ParticipantsDTO participans = participants.size()==1?participants.get(0):participants.size()==2?participants.get(1):participants.get(2);
         PersonaBO personaInsured = new PersonaBO();
@@ -40,11 +41,12 @@ public class InsuredBean {
         personaInsured.setRol(ConstantsUtil.Rol.INSURED.getValue());
         personaInsured.setCelular((String) dataInsured.get(LifeInsuranceInsuredData.FIELD_PHONE_ID));
 
-        personaInsured.setTipoVia(personManager.getTipoVia());
-        personaInsured.setNombreVia(personManager.getNombreVia());
+        personaInsured.setTipoVia(ValidationUtil.validateAllVia(personManager.getTipoVia()));
+        personaInsured.setNombreVia(ValidationUtil.validateAllVia(personManager.getNombreVia()));
+        personaInsured.setNumeroVia(ValidationUtil.validateAllVia(personManager.getNumeroVia()));
+
         personaInsured.setDistrito(personManager.getDistrito());
         personaInsured.setProvincia(personManager.getProvincia());
-        personaInsured.setNumeroVia(personManager.getNumeroVia());
         personaInsured.setDepartamento(personManager.getDepartamento());
         personaInsured.setDireccion(personManager.getDireccion());
 

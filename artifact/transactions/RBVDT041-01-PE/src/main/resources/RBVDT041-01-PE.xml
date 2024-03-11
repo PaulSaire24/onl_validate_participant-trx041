@@ -38,7 +38,7 @@
 				</list>
 				<list order="5" name="addresses" mandatory="0">
 					<dto order="1" name="Type" mandatory="0" package="com.bbva.rbvd.dto.participant.request.AddressesDTO" artifactId="RBVDC008">
-						<parameter order="1" name="formattedAddress" mandatory="0" type="String" size="20"/>
+						<parameter order="1" name="formattedAddress" mandatory="0" type="String" size="1000"/>
 						<dto order="2" name="location" mandatory="1" package="com.bbva.rbvd.dto.participant.request.LocationDTO" artifactId="RBVDC008">
 							<list order="1" name="locationTypes" mandatory="1">
 								<parameter order="1" name="Type" mandatory="0" type="String" size="50"/>

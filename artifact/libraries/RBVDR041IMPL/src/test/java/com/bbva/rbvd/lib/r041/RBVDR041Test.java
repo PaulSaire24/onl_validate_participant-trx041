@@ -44,7 +44,7 @@ import java.util.HashMap;
 import java.util.Date;
 import java.util.Collections;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNull;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.anyObject;
 import static org.mockito.Mockito.when;

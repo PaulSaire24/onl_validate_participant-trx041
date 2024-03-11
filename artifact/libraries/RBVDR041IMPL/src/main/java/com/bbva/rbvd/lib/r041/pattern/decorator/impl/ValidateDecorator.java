@@ -1,24 +1,24 @@
 package com.bbva.rbvd.lib.r041.pattern.decorator.impl;
 
-import com.bbva.rbvd.lib.r041.pattern.PostValidate;
-import com.bbva.rbvd.lib.r041.pattern.PreValidate;
-import com.bbva.rbvd.lib.r041.pattern.Validate;
+import com.bbva.rbvd.lib.r041.pattern.decorator.PostParticipantValidations;
+import com.bbva.rbvd.lib.r041.pattern.decorator.PreParticipantValidations;
+import com.bbva.rbvd.lib.r041.pattern.decorator.ParticipantValidations;
 
-public abstract class ValidateDecorator implements Validate {
+public abstract class ValidateDecorator implements ParticipantValidations {
 
-    private PreValidate preValidate;
-    private PostValidate postValidate;
+    private PreParticipantValidations preValidate;
+    private PostParticipantValidations postValidate;
 
-    protected ValidateDecorator(PreValidate preValidate, PostValidate postValidate) {
+    protected ValidateDecorator(PreParticipantValidations preValidate, PostParticipantValidations postValidate) {
         this.preValidate = preValidate;
         this.postValidate = postValidate;
     }
 
-    public PreValidate getPreValidate() {
+    public PreParticipantValidations getPreValidate() {
         return preValidate;
     }
 
-    public PostValidate getPostValidate() {
+    public PostParticipantValidations getPostValidate() {
         return postValidate;
     }
 }

@@ -1,13 +1,13 @@
 package com.bbva.rbvd.lib.r041.pattern.decorator.impl;
 
 import com.bbva.rbvd.dto.insrncsale.bo.emision.AgregarTerceroBO;
-import com.bbva.rbvd.lib.r041.pattern.PostValidate;
+import com.bbva.rbvd.lib.r041.pattern.decorator.PostParticipantValidations;
 import com.bbva.rbvd.lib.r041.service.api.ConsumerExternalService;
 import com.bbva.rbvd.lib.r048.RBVDR048;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ValidateStore implements PostValidate {
+public class ValidateStore implements PostParticipantValidations {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ValidateStore.class);
     private RBVDR048 rbvdr048;

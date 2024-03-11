@@ -1,7 +1,7 @@
 package com.bbva.rbvd;
 
 import com.bbva.elara.transaction.AbstractTransaction;
-import com.bbva.rbvd.dto.insurance.commons.ParticipantsDTO;
+import com.bbva.rbvd.dto.participant.request.ParticipantsDTO;
 import java.util.List;
 
 /**
@@ -14,16 +14,16 @@ public abstract class AbstractRBVDT04101PETransaction extends AbstractTransactio
 
 
 	/**
-	 * Return value for input parameter participants
-	 */
-	protected List<ParticipantsDTO> getParticipants(){
-		return (List<ParticipantsDTO>)this.getParameter("participants");
-	}
-
-	/**
 	 * Return value for input parameter quotation-id
 	 */
 	protected String getQuotationId(){
 		return (String)this.getParameter("quotation-id");
+	}
+
+	/**
+	 * Return value for input parameter participants
+	 */
+	protected List<ParticipantsDTO> getParticipants(){
+		return (List<ParticipantsDTO>)this.getParameter("participants");
 	}
 }

@@ -1,14 +1,14 @@
 package com.bbva.rbvd.lib.r041.transform.bean;
 
 import com.bbva.rbvd.dto.insrncsale.bo.emision.PersonaBO;
-import com.bbva.rbvd.dto.insurance.commons.ParticipantsDTO;
-import com.bbva.rbvd.lib.r041.transfer.PayloadProperties;
+import com.bbva.rbvd.dto.participant.request.ParticipantsDTO;
+import com.bbva.rbvd.lib.r041.transfer.PayloadCustomer;
 import com.bbva.rbvd.lib.r041.util.ConstantsUtil;
 import com.bbva.rbvd.lib.r041.validation.ValidationUtil;
 
 public class PersonaBean {
 
-    public static PersonaBO mapInRequestRimacDynamicLife(ParticipantsDTO participant,PayloadProperties partPewu){
+    public static PersonaBO mapInRequestRimacDynamicLife(ParticipantsDTO participant, PayloadCustomer partPewu){
         PersonaBO personaBO = new PersonaBO();
         personaBO.setNombres(partPewu.getCustomer().getPemsalwu().getNombres());
         personaBO.setApePaterno(partPewu.getCustomer().getPemsalwu().getApellip());

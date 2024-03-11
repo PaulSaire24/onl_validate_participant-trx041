@@ -5,24 +5,23 @@ import com.bbva.elara.configuration.manager.application.ApplicationConfiguration
 import com.bbva.pbtq.dto.validatedocument.response.host.pewu.PEWUResponse;
 import com.bbva.pisd.dto.insurancedao.join.QuotationJoinCustomerInformationDTO;
 import com.bbva.pisd.lib.r601.PISDR601;
-import com.bbva.rbvd.dto.insurance.commons.ValidateParticipantDTO;
+import com.bbva.rbvd.dto.participant.request.InputParticipantsDTO;
 import com.bbva.rbvd.dto.validateparticipant.utils.TypeErrorControllerEnum;
-import com.bbva.rbvd.lib.r041.pattern.PreValidate;
+import com.bbva.rbvd.lib.r041.pattern.decorator.PreParticipantValidations;
 import com.bbva.rbvd.lib.r041.service.api.ConsumerInternalService;
 import com.bbva.rbvd.lib.r041.transfer.PayloadConfig;
-import com.bbva.rbvd.lib.r041.transfer.PayloadProperties;
+import com.bbva.rbvd.lib.r041.transfer.PayloadCustomer;
 import com.bbva.rbvd.lib.r041.util.ConstantsUtil;
 import com.bbva.rbvd.lib.r041.validation.ValidationUtil;
 import com.bbva.rbvd.lib.r048.RBVDR048;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class ValidationParameter implements PreValidate {
+public class ValidationParameter implements PreParticipantValidations {
     private static final Logger LOGGER = LoggerFactory.getLogger(ValidationParameter.class);
     private PISDR601 pisdr601;
     private RBVDR048 rbvdr048;
@@ -37,32 +36,33 @@ public class ValidationParameter implements PreValidate {
     }
 
     @Override
-    public PayloadConfig getConfig(ValidateParticipantDTO input,ApplicationConfigurationService applicationConfigurationService) {
+    public PayloadConfig getConfig(InputParticipantsDTO input,ApplicationConfigurationService applicationConfigurationService) {
         LOGGER.info("** getConfig :: start");
         PayloadConfig payloadConfig = new PayloadConfig();
-        List<PayloadProperties> payloadPropertiesList = new ArrayList<>();
+        List<PayloadCustomer> payloadCustomerList = new ArrayList<>();
         input.getParticipants().forEach(part -> {
-            PayloadProperties payloadProperties = new PayloadProperties();
+            PayloadCustomer payloadProperties = new PayloadCustomer();
             String documentTypeHost = applicationConfigurationService.getProperty(part.getIdentityDocuments().get(0).getDocumentType().getId());
             part.getIdentityDocuments().get(0).getDocumentType().setId(documentTypeHost);
             if(ValidationUtil.isBBVAClient(part.getPerson().getCustomerId())){
-                payloadProperties.setDocumetType(documentTypeHost);
+                payloadProperties.setDocumentType(documentTypeHost);
                 payloadProperties.setCustomerId(part.getPerson().getCustomerId());
-                payloadProperties.setDocumetNumber(part.getIdentityDocuments().get(0).getValue());
+                payloadProperties.setDocumentNumber(part.getIdentityDocuments().get(0).getValue());
                 PEWUResponse customer = executeGetCustomer(part.getIdentityDocuments().get(0).getValue(),documentTypeHost);
                 payloadProperties.setCustomer(customer);
                 LOGGER.info("** getConfig payloadProperties -> {}",payloadProperties);
-                payloadPropertiesList.add(payloadProperties);
+                payloadCustomerList.add(payloadProperties);
             }
 
         });
+
         Map<String,Object> result = getProducAndPlanByQuotation(input.getQuotationId());
         String productId = result.get(ConstantsUtil.INSURANCE_PRODUCT_ID).toString();
         String planId = (String) result.get(ConstantsUtil.INSURANCE_MODALITY_TYPE);
-        Map<String,Object> dataInsures = getDataInsuredBD(input.getQuotationId(),productId,planId);
-        LOGGER.info("** getConfig dataInsured -> {}",dataInsures);
-        payloadConfig.setDataInsuredBD(dataInsures);
-        payloadConfig.setProperties(payloadPropertiesList);
+        Map<String,Object> insuredInformation = getInformationInsuredBD(input.getQuotationId(),productId,planId);
+        LOGGER.info("** getConfig dataInsured -> {}",insuredInformation);
+        payloadConfig.setDataInsuredBD(insuredInformation);
+        payloadConfig.setProperties(payloadCustomerList);
         payloadConfig.setInput(input);
         return payloadConfig;
     }
@@ -89,7 +89,7 @@ public class ValidationParameter implements PreValidate {
         return consumerInternalService.getProducAndPlanByQuotation(quotationId);
     }
 
-    private Map<String,Object> getDataInsuredBD(String quotationId,String productId, String planId){
+    private Map<String,Object> getInformationInsuredBD(String quotationId, String productId, String planId){
         ConsumerInternalService consumerInternalService = new ConsumerInternalService(rbvdr048);
         return consumerInternalService.getDataInsuredBD(quotationId,productId,planId);
     }

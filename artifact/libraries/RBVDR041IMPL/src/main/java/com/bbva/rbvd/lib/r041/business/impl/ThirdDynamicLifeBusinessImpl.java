@@ -3,10 +3,10 @@ package com.bbva.rbvd.lib.r041.business.impl;
 import com.bbva.rbvd.dto.insrncsale.bo.emision.AgregarTerceroBO;
 import com.bbva.rbvd.dto.insrncsale.bo.emision.PayloadAgregarTerceroBO;
 import com.bbva.rbvd.dto.insrncsale.bo.emision.PersonaBO;
-import com.bbva.rbvd.dto.insurance.commons.ParticipantsDTO;
+import com.bbva.rbvd.dto.participant.request.ParticipantsDTO;
 import com.bbva.rbvd.lib.r041.business.IThirdDynamicLifeBusiness;
 import com.bbva.rbvd.lib.r041.transfer.PayloadConfig;
-import com.bbva.rbvd.lib.r041.transfer.PayloadProperties;
+import com.bbva.rbvd.lib.r041.transfer.PayloadCustomer;
 import com.bbva.rbvd.lib.r041.transform.bean.ContractorBean;
 import com.bbva.rbvd.lib.r041.transform.bean.InsuredBean;
 import com.bbva.rbvd.lib.r041.transform.bean.PersonaBean;
@@ -28,13 +28,13 @@ public class ThirdDynamicLifeBusinessImpl implements IThirdDynamicLifeBusiness {
         AgregarTerceroBO requestRimac = new AgregarTerceroBO();
         PayloadAgregarTerceroBO  agregarTercero = new PayloadAgregarTerceroBO();
         List<ParticipantsDTO> participantsInputList = payloadConfig.getInput().getParticipants();
-        List<PayloadProperties> participantsPewuList = payloadConfig.getProperties();
+        List<PayloadCustomer> participantsPewuList = payloadConfig.getProperties();
 
         List<PersonaBO> personaList = new ArrayList<>();
         participantsInputList.forEach(partInput->
                 participantsPewuList.forEach(parPewu->{
-                    if(parPewu.getDocumetType().equalsIgnoreCase(partInput.getIdentityDocuments().get(0).getDocumentType().getId())
-                            && parPewu.getDocumetNumber().equalsIgnoreCase(partInput.getIdentityDocuments().get(0).getValue())){
+                    if(parPewu.getDocumentType().equalsIgnoreCase(partInput.getIdentityDocuments().get(0).getDocumentType().getId())
+                            && parPewu.getDocumentNumber().equalsIgnoreCase(partInput.getIdentityDocuments().get(0).getValue())){
                         personaList.add(PersonaBean.mapInRequestRimacDynamicLife(partInput,parPewu));
                     }
                 }));

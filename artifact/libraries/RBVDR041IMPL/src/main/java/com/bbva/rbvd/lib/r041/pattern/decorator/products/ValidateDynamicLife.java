@@ -1,11 +1,11 @@
-package com.bbva.rbvd.lib.r041.pattern.products;
+package com.bbva.rbvd.lib.r041.pattern.decorator.products;
 
 import com.bbva.elara.configuration.manager.application.ApplicationConfigurationService;
 import com.bbva.rbvd.dto.insrncsale.bo.emision.AgregarTerceroBO;
-import com.bbva.rbvd.dto.insurance.commons.ValidateParticipantDTO;
+import com.bbva.rbvd.dto.participant.request.InputParticipantsDTO;
 import com.bbva.rbvd.lib.r041.business.impl.ThirdDynamicLifeBusinessImpl;
-import com.bbva.rbvd.lib.r041.pattern.PostValidate;
-import com.bbva.rbvd.lib.r041.pattern.PreValidate;
+import com.bbva.rbvd.lib.r041.pattern.decorator.PostParticipantValidations;
+import com.bbva.rbvd.lib.r041.pattern.decorator.PreParticipantValidations;
 import com.bbva.rbvd.lib.r041.pattern.decorator.impl.ValidateDecorator;
 import com.bbva.rbvd.lib.r041.transfer.PayloadConfig;
 import com.bbva.rbvd.lib.r041.transfer.PayloadStore;
@@ -16,12 +16,12 @@ import org.slf4j.LoggerFactory;
 public class ValidateDynamicLife extends ValidateDecorator {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ValidateDynamicLife.class);
-    public ValidateDynamicLife(PreValidate preValidate, PostValidate postValidate) {
+    public ValidateDynamicLife(PreParticipantValidations preValidate, PostParticipantValidations postValidate) {
         super(preValidate, postValidate);
     }
 
     @Override
-    public PayloadStore start(ValidateParticipantDTO input, String quotationId, ApplicationConfigurationService applicationConfigurationService) {
+    public PayloadStore start(InputParticipantsDTO input, String quotationId, ApplicationConfigurationService applicationConfigurationService) {
 
         PayloadConfig payloadConfig = this.getPreValidate().getConfig(input,applicationConfigurationService);
         payloadConfig.setQuotationId(quotationId);
@@ -39,8 +39,8 @@ public class ValidateDynamicLife extends ValidateDecorator {
     }
 
     public static final class Builder {
-        private PreValidate preValidate;
-        private PostValidate postValidate;
+        private PreParticipantValidations preValidate;
+        private PostParticipantValidations postValidate;
 
         private Builder() {
         }
@@ -49,12 +49,12 @@ public class ValidateDynamicLife extends ValidateDecorator {
             return new Builder();
         }
 
-        public Builder preValidate(PreValidate preValidate) {
+        public Builder preValidate(PreParticipantValidations preValidate) {
             this.preValidate = preValidate;
             return this;
         }
 
-        public Builder postValidate(PostValidate postValidate) {
+        public Builder postValidate(PostParticipantValidations postValidate) {
             this.postValidate = postValidate;
             return this;
         }

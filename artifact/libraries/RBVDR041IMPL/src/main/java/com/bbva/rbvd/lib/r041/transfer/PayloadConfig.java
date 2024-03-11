@@ -1,29 +1,29 @@
 package com.bbva.rbvd.lib.r041.transfer;
 
-import com.bbva.rbvd.dto.insurance.commons.ValidateParticipantDTO;
+import com.bbva.rbvd.dto.participant.request.InputParticipantsDTO;
 
 import java.util.List;
 import java.util.Map;
 
 public class PayloadConfig {
 
-    private ValidateParticipantDTO input;
-    private List<PayloadProperties> properties;
+    private InputParticipantsDTO input;
+    private List<PayloadCustomer> properties;
     private String quotationId;
     private Map<String,Object> dataInsuredBD;
-    public ValidateParticipantDTO getInput() {
+    public InputParticipantsDTO getInput() {
         return input;
     }
 
-    public void setInput(ValidateParticipantDTO input) {
+    public void setInput(InputParticipantsDTO input) {
         this.input = input;
     }
 
-    public List<PayloadProperties> getProperties() {
+    public List<PayloadCustomer> getProperties() {
         return properties;
     }
 
-    public void setProperties(List<PayloadProperties> properties) {
+    public void setProperties(List<PayloadCustomer> properties) {
         this.properties = properties;
     }
 

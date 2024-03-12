@@ -6,7 +6,7 @@ import com.bbva.pbtq.dto.validatedocument.response.host.pewu.PEWUResponse;
 import com.bbva.pisd.dto.insurancedao.join.QuotationJoinCustomerInformationDTO;
 import com.bbva.pisd.lib.r601.PISDR601;
 import com.bbva.rbvd.dto.participant.request.InputParticipantsDTO;
-import com.bbva.rbvd.dto.validateparticipant.utils.TypeErrorControllerEnum;
+import com.bbva.rbvd.lib.r041.util.TypeErrorControllerEnum;
 import com.bbva.rbvd.lib.r041.pattern.decorator.PreParticipantValidations;
 import com.bbva.rbvd.lib.r041.service.api.ConsumerInternalService;
 import com.bbva.rbvd.lib.r041.transfer.PayloadConfig;

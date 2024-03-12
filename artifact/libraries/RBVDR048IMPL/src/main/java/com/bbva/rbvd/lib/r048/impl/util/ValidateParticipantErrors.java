@@ -1,11 +1,7 @@
-package com.bbva.rbvd.dto.validateparticipant.utils;
+package com.bbva.rbvd.lib.r048.impl.util;
 
 public enum ValidateParticipantErrors {
-    SELECT_DB_ORACLE_ERROR("RBVD00000132", false, "Error al ejecutar la consulta a la BD."),
-    ERROR_BBVA_VALIDATION("RBVD10094946", false, "Error por validación interna de BBVA."),
-    ERROR_INTERNAL_SERVICE_INVOKATION("RBVD10094947", false, ""),
-    ERROR_EXTERNAL_SERVICE_INVOKATION("RBVD10094948",false,"");
-
+    ERROR_INTERNAL_SERVICE_INVOKATION("RBVD10094947", false, "Error en la invocación de servicio BBVA.");
 
     private final String adviceCode;
     private final boolean rollback;

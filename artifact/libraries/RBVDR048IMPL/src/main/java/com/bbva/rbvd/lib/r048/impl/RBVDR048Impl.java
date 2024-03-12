@@ -6,8 +6,8 @@ import com.bbva.pisd.dto.insurance.amazon.SignatureAWS;
 import com.bbva.rbvd.dto.insrncsale.bo.emision.AgregarTerceroBO;
 import com.bbva.rbvd.dto.insuranceroyal.error.ErrorRequestDTO;
 import com.bbva.rbvd.dto.insuranceroyal.error.ErrorResponseDTO;
-import com.bbva.rbvd.dto.validateparticipant.utils.TypeErrorControllerEnum;
-import com.bbva.rbvd.dto.validateparticipant.utils.ValidateParticipantErrors;
+import com.bbva.rbvd.lib.r048.impl.util.TypeErrorControllerEnum;
+import com.bbva.rbvd.lib.r048.impl.util.ValidateParticipantErrors;
 import com.bbva.rbvd.lib.r048.impl.util.Constans;
 import com.bbva.rbvd.lib.r048.impl.util.JsonHelper;
 import com.bbva.rbvd.lib.r048.impl.util.RimacUrlForker;
@@ -66,6 +66,7 @@ public class RBVDR048Impl extends RBVDR048Abstract {
 			return output;
 		} catch (RestClientException ex) {
 			ErrorRequestDTO err =  getErrorCode(ex);
+			LOGGER.info("** RBVDR048Impl - executeAddParticipantsService catch {} **",err);
 			if(Objects.nonNull(err.getHttpCode()) && !CollectionUtils.isEmpty(err.getDetails())){
 				err.setTypeErrorScope("RIMAC");
 				ErrorResponseDTO responseErr = this.pisdR403.executeFindError(err);

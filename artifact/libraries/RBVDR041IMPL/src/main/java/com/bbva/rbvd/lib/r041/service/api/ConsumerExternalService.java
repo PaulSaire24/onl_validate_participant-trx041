@@ -20,7 +20,7 @@ public class ConsumerExternalService extends AbstractLibrary {
         LOGGER.info("***** RBVDR041Impl - executeValidateParticipantRimacService Start *****");
         AgregarTerceroBO output = new AgregarTerceroBO();
         try {
-           output = rbvdr048.executeAddParticipantsDynamicLife(payload, quotationId, productId, traceId);
+           output = rbvdr048.executeAddParticipants(payload, quotationId, productId, traceId);
             LOGGER.info("**** executeValidateParticipantRimacService successful execution");
         }catch(BusinessException ex){
             LOGGER.info("**** executeValidateParticipantRimacService failed execution");

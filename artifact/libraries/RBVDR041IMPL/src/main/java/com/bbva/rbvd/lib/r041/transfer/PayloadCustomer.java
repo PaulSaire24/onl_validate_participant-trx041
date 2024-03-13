@@ -1,6 +1,7 @@
 package com.bbva.rbvd.lib.r041.transfer;
 
 import com.bbva.pbtq.dto.validatedocument.response.host.pewu.PEWUResponse;
+import com.bbva.rbvd.dto.insrncsale.aso.listbusinesses.ListBusinessesASO;
 
 public class PayloadCustomer {
 
@@ -8,6 +9,7 @@ public class PayloadCustomer {
     private String documentType;
     private String documentNumber;
     private PEWUResponse customer;
+    private ListBusinessesASO legalCustomer;
 
     public String getCustomerId() {
         return customerId;
@@ -41,6 +43,14 @@ public class PayloadCustomer {
         this.customer = customer;
     }
 
+    public ListBusinessesASO getLegalCustomer() {
+        return legalCustomer;
+    }
+
+    public void setLegalCustomer(ListBusinessesASO legalCustomer) {
+        this.legalCustomer = legalCustomer;
+    }
+
     @Override
     public String toString() {
         return "PayloadProperties{" +
@@ -48,6 +58,7 @@ public class PayloadCustomer {
                 ", documetType='" + documentType + '\'' +
                 ", documetNumber='" + documentNumber + '\'' +
                 ", customer=" + customer +
+                ", legalCustomer=" + legalCustomer +
                 '}';
     }
 }

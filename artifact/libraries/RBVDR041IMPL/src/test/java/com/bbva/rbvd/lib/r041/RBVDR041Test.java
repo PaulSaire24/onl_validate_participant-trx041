@@ -9,13 +9,18 @@ import javax.annotation.Resource;
 import com.bbva.pbtq.dto.validatedocument.response.host.pewu.PEMSALW4;
 import com.bbva.pbtq.dto.validatedocument.response.host.pewu.PEMSALWU;
 import com.bbva.pbtq.dto.validatedocument.response.host.pewu.PEWUResponse;
+
+import com.bbva.pisd.dto.insurancedao.constants.PISDInsuranceErrors;
 import com.bbva.pisd.dto.insurancedao.entities.InsuranceBusinessEntity;
 import com.bbva.pisd.dto.insurancedao.entities.InsuranceProductEntity;
 import com.bbva.pisd.dto.insurancedao.entities.QuotationEntity;
 import com.bbva.pisd.dto.insurancedao.entities.QuotationModEntity;
 import com.bbva.pisd.dto.insurancedao.join.QuotationJoinCustomerInformationDTO;
+
+import com.bbva.pisd.lib.r012.PISDR012;
 import com.bbva.pisd.lib.r601.PISDR601;
 import com.bbva.rbvd.dto.insrncsale.bo.emision.AgregarTerceroBO;
+import com.bbva.rbvd.dto.insrncsale.bo.emision.PayloadAgregarTerceroBO;
 import com.bbva.rbvd.dto.participant.request.ParticipantsDTO;
 import com.bbva.rbvd.dto.participant.request.InputParticipantsDTO;
 import com.bbva.rbvd.dto.participant.request.ParticipantTypeDTO;
@@ -25,10 +30,12 @@ import com.bbva.rbvd.dto.participant.request.DocumentTypeDTO;
 import com.bbva.rbvd.dto.participant.request.ContactDetailsDTO;
 import com.bbva.rbvd.dto.participant.request.GenderDTO;
 import com.bbva.rbvd.lib.r048.RBVDR048;
+import com.bbva.rbvd.util.MockDTO;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
 import org.springframework.aop.framework.Advised;
@@ -36,6 +43,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.ArrayList;
@@ -64,11 +72,16 @@ public class RBVDR041Test {
 
 	@Resource(name = "rbvdR041")
 	private RBVDR041 rbvdR041;
+
 	@Resource(name = "rbvdR048")
 	private RBVDR048 rbvdr048;
 
 	@Resource(name = "pisdR601")
 	private PISDR601 pisdr601;
+
+    @Resource(name = "pisdR012")
+    private PISDR012 pisdr012;
+    
 	@Resource(name = "applicationConfigurationService")
 	private ApplicationConfigurationService applicationConfigurationService;
 
@@ -102,173 +115,378 @@ public class RBVDR041Test {
 	}
 
 	@Test
-	public void executeTestOk(){
-		QuotationJoinCustomerInformationDTO quotationJoinCustomerInformation = new QuotationJoinCustomerInformationDTO();
-		quotationJoinCustomerInformation.setInsuranceProduct(new InsuranceProductEntity());
-		quotationJoinCustomerInformation.setQuotation(new QuotationEntity());
-		quotationJoinCustomerInformation.getInsuranceProduct().setInsuranceProductType("841");
-		quotationJoinCustomerInformation.getQuotation().setInsuranceCompanyQuotaId("0814000038990");
-		Map<String,Object> responseInsuredBD = new HashMap<>();
-		responseInsuredBD.put("CLIENT_LAST_NAME","Romero|Aguilar");
-		responseInsuredBD.put("INSURED_CUSTOMER_NAME","Paul");
-		responseInsuredBD.put("GENDER_ID","F");
-		responseInsuredBD.put("USER_EMAIL_PERSONAL_DESC","huhuh@gmail.com");
-		responseInsuredBD.put("PHONE_ID","960675837");
-		responseInsuredBD.put("CUSTOMER_BIRTH_DATE","2023-05-15");
-		//request of trx
-		Map<String,Object> responseData = new HashMap<>();
-		responseData.put("INSURANCE_PRODUCT_ID",new BigDecimal(21));
-		responseData.put("INSURANCE_MODALITY_TYPE","02");
+	public void executeNaturalPersonTestOkNonLifeProduct(){
+		InputParticipantsDTO request = getMockRequestBodyValidateNaturalParticipants();
+		when(pisdr601.executeFindQuotationJoinByPolicyQuotaInternalId(anyString())).thenReturn(buildFindQuotationJoinByPolicyQuotaInternalId("789956435"));
+		when(pisdr012.executeGetParticipantRolesByCompany(anyMap())).thenReturn(buildRolByParticipantTypeResponse());
+		AgregarTerceroBO agregarTerceroBO = new AgregarTerceroBO();
+		PayloadAgregarTerceroBO payloadAgregarTerceroBO = new PayloadAgregarTerceroBO();
+		payloadAgregarTerceroBO.setCotizacion("cotizacion");
+		agregarTerceroBO.setPayload(payloadAgregarTerceroBO);
+		when(rbvdr048.executeAddParticipants(anyObject(),anyString(),anyString(),anyString())).thenReturn(agregarTerceroBO);
+		when(rbvdr048.executeGetCustomerByDocType(anyString(),anyString())).thenReturn(buildPersonHostDataResponseCase3());
+		AgregarTerceroBO response = rbvdR041.executeValidateAddParticipant(request);
+		Assert.assertNotNull(response);
+		Assert.assertEquals(0,this.context.getAdviceList().size());
+	}
 
-		InputParticipantsDTO request = getMockRequestBodyValidateLegalParticipants();
-		when(this.applicationConfigurationService.getProperty(anyString())).thenReturn("L");
-		when(pisdr601.executeFindQuotationJoinByPolicyQuotaInternalId(anyString())).thenReturn(quotationJoinCustomerInformation);
-		when(rbvdr048.executeAddParticipantsDynamicLife(anyObject(),anyString(),anyString(),anyString())).thenReturn(new AgregarTerceroBO());
-		when(rbvdr048.executeGetCustomerService(anyString(),anyString())).thenReturn(buildPersonHostDataResponseCase3());
-		when(rbvdr048.executeGetDataInsuredBD(anyString(),anyString(),anyString())).thenReturn(responseInsuredBD);
-		when(rbvdr048.executeGetProducAndPlanByQuotation(anyString())).thenReturn(responseData);
+    @Test
+    public void executeTestOk(){
+        QuotationJoinCustomerInformationDTO quotationJoinCustomerInformation = new QuotationJoinCustomerInformationDTO();
+        quotationJoinCustomerInformation.setInsuranceProduct(new InsuranceProductEntity());
+        quotationJoinCustomerInformation.setQuotation(new QuotationEntity());
+        quotationJoinCustomerInformation.getInsuranceProduct().setInsuranceProductType("841");
+        quotationJoinCustomerInformation.getQuotation().setInsuranceCompanyQuotaId("0814000038990");
+        Map<String,Object> responseInsuredBD = new HashMap<>();
+        responseInsuredBD.put("CLIENT_LAST_NAME","Romero|Aguilar");
+        responseInsuredBD.put("INSURED_CUSTOMER_NAME","Paul");
+        responseInsuredBD.put("GENDER_ID","F");
+        responseInsuredBD.put("USER_EMAIL_PERSONAL_DESC","huhuh@gmail.com");
+        responseInsuredBD.put("PHONE_ID","960675837");
+        responseInsuredBD.put("CUSTOMER_BIRTH_DATE","2023-05-15");
+        //request of trx
+        Map<String,Object> responseData = new HashMap<>();
+        responseData.put("INSURANCE_PRODUCT_ID",new BigDecimal(21));
+        responseData.put("INSURANCE_MODALITY_TYPE","02");
+
+        InputParticipantsDTO request = getMockRequestBodyValidateLegalParticipants();
+        when(this.applicationConfigurationService.getProperty(anyString())).thenReturn("L");
+        when(pisdr601.executeFindQuotationJoinByPolicyQuotaInternalId(anyString())).thenReturn(quotationJoinCustomerInformation);
+        when(rbvdr048.executeAddParticipantsDynamicLife(anyObject(),anyString(),anyString(),anyString())).thenReturn(new AgregarTerceroBO());
+        when(rbvdr048.executeGetCustomerService(anyString(),anyString())).thenReturn(buildPersonHostDataResponseCase3());
+        when(rbvdr048.executeGetDataInsuredBD(anyString(),anyString(),anyString())).thenReturn(responseInsuredBD);
+        when(rbvdr048.executeGetProducAndPlanByQuotation(anyString())).thenReturn(responseData);
+        AgregarTerceroBO response = rbvdR041.executeValidateAddParticipant(request);
+        Assert.assertNotNull(response);
+        Assert.assertEquals(0,this.context.getAdviceList().size());
+    }
+
+	@Test
+	public void executeNaturalPersonTestOkLifeProduct(){
+		QuotationJoinCustomerInformationDTO quotation = buildFindQuotationJoinByPolicyQuotaInternalId("789956435");
+		quotation.getInsuranceProduct().setInsuranceProductType("841");
+		when(pisdr601.executeFindQuotationJoinByPolicyQuotaInternalId(anyString())).thenReturn(quotation);
+		when(pisdr012.executeGetParticipantRolesByCompany(anyMap())).thenReturn(buildRolByParticipantTypeResponse());
+		AgregarTerceroBO agregarTerceroBO = new AgregarTerceroBO();
+		PayloadAgregarTerceroBO payloadAgregarTerceroBO = new PayloadAgregarTerceroBO();
+		payloadAgregarTerceroBO.setCotizacion("cotizacion");
+		agregarTerceroBO.setPayload(payloadAgregarTerceroBO);
+		when(rbvdr048.executeAddParticipants(anyObject(),anyString(),anyString(),anyString())).thenReturn(agregarTerceroBO);
+		when(rbvdr048.executeGetCustomerByDocType(anyString(),anyString())).thenReturn(buildPersonHostDataResponseCase3());
+		AgregarTerceroBO response = rbvdR041.executeValidateAddParticipant(getMockRequestBodyValidateNaturalParticipantsLifeCase1());
+		Assert.assertNotNull(response);
+		Assert.assertEquals(0,this.context.getAdviceList().size());
+
+		AgregarTerceroBO response1 = rbvdR041.executeValidateAddParticipant(getMockRequestBodyValidateNaturalParticipantsLifeCase2());
+		Assert.assertNotNull(response1);
+		Assert.assertEquals(0,this.context.getAdviceList().size());
+	}
+
+	@Test
+	public void executeNaturalPersonTestOkWithNonCustomer(){
+		InputParticipantsDTO request = getMockRequestBodyValidateNaturalParticipants();
+		request.getParticipants().get(2).getPerson().setCustomerId(null);
+		when(pisdr601.executeFindQuotationJoinByPolicyQuotaInternalId(anyString())).thenReturn(buildFindQuotationJoinByPolicyQuotaInternalId("789956435"));
+		when(pisdr012.executeGetParticipantRolesByCompany(anyMap())).thenReturn(buildRolByParticipantTypeResponse());
+		AgregarTerceroBO agregarTerceroBO = new AgregarTerceroBO();
+		PayloadAgregarTerceroBO payloadAgregarTerceroBO = new PayloadAgregarTerceroBO();
+		payloadAgregarTerceroBO.setCotizacion("cotizacion");
+		agregarTerceroBO.setPayload(payloadAgregarTerceroBO);
+		when(rbvdr048.executeAddParticipants(anyObject(),anyString(),anyString(),anyString())).thenReturn(agregarTerceroBO);
+		when(rbvdr048.executeGetCustomerByDocType(anyString(),anyString())).thenReturn(buildPersonHostDataResponseCase3());
 		AgregarTerceroBO response = rbvdR041.executeValidateAddParticipant(request);
 		Assert.assertNotNull(response);
 		Assert.assertEquals(0,this.context.getAdviceList().size());
 	}
 
 	@Test
-	public void executeTestOkAnotherTwo(){
-		QuotationJoinCustomerInformationDTO quotationJoinCustomerInformation = new QuotationJoinCustomerInformationDTO();
-		quotationJoinCustomerInformation.setInsuranceProduct(new InsuranceProductEntity());
-		quotationJoinCustomerInformation.setQuotation(new QuotationEntity());
-		quotationJoinCustomerInformation.getInsuranceProduct().setInsuranceProductType("841");
-		quotationJoinCustomerInformation.getQuotation().setInsuranceCompanyQuotaId("0814000038990");
-		Map<String,Object> responseInsuredBD = new HashMap<>();
-		responseInsuredBD.put("CLIENT_LAST_NAME","Romero|Aguilar");
-		responseInsuredBD.put("INSURED_CUSTOMER_NAME","Paul");
-		responseInsuredBD.put("GENDER_ID","F");
-		responseInsuredBD.put("USER_EMAIL_PERSONAL_DESC","huhuh@gmail.com");
-		responseInsuredBD.put("PHONE_ID","960675837");
-		responseInsuredBD.put("CUSTOMER_BIRTH_DATE","2023-05-15");
-		//request of trx
+	public void executeValidationWithNaturalPersonDataTypeOkCase2(){
 
-		Map<String,Object> responseData = new HashMap<>();
-		responseData.put("INSURANCE_PRODUCT_ID",new BigDecimal(21));
-		responseData.put("INSURANCE_MODALITY_TYPE","02");
+		Mockito.when(pisdr601.executeFindQuotationJoinByPolicyQuotaInternalId(Mockito.eq("0123489304"))).thenReturn(buildFindQuotationJoinByPolicyQuotaInternalId("71998384"));
+		Mockito.when(pisdr012.executeGetParticipantRolesByCompany(Mockito.anyMap())).thenReturn(buildRolByParticipantTypeResponse());
+		Mockito.when(rbvdr048.executeGetCustomerByDocType(Mockito.anyString(),Mockito.anyString())).thenReturn(buildPersonHostDataResponseCase2());
+		AgregarTerceroBO agregarTerceroBO = new AgregarTerceroBO();
+		PayloadAgregarTerceroBO payloadAgregarTerceroBO = new PayloadAgregarTerceroBO();
+		payloadAgregarTerceroBO.setCotizacion("cotizacion");
+		agregarTerceroBO.setPayload(payloadAgregarTerceroBO);
+		when(rbvdr048.executeAddParticipants(anyObject(),anyString(),anyString(),anyString())).thenReturn(agregarTerceroBO);
 
-		InputParticipantsDTO request = getMockRequestBodyValidateLegalParticipantsTwo();
-		when(this.applicationConfigurationService.getProperty(anyString())).thenReturn("L");
-		when(pisdr601.executeFindQuotationJoinByPolicyQuotaInternalId(anyString())).thenReturn(quotationJoinCustomerInformation);
-		when(rbvdr048.executeAddParticipantsDynamicLife(anyObject(),anyString(),anyString(),anyString())).thenReturn(new AgregarTerceroBO());
-		when(rbvdr048.executeGetDataInsuredBD(anyString(),anyString(),anyString())).thenReturn(responseInsuredBD);
-		when(rbvdr048.executeGetCustomerService(anyString(),anyString())).thenReturn(buildPersonHostDataResponseCase3());
-		when(rbvdr048.executeGetProducAndPlanByQuotation(anyString())).thenReturn(responseData);
-		AgregarTerceroBO response = rbvdR041.executeValidateAddParticipant(request);
+		InputParticipantsDTO InputParticipantsDTO =  getMockRequestBodyValidateNaturalParticipants();
+		AgregarTerceroBO response =  rbvdR041.executeValidateAddParticipant(InputParticipantsDTO);
 		Assert.assertNotNull(response);
-		Assert.assertEquals(0,this.context.getAdviceList().size());
+		Assert.assertEquals(0, context.getAdviceList().size());
+
 	}
 
 	@Test
-	public void testExecuteBusinessExceptionInternalApi() {
-		QuotationJoinCustomerInformationDTO quotationJoinCustomerInformation = new QuotationJoinCustomerInformationDTO();
-		quotationJoinCustomerInformation.setInsuranceProduct(new InsuranceProductEntity());
-		quotationJoinCustomerInformation.setQuotation(new QuotationEntity());
-		quotationJoinCustomerInformation.getInsuranceProduct().setInsuranceProductType("841");
-		quotationJoinCustomerInformation.getQuotation().setInsuranceCompanyQuotaId("0814000038990");
+	public void executeValidationWithNaturalPersonDataTypeOkCase3(){
 
-		Map<String,Object> responseData = new HashMap<>();
-		responseData.put("INSURANCE_PRODUCT_ID",new BigDecimal(21));
-		responseData.put("INSURANCE_MODALITY_TYPE","02");
+		Mockito.when(pisdr601.executeFindQuotationJoinByPolicyQuotaInternalId(anyString())).thenReturn(buildFindQuotationJoinByPolicyQuotaInternalId("71998384"));
+        Mockito.when(pisdr012.executeGetParticipantRolesByCompany(Mockito.anyMap())).thenReturn(buildRolByParticipantTypeResponse());
+        Mockito.when(rbvdr048.executeGetCustomerByDocType(Mockito.anyString(), Mockito.anyString())).thenReturn(buildPersonHostDataResponseCase3());
+        AgregarTerceroBO agregarTerceroBO = new AgregarTerceroBO();
+        PayloadAgregarTerceroBO payloadAgregarTerceroBO = new PayloadAgregarTerceroBO();
+        payloadAgregarTerceroBO.setCotizacion("cotizacion");
+        agregarTerceroBO.setPayload(payloadAgregarTerceroBO);
+        when(rbvdr048.executeAddParticipants(anyObject(), anyString(), anyString(), anyString())).thenReturn(agregarTerceroBO);
 
-		Map<String,Object> responseInsuredBD = new HashMap<>();
-		responseInsuredBD.put("CLIENT_LAST_NAME","Romero|Aguilar");
-		responseInsuredBD.put("INSURED_CUSTOMER_NAME","Paul");
-		responseInsuredBD.put("GENDER_ID","F");
-		responseInsuredBD.put("USER_EMAIL_PERSONAL_DESC","huhuh@gmail.com");
-		responseInsuredBD.put("PHONE_ID","960675837");
-		responseInsuredBD.put("CUSTOMER_BIRTH_DATE","2023-05-15");
+        InputParticipantsDTO InputParticipantsDTO = getMockRequestBodyValidateNaturalParticipants();
+        AgregarTerceroBO response = rbvdR041.executeValidateAddParticipant(InputParticipantsDTO);
+        Assert.assertNotNull(response);
+        Assert.assertEquals(0, context.getAdviceList().size());
 
-		InputParticipantsDTO request = getMockRequestBodyValidateLegalParticipantsTwo();
-		when(this.applicationConfigurationService.getProperty(anyString())).thenReturn("L");
-		when(pisdr601.executeFindQuotationJoinByPolicyQuotaInternalId(anyString())).thenReturn(quotationJoinCustomerInformation);
-		when(this.rbvdr048.executeAddParticipantsDynamicLife(anyObject(),anyString(),anyString(),anyString())).thenThrow(new BusinessException("BBVA14554",false,"businessError"));
-		when(rbvdr048.executeGetDataInsuredBD(anyString(),anyString(),anyString())).thenReturn(responseInsuredBD);
-		when(rbvdr048.executeGetCustomerService(anyString(),anyString())).thenReturn(buildPersonHostDataResponseCase3());
-		when(rbvdr048.executeGetProducAndPlanByQuotation(anyString())).thenReturn(responseData);
-		AgregarTerceroBO response = rbvdR041.executeValidateAddParticipant(request);
-		assertNull(response.getPayload());
+    }
+
+    @Test
+    public void executeValidationWithNaturalPersonDataTypeOkCase4(){
+		AgregarTerceroBO agregarTerceroBO = new AgregarTerceroBO();
+		PayloadAgregarTerceroBO payloadAgregarTerceroBO = new PayloadAgregarTerceroBO();
+		payloadAgregarTerceroBO.setCotizacion("cotizacion");
+		agregarTerceroBO.setPayload(payloadAgregarTerceroBO);
+		when(rbvdr048.executeAddParticipants(anyObject(),anyString(),anyString(),anyString())).thenReturn(agregarTerceroBO);
+		Mockito.when(pisdr601.executeFindQuotationJoinByPolicyQuotaInternalId(Mockito.eq("0123489304"))).thenReturn(buildFindQuotationJoinByPolicyQuotaInternalId("71998384"));
+		Mockito.when(pisdr012.executeGetParticipantRolesByCompany(Mockito.anyMap())).thenReturn(buildRolByParticipantTypeResponse());
+		Mockito.when(rbvdr048.executeGetCustomerByDocType(Mockito.anyString(),Mockito.anyString())).thenReturn(buildPersonHostDataResponseCase4());
+
+
+		AgregarTerceroBO response =  rbvdR041.executeValidateAddParticipant(getMockRequestBodyValidateNaturalParticipants());
+		Assert.assertNotNull(response);
+		Assert.assertEquals(0, context.getAdviceList().size());
+
 	}
 
 	@Test
-	public void executeTestOkAnotherOne(){
-		QuotationJoinCustomerInformationDTO quotationJoinCustomerInformation = new QuotationJoinCustomerInformationDTO();
-		quotationJoinCustomerInformation.setInsuranceProduct(new InsuranceProductEntity());
-		quotationJoinCustomerInformation.setQuotation(new QuotationEntity());
-		quotationJoinCustomerInformation.getInsuranceProduct().setInsuranceProductType("841");
-		quotationJoinCustomerInformation.getQuotation().setInsuranceCompanyQuotaId("0814000038990");
-		//request of trx
+	public void executeValidationWithNaturalPersonDataTypeOkCase5(){
+		AgregarTerceroBO agregarTerceroBO = new AgregarTerceroBO();
+		PayloadAgregarTerceroBO payloadAgregarTerceroBO = new PayloadAgregarTerceroBO();
+		payloadAgregarTerceroBO.setCotizacion("cotizacion");
+		agregarTerceroBO.setPayload(payloadAgregarTerceroBO);
+		when(rbvdr048.executeAddParticipants(anyObject(),anyString(),anyString(),anyString())).thenReturn(agregarTerceroBO);
+		Mockito.when(pisdr601.executeFindQuotationJoinByPolicyQuotaInternalId(Mockito.eq("0123489304"))).thenReturn(buildFindQuotationJoinByPolicyQuotaInternalId("71998384"));
+		Mockito.when(pisdr012.executeGetParticipantRolesByCompany(Mockito.anyMap())).thenReturn(buildRolByParticipantTypeResponse());
+		Mockito.when(rbvdr048.executeGetCustomerByDocType(Mockito.anyString(),Mockito.anyString())).thenReturn(buildPersonHostDataResponseCase5());
 
-		Map<String,Object> responseInsuredBD = new HashMap<>();
-		responseInsuredBD.put("CLIENT_LAST_NAME","Romero|Aguilar");
-		responseInsuredBD.put("INSURED_CUSTOMER_NAME","Paul");
-		responseInsuredBD.put("GENDER_ID","F");
-		responseInsuredBD.put("USER_EMAIL_PERSONAL_DESC","huhuh@gmail.com");
-		responseInsuredBD.put("PHONE_ID","960675837");
-		responseInsuredBD.put("CUSTOMER_BIRTH_DATE","2023-05-15");
-
-		Map<String,Object> responseData = new HashMap<>();
-		responseData.put("INSURANCE_PRODUCT_ID",new BigDecimal(21));
-		responseData.put("INSURANCE_MODALITY_TYPE","02");
-
-		InputParticipantsDTO request = getMockRequestBodyValidateLegalParticipantsOne();
-		when(this.applicationConfigurationService.getProperty(anyString())).thenReturn("L");
-		when(pisdr601.executeFindQuotationJoinByPolicyQuotaInternalId(anyString())).thenReturn(quotationJoinCustomerInformation);
-		when(rbvdr048.executeAddParticipantsDynamicLife(anyObject(),anyString(),anyString(),anyString())).thenReturn(new AgregarTerceroBO());
-		when(rbvdr048.executeGetCustomerService(anyString(),anyString())).thenReturn(buildPersonHostDataResponseCase3());
-		when(rbvdr048.executeGetDataInsuredBD(anyString(),anyString(),anyString())).thenReturn(responseInsuredBD);
-		when(rbvdr048.executeGetProducAndPlanByQuotation(anyString())).thenReturn(responseData);
-		AgregarTerceroBO response = rbvdR041.executeValidateAddParticipant(request);
+		AgregarTerceroBO response =  rbvdR041.executeValidateAddParticipant(getMockRequestBodyValidateNaturalParticipants());
 		Assert.assertNotNull(response);
-		Assert.assertEquals(0,this.context.getAdviceList().size());
+		Assert.assertEquals(0, context.getAdviceList().size());
+
 	}
 
 
-	public static InputParticipantsDTO getMockRequestBodyValidateLegalParticipants(){
+
+    @Test
+    public void executeTestOkAnotherTwo(){
+        QuotationJoinCustomerInformationDTO quotationJoinCustomerInformation = new QuotationJoinCustomerInformationDTO();
+        quotationJoinCustomerInformation.setInsuranceProduct(new InsuranceProductEntity());
+        quotationJoinCustomerInformation.setQuotation(new QuotationEntity());
+        quotationJoinCustomerInformation.getInsuranceProduct().setInsuranceProductType("841");
+        quotationJoinCustomerInformation.getQuotation().setInsuranceCompanyQuotaId("0814000038990");
+        Map<String,Object> responseInsuredBD = new HashMap<>();
+        responseInsuredBD.put("CLIENT_LAST_NAME","Romero|Aguilar");
+        responseInsuredBD.put("INSURED_CUSTOMER_NAME","Paul");
+        responseInsuredBD.put("GENDER_ID","F");
+        responseInsuredBD.put("USER_EMAIL_PERSONAL_DESC","huhuh@gmail.com");
+        responseInsuredBD.put("PHONE_ID","960675837");
+        responseInsuredBD.put("CUSTOMER_BIRTH_DATE","2023-05-15");
+        //request of trx
+
+        Map<String,Object> responseData = new HashMap<>();
+        responseData.put("INSURANCE_PRODUCT_ID",new BigDecimal(21));
+        responseData.put("INSURANCE_MODALITY_TYPE","02");
+
+        InputParticipantsDTO request = getMockRequestBodyValidateLegalParticipantsTwo();
+        when(this.applicationConfigurationService.getProperty(anyString())).thenReturn("L");
+        when(pisdr601.executeFindQuotationJoinByPolicyQuotaInternalId(anyString())).thenReturn(quotationJoinCustomerInformation);
+        when(rbvdr048.executeAddParticipantsDynamicLife(anyObject(),anyString(),anyString(),anyString())).thenReturn(new AgregarTerceroBO());
+        when(rbvdr048.executeGetDataInsuredBD(anyString(),anyString(),anyString())).thenReturn(responseInsuredBD);
+        when(rbvdr048.executeGetCustomerService(anyString(),anyString())).thenReturn(buildPersonHostDataResponseCase3());
+        when(rbvdr048.executeGetProducAndPlanByQuotation(anyString())).thenReturn(responseData);
+        AgregarTerceroBO response = rbvdR041.executeValidateAddParticipant(request);
+        Assert.assertNotNull(response);
+        Assert.assertEquals(0,this.context.getAdviceList().size());
+    }
+
+    @Test
+    public void executeTestOkAnotherOne(){
+        QuotationJoinCustomerInformationDTO quotationJoinCustomerInformation = new QuotationJoinCustomerInformationDTO();
+        quotationJoinCustomerInformation.setInsuranceProduct(new InsuranceProductEntity());
+        quotationJoinCustomerInformation.setQuotation(new QuotationEntity());
+        quotationJoinCustomerInformation.getInsuranceProduct().setInsuranceProductType("841");
+        quotationJoinCustomerInformation.getQuotation().setInsuranceCompanyQuotaId("0814000038990");
+        //request of trx
+
+        Map<String,Object> responseInsuredBD = new HashMap<>();
+        responseInsuredBD.put("CLIENT_LAST_NAME","Romero|Aguilar");
+        responseInsuredBD.put("INSURED_CUSTOMER_NAME","Paul");
+        responseInsuredBD.put("GENDER_ID","F");
+        responseInsuredBD.put("USER_EMAIL_PERSONAL_DESC","huhuh@gmail.com");
+        responseInsuredBD.put("PHONE_ID","960675837");
+        responseInsuredBD.put("CUSTOMER_BIRTH_DATE","2023-05-15");
+
+        Map<String,Object> responseData = new HashMap<>();
+        responseData.put("INSURANCE_PRODUCT_ID",new BigDecimal(21));
+        responseData.put("INSURANCE_MODALITY_TYPE","02");
+
+        InputParticipantsDTO request = getMockRequestBodyValidateLegalParticipantsOne();
+        when(this.applicationConfigurationService.getProperty(anyString())).thenReturn("L");
+        when(pisdr601.executeFindQuotationJoinByPolicyQuotaInternalId(anyString())).thenReturn(quotationJoinCustomerInformation);
+        when(rbvdr048.executeAddParticipantsDynamicLife(anyObject(),anyString(),anyString(),anyString())).thenReturn(new AgregarTerceroBO());
+        when(rbvdr048.executeGetCustomerByDocType(anyString(),anyString())).thenReturn(buildPersonHostDataResponseCase3());
+        when(rbvdr048.executeGetDataInsuredBD(anyString(),anyString(),anyString())).thenReturn(responseInsuredBD);
+        when(rbvdr048.executeGetProducAndPlanByQuotation(anyString())).thenReturn(responseData);
+        AgregarTerceroBO response = rbvdR041.executeValidateAddParticipant(request);
+        Assert.assertNotNull(response);
+        Assert.assertEquals(0,this.context.getAdviceList().size());
+    }
+
+    @Test
+    public void testExecuteBusinessExceptionInternalApi() {
+        QuotationJoinCustomerInformationDTO quotationJoinCustomerInformation = new QuotationJoinCustomerInformationDTO();
+        quotationJoinCustomerInformation.setInsuranceProduct(new InsuranceProductEntity());
+        quotationJoinCustomerInformation.setQuotation(new QuotationEntity());
+        quotationJoinCustomerInformation.getInsuranceProduct().setInsuranceProductType("841");
+        quotationJoinCustomerInformation.getQuotation().setInsuranceCompanyQuotaId("0814000038990");
+
+        Map<String,Object> responseData = new HashMap<>();
+        responseData.put("INSURANCE_PRODUCT_ID",new BigDecimal(21));
+        responseData.put("INSURANCE_MODALITY_TYPE","02");
+
+        Map<String,Object> responseInsuredBD = new HashMap<>();
+        responseInsuredBD.put("CLIENT_LAST_NAME","Romero|Aguilar");
+        responseInsuredBD.put("INSURED_CUSTOMER_NAME","Paul");
+        responseInsuredBD.put("GENDER_ID","F");
+        responseInsuredBD.put("USER_EMAIL_PERSONAL_DESC","huhuh@gmail.com");
+        responseInsuredBD.put("PHONE_ID","960675837");
+        responseInsuredBD.put("CUSTOMER_BIRTH_DATE","2023-05-15");
+
+        InputParticipantsDTO request = getMockRequestBodyValidateLegalParticipantsTwo();
+        when(this.applicationConfigurationService.getProperty(anyString())).thenReturn("L");
+        when(pisdr601.executeFindQuotationJoinByPolicyQuotaInternalId(anyString())).thenReturn(quotationJoinCustomerInformation);
+        when(this.rbvdr048.executeAddParticipantsDynamicLife(anyObject(),anyString(),anyString(),anyString())).thenThrow(new BusinessException("BBVA14554",false,"businessError"));
+        when(rbvdr048.executeGetDataInsuredBD(anyString(),anyString(),anyString())).thenReturn(responseInsuredBD);
+        when(rbvdr048.executeGetCustomerByDocType(anyString(),anyString())).thenReturn(buildPersonHostDataResponseCase3());
+        when(rbvdr048.executeGetProducAndPlanByQuotation(anyString())).thenReturn(responseData);
+        AgregarTerceroBO response = rbvdR041.executeValidateAddParticipant(request);
+        assertNull(response.getPayload());
+    }
+
+    public static InputParticipantsDTO getMockRequestBodyValidateLegalParticipants(){
+        InputParticipantsDTO requestBody = new InputParticipantsDTO();
+        requestBody.setQuotationId("0123489304");
+        requestBody.setChannelId("PC");
+        requestBody.setTraceId("c05ed2bd-1a7c-47ca-b7c9-fc639f47790a");
+        List<ParticipantsDTO> participantsList = new ArrayList<>();
+        ParticipantsDTO participant1 = buildParticipant("PAYMENT_MANAGER","DNI", "46716129","LEGAL", true);
+        ParticipantsDTO participant2 = buildParticipant("CONTRACTOR","DNI", "45093558","LEGAL", true);
+        ParticipantsDTO participant3 = buildParticipant("INSURED","DNI", "00002023","LEGAL",false);
+        participantsList.add(participant1);
+        participantsList.add(participant2);
+        participantsList.add(participant3);
+        requestBody.setParticipants(participantsList);
+        return requestBody;
+    }
+	@Test
+	public void executeValidationWithWrongClientQuotationId(){
+		when(pisdr601.executeFindQuotationJoinByPolicyQuotaInternalId(anyString())).thenReturn(buildFindQuotationJoinByPolicyQuotaInternalId("20123453922"));
+		Mockito.when(pisdr601.executeFindQuotationJoinByPolicyQuotaInternalId(Mockito.eq("0123489304"))).thenThrow(new BusinessException(PISDInsuranceErrors.PARAMETERS_INVALIDATE.getAdviceCode(), false, PISDInsuranceErrors.PARAMETERS_INVALIDATE.getMessage()));
+		AgregarTerceroBO response =  rbvdR041.executeValidateAddParticipant(getMockRequestBodyValidateNaturalParticipants());
+		Assert.assertNull(response);
+		Assert.assertEquals(1,this.context.getAdviceList().size());
+
+	}
+
+	@Test
+	public void executeValidationWithWrongPlansConfiguredForProductModality(){
+
+		Mockito.when(pisdr601.executeFindQuotationJoinByPolicyQuotaInternalId(Mockito.eq("0123489304"))).thenReturn(buildFindQuotationJoinByPolicyQuotaInternalId("71998384"));
+		Mockito.when(pisdr012.executeGetParticipantRolesByCompany(anyMap())).thenThrow(new BusinessException(PISDInsuranceErrors.QUERY_EMPTY_RESULT.getAdviceCode(), false, PISDInsuranceErrors.QUERY_EMPTY_RESULT.getMessage()));
+
+		AgregarTerceroBO response =  rbvdR041.executeValidateAddParticipant(getMockRequestBodyValidateNaturalParticipants());
+		Assert.assertNull(response);
+		Assert.assertEquals(1,this.context.getAdviceList().size());
+
+	}
+
+	@Test
+	public void executeValidationWithWrongPersonTypeListFormatted(){
+
+		InputParticipantsDTO InputParticipantsDTO = getMockRequestBodyValidateNaturalParticipants();
+		InputParticipantsDTO.getParticipants().get(0).getPerson().setPersonType("LEGAL");
+		AgregarTerceroBO response =  rbvdR041.executeValidateAddParticipant(InputParticipantsDTO);
+		Assert.assertNull(response);
+		Assert.assertEquals(1,this.context.getAdviceList().size());
+
+	}
+
+	public static InputParticipantsDTO getMockRequestBodyValidateNaturalParticipants(){
 		InputParticipantsDTO requestBody = new InputParticipantsDTO();
 		requestBody.setQuotationId("0123489304");
 		requestBody.setChannelId("PC");
 		requestBody.setTraceId("c05ed2bd-1a7c-47ca-b7c9-fc639f47790a");
 		List<ParticipantsDTO> participantsList = new ArrayList<>();
-		ParticipantsDTO participant1 = buildParticipant("PAYMENT_MANAGER","DNI", "46716129","LEGAL", true);
-		ParticipantsDTO participant2 = buildParticipant("CONTRACTOR","DNI", "45093558","LEGAL", true);
-		ParticipantsDTO participant3 = buildParticipant("INSURED","DNI", "00002023","LEGAL",false);
+		ParticipantsDTO participant1 = buildParticipant("PAYMENT_MANAGER","DNI", "78394872","NATURAL",true);
+		ParticipantsDTO participant2 = buildParticipant("INSURED","DNI", "78394872","NATURAL",true);
+		ParticipantsDTO participant3 = buildParticipant("CONTRACTOR","DNI", "78394872","NATURAL",true);
 		participantsList.add(participant1);
 		participantsList.add(participant2);
 		participantsList.add(participant3);
 		requestBody.setParticipants(participantsList);
 		return requestBody;
 	}
-	public static InputParticipantsDTO getMockRequestBodyValidateLegalParticipantsTwo(){
-		InputParticipantsDTO requestBody = new InputParticipantsDTO();
+
+	public static InputParticipantsDTO getMockRequestBodyValidateNaturalParticipantsLifeCase1(){
+        InputParticipantsDTO requestBody = new InputParticipantsDTO();
 		requestBody.setQuotationId("0123489304");
 		requestBody.setChannelId("PC");
 		requestBody.setTraceId("c05ed2bd-1a7c-47ca-b7c9-fc639f47790a");
 		List<ParticipantsDTO> participantsList = new ArrayList<>();
-		ParticipantsDTO participant1 = buildParticipant("PAYMENT_MANAGER","DNI", "46716129","LEGAL", true);
-		ParticipantsDTO participant3 = buildParticipant("INSURED","DNI", "00002023","LEGAL",false);
+		ParticipantsDTO participant1 = buildParticipant("PAYMENT_MANAGER","DNI", "78394872","NATURAL",true);
+		ParticipantsDTO participant2 = buildParticipant("INSURED","DNI", "78394872","NATURAL",true);
 		participantsList.add(participant1);
-		participantsList.add(participant3);
+		participantsList.add(participant2);
 		requestBody.setParticipants(participantsList);
 		return requestBody;
 	}
 
-	public static InputParticipantsDTO getMockRequestBodyValidateLegalParticipantsOne(){
-		InputParticipantsDTO requestBody = new InputParticipantsDTO();
+	public static InputParticipantsDTO getMockRequestBodyValidateNaturalParticipantsLifeCase2(){
+        InputParticipantsDTO requestBody = new InputParticipantsDTO();
 		requestBody.setQuotationId("0123489304");
 		requestBody.setChannelId("PC");
 		requestBody.setTraceId("c05ed2bd-1a7c-47ca-b7c9-fc639f47790a");
 		List<ParticipantsDTO> participantsList = new ArrayList<>();
-		ParticipantsDTO participant1 = buildParticipant("PAYMENT_MANAGER","DNI", "46716129","LEGAL", true);
+		ParticipantsDTO participant1 = buildParticipant("PAYMENT_MANAGER","DNI", "78394872","NATURAL",true);
 		participantsList.add(participant1);
 		requestBody.setParticipants(participantsList);
 		return requestBody;
 	}
+
+
+    
+    public static InputParticipantsDTO getMockRequestBodyValidateLegalParticipantsTwo(){
+        InputParticipantsDTO requestBody = new InputParticipantsDTO();
+        requestBody.setQuotationId("0123489304");
+        requestBody.setChannelId("PC");
+        requestBody.setTraceId("c05ed2bd-1a7c-47ca-b7c9-fc639f47790a");
+        List<ParticipantsDTO> participantsList = new ArrayList<>();
+        ParticipantsDTO participant1 = buildParticipant("PAYMENT_MANAGER","DNI", "46716129","LEGAL", true);
+        ParticipantsDTO participant3 = buildParticipant("INSURED","DNI", "00002023","LEGAL",false);
+        participantsList.add(participant1);
+        participantsList.add(participant3);
+        requestBody.setParticipants(participantsList);
+        return requestBody;
+    }
+
+    public static InputParticipantsDTO getMockRequestBodyValidateLegalParticipantsOne(){
+        InputParticipantsDTO requestBody = new InputParticipantsDTO();
+        requestBody.setQuotationId("0123489304");
+        requestBody.setChannelId("PC");
+        requestBody.setTraceId("c05ed2bd-1a7c-47ca-b7c9-fc639f47790a");
+        List<ParticipantsDTO> participantsList = new ArrayList<>();
+        ParticipantsDTO participant1 = buildParticipant("PAYMENT_MANAGER","DNI", "46716129","LEGAL", true);
+        participantsList.add(participant1);
+        requestBody.setParticipants(participantsList);
+        return requestBody;
+    }
 
 	public static ParticipantsDTO buildParticipant(String typePerson, String typeDocument, String documentNumber, String personType, boolean isClient){
 		ParticipantsDTO participant = new ParticipantsDTO();

@@ -1,6 +1,7 @@
 package com.bbva.rbvd.lib.r041.pattern.decorator.products;
 
 import com.bbva.elara.configuration.manager.application.ApplicationConfigurationService;
+import com.bbva.pisd.dto.insurancedao.join.QuotationJoinCustomerInformationDTO;
 import com.bbva.rbvd.dto.insrncsale.bo.emision.AgregarTerceroBO;
 import com.bbva.rbvd.dto.participant.request.InputParticipantsDTO;
 import com.bbva.rbvd.lib.r041.business.impl.ThirdDynamicLifeBusinessImpl;
@@ -13,7 +14,7 @@ import com.bbva.rbvd.lib.r041.util.ConstantsUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ValidateDynamicLife extends ValidateDecorator {
+public class InsuranceProductVidaDinamico extends InsuranceProductDecorator {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ValidateDynamicLife.class);
     public ValidateDynamicLife(PreParticipantValidations preValidate, PostParticipantValidations postValidate) {
@@ -30,7 +31,7 @@ public class ValidateDynamicLife extends ValidateDecorator {
         AgregarTerceroBO requestRimac = thirdDynamicLifeBusiness.doDynamicLife(payloadConfig);
         LOGGER.info("** start - request Rimac {} **",requestRimac);
 
-        //end
+//end
         AgregarTerceroBO responseRimac = this.getPostValidate().end(requestRimac,payloadConfig.getQuotationId(), ConstantsUtil.Product.DYNAMIC_LIFE.getCode(),payloadConfig.getInput().getTraceId());
 
         return PayloadStore.Builder.an()
@@ -60,8 +61,8 @@ public class ValidateDynamicLife extends ValidateDecorator {
         }
 
 
-        public ValidateDynamicLife build() {
-            return new ValidateDynamicLife(preValidate, postValidate);
+        public InsuranceProductVidaDinamico build() {
+            return new InsuranceProductVidaDinamico(preValidate, postValidate);
         }
     }
 }

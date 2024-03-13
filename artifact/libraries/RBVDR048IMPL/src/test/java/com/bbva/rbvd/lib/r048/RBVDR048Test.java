@@ -100,6 +100,7 @@ public class RBVDR048Test {
 			Advised advised = (Advised) this.rbvdR048;
 			result = advised.getTargetSource().getTarget();
 		}
+
 		return result;
 	}
 

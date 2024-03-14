@@ -1,6 +1,5 @@
 package com.bbva.rbvd.lib.r041.service.api;
 
-import com.bbva.apx.exception.business.BusinessException;
 import com.bbva.pbtq.dto.validatedocument.response.host.pewu.PEWUResponse;
 import com.bbva.rbvd.lib.r048.RBVDR048;
 import com.bbva.rbvd.dto.insrncsale.aso.listbusinesses.ListBusinessesASO;
@@ -27,7 +26,7 @@ public class ConsumerInternalService {
         LOGGER.info("***** ConsumerInternalService - executeGetCustomerService Start *****");
         LOGGER.info("***** ConsumerInternalService - executeGetCustomerService numDoc {} *****", documentNumber);
         LOGGER.info("***** ConsumerInternalService - executeGetCustomerService typeDoc {} *****", documentType);
-        return rbvdr048.executeGetCustomerService(documentNumber, documentType);
+        return rbvdr048.executeGetCustomerByDocType(documentNumber, documentType);
     }
 
    public Map<String,Object> getDataInsuredBD(String quotationId,String productId,String planId){
@@ -39,9 +38,9 @@ public class ConsumerInternalService {
         LOGGER.info("***** ConsumerInternalService - getDataInsuredBD quotationId {}",quotationId);
         return rbvdr048.executeGetProducAndPlanByQuotation(quotationId);
     }
-        public ListBusinessesASO executeListBusinessService(String encryptedCustomerId){
-            LOGGER.info("***** RBVDR041Impl - executeListBusinessService Start *****");
-            return rbvdr048.executeListBusiness(encryptedCustomerId);
-        }
+    public ListBusinessesASO executeListBusinessService(String encryptedCustomerId){
+        LOGGER.info("***** RBVDR041Impl - executeListBusinessService Start *****");
+        return rbvdr048.executeListBusiness(encryptedCustomerId);
+    }
 }
 

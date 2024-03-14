@@ -7,7 +7,7 @@ import com.bbva.pisd.dto.insurancedao.join.QuotationJoinCustomerInformationDTO;
 import com.bbva.pisd.lib.r012.PISDR012;
 import com.bbva.pisd.lib.r601.PISDR601;
 import com.bbva.rbvd.dto.insrncsale.aso.listbusinesses.ListBusinessesASO;
-import com.bbva.rbvd.dto.validateparticipant.constants.RBVDInternalConstants;
+import com.bbva.rbvd.dto.participant.constants.RBVDInternalConstants;
 import com.bbva.rbvd.dto.validateparticipant.dto.RolDTO;
 import com.bbva.rbvd.dto.validateparticipant.utils.TypeErrorControllerEnum;
 import com.bbva.rbvd.dto.validateparticipant.utils.ValidateParticipantErrors;
@@ -103,10 +103,10 @@ public class ValidationParameter implements PreParticipantValidations {
             String documentTypeHost = applicationConfigurationService.getProperty(part.getDocumentType());
             part.getParticipantList().forEach(p -> p.getIdentityDocuments().get(0).getDocumentType().setId(documentTypeHost));
             if(ValidationUtil.isBBVAClient(part.getParticipantList().get(0).getPerson().getCustomerId())){
-                PayloadProperties payloadProperties = new PayloadProperties();
-                payloadProperties.setDocumetType(documentTypeHost);
+                PayloadCustomer payloadProperties = new PayloadCustomer();
+                payloadProperties.setDocumentType(documentTypeHost);
                 payloadProperties.setCustomerId(part.getParticipantList().get(0).getPerson().getCustomerId());
-                payloadProperties.setDocumetNumber(part.getDocumentNumber());
+                payloadProperties.setDocumentNumber(part.getDocumentNumber());
                 PEWUResponse customer = executeGetCustomer(documentTypeHost,part.getDocumentNumber());
                 payloadProperties.setCustomer(customer);
 
@@ -117,8 +117,8 @@ public class ValidationParameter implements PreParticipantValidations {
                 payloadPropertiesList.add(payloadProperties);
             }else{
                 PayloadCustomer payloadPropertiesNonCustomer = new PayloadCustomer();
-                payloadPropertiesNonCustomer.setDocumetType(documentTypeHost);
-                payloadPropertiesNonCustomer.setDocumetNumber(part.getDocumentNumber());
+                payloadPropertiesNonCustomer.setDocumentType(documentTypeHost);
+                payloadPropertiesNonCustomer.setDocumentNumber(part.getDocumentNumber());
                 payloadPropertiesList.add(payloadPropertiesNonCustomer);
             }
 
@@ -146,7 +146,7 @@ public class ValidationParameter implements PreParticipantValidations {
         }
     }
 
-    public PEWUResponse executeGetCustomer(String documentNumber,String documentType){
+    private PEWUResponse executeGetCustomer(String documentNumber,String documentType){
         ConsumerInternalService consumerInternalService = new ConsumerInternalService(rbvdr048);
         return consumerInternalService.executeGetCustomerServiceByDocType(documentNumber,documentType);
     }
@@ -166,7 +166,7 @@ public class ValidationParameter implements PreParticipantValidations {
         String encryptedCustomerId = consumerInternalService.executeKsmkCryptographyService(customerId);
         return consumerInternalService.executeListBusinessService(encryptedCustomerId);
     }
-    public  List<ParticipantGroupDTO> groupByDocumentNumberAndDocumentType(ValidateParticipantDTO participant){
+    public  List<ParticipantGroupDTO> groupByDocumentNumberAndDocumentType(InputParticipantsDTO participant){
         List<ParticipantGroupDTO> groupParticipants = new ArrayList<>();
         IntStream.range(0,participant.getParticipants().size()).forEach(i ->{
             ParticipantsDTO participantPrimary = participant.getParticipants().get(i);

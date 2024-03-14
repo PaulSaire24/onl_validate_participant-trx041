@@ -138,7 +138,7 @@ public class RBVDR048Test {
 
 		when(this.externalApiConnector.exchange(anyString(), anyObject(),anyObject(), (Class<AgregarTerceroBO>) any(), anyMap())).thenReturn(new ResponseEntity<>(response, HttpStatus.OK));
 		when(this.applicationConfigurationService.getProperty(anyString())).thenReturn("https://apitest.rimac.com/api-vida/V1/cotizaciones/{cotizacion}/persona-agregar");
-		AgregarTerceroBO validation = this.rbvdR048.executeAddParticipantsDynamicLife(agregarTerceroBO,"quotationId","840","traceId");
+		AgregarTerceroBO validation = this.rbvdR048.executeAddParticipants(agregarTerceroBO,"quotationId","840","traceId");
 
 		assertNotNull(validation);
 		assertNotNull(validation.getPayload());

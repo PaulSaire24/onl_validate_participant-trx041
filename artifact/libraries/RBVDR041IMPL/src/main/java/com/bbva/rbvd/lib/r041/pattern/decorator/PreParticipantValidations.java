@@ -9,6 +9,7 @@ import com.bbva.rbvd.lib.r041.transfer.PayloadConfig;
 public interface PreParticipantValidations {
 
     PayloadConfig getConfig(InputParticipantsDTO input, ApplicationConfigurationService applicationConfigurationService);
+    PayloadConfig getConfig(InputParticipantsDTO input,ApplicationConfigurationService applicationConfigurationService, QuotationJoinCustomerInformationDTO quotationInformation, String personType);
     QuotationJoinCustomerInformationDTO getCustomerBasicInformation(String quotationId);
 
 }

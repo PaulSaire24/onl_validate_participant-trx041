@@ -33,7 +33,7 @@ public class ValidationUtil {
     }
 
     public static String validateAllVia(String via){
-        return !org.apache.cxf.common.util.StringUtils.isEmpty(via)?via:"N/A";
+        return !StringUtils.isEmpty(via)?via:"N/A";
     }
 
 }

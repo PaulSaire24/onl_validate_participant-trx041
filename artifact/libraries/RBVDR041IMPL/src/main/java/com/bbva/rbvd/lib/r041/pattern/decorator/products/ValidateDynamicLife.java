@@ -14,7 +14,7 @@ import com.bbva.rbvd.lib.r041.util.ConstantsUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class InsuranceProductVidaDinamico extends InsuranceProductDecorator {
+public class ValidateDynamicLife extends ValidateDecorator {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ValidateDynamicLife.class);
     public ValidateDynamicLife(PreParticipantValidations preValidate, PostParticipantValidations postValidate) {
@@ -22,16 +22,16 @@ public class InsuranceProductVidaDinamico extends InsuranceProductDecorator {
     }
 
     @Override
-    public PayloadStore start(InputParticipantsDTO input, String quotationId, ApplicationConfigurationService applicationConfigurationService) {
+    public PayloadStore start(InputParticipantsDTO input, QuotationJoinCustomerInformationDTO quotationInformation, ApplicationConfigurationService applicationConfigurationService) {
 
         PayloadConfig payloadConfig = this.getPreValidate().getConfig(input,applicationConfigurationService);
-        payloadConfig.setQuotationId(quotationId);
+        payloadConfig.setQuotationId(quotationInformation.getQuotation().getInsuranceCompanyQuotaId());
         LOGGER.info("** start - PayloadConfig {} **",payloadConfig);
         ThirdDynamicLifeBusinessImpl thirdDynamicLifeBusiness = new ThirdDynamicLifeBusinessImpl();
         AgregarTerceroBO requestRimac = thirdDynamicLifeBusiness.doDynamicLife(payloadConfig);
         LOGGER.info("** start - request Rimac {} **",requestRimac);
 
-//end
+        //end
         AgregarTerceroBO responseRimac = this.getPostValidate().end(requestRimac,payloadConfig.getQuotationId(), ConstantsUtil.Product.DYNAMIC_LIFE.getCode(),payloadConfig.getInput().getTraceId());
 
         return PayloadStore.Builder.an()
@@ -45,7 +45,6 @@ public class InsuranceProductVidaDinamico extends InsuranceProductDecorator {
 
         private Builder() {
         }
-
         public static Builder an() {
             return new Builder();
         }
@@ -54,15 +53,12 @@ public class InsuranceProductVidaDinamico extends InsuranceProductDecorator {
             this.preValidate = preValidate;
             return this;
         }
-
         public Builder postValidate(PostParticipantValidations postValidate) {
             this.postValidate = postValidate;
             return this;
         }
-
-
-        public InsuranceProductVidaDinamico build() {
-            return new InsuranceProductVidaDinamico(preValidate, postValidate);
+        public ValidateDynamicLife build() {
+            return new ValidateDynamicLife(preValidate, postValidate);
         }
     }
 }

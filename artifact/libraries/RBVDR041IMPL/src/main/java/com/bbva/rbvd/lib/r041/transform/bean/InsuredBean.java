@@ -11,44 +11,66 @@ import java.util.List;
 import java.util.Map;
 
 public class InsuredBean {
-    public static void builRolInsured(List<PersonaBO> personaList, List<ParticipantsDTO> participants,Map<String,Object> dataInsured){
+    public static void builRolInsured(List<PersonaBO> personaList, List<ParticipantsDTO> participants, Map<String,Object> dataInsured){
         PersonaBO personManager = personaList.get(0);
-        ParticipantsDTO participans = participants.size()==1?participants.get(0):participants.size()==2?participants.get(1):participants.get(2);
         PersonaBO personaInsured = new PersonaBO();
+        if(participants.size()==1){
+            personaInsured.setNombres(personManager.getNombres());
+            personaInsured.setApePaterno(personManager.getApePaterno());
+            personaInsured.setApeMaterno(personManager.getApeMaterno());
+            personaInsured.setTipoDocumento(personManager.getTipoDocumento());
+            personaInsured.setNroDocumento(personManager.getNroDocumento());
+            personaInsured.setFechaNacimiento(personManager.getFechaNacimiento());
+            personaInsured.setSexo(personManager.getSexo());
+            personaInsured.setCorreoElectronico(personManager.getCorreoElectronico());
+            personaInsured.setRol(ConstantsUtil.Rol.INSURED.getValue());
+            personaInsured.setCelular(personManager.getCelular());
 
-        String apellidos = (String) dataInsured.get(LifeInsuranceInsuredData.FIELD_CLIENT_LAST_NAME);
-        String apPaterno="";
-        String apMaterno="";
+            personaInsured.setTipoVia(personManager.getTipoVia());
+            personaInsured.setNombreVia(personManager.getNombreVia());
+            personaInsured.setNumeroVia(personManager.getNumeroVia());
+            personaInsured.setDistrito(personManager.getDistrito());
+            personaInsured.setProvincia(personManager.getProvincia());
+            personaInsured.setDepartamento(personManager.getDepartamento());
+            personaInsured.setDireccion(personManager.getDireccion());
 
-        if(StringUtils.isNotEmpty(apellidos)){
-            int index = apellidos.indexOf(ConstantsUtil.Delimeter.VERTICAL_BAR);
-            apPaterno = apellidos.substring(ConstantsUtil.Number.CERO,index);
-            apMaterno = apellidos.substring(index+ConstantsUtil.Number.UNO);
+        }else{
+            String apellidos = (String) dataInsured.get(LifeInsuranceInsuredData.FIELD_CLIENT_LAST_NAME);
+            String apPaterno="";
+            String apMaterno="";
+
+            if(StringUtils.isNotEmpty(apellidos)){
+                int index = apellidos.indexOf(ConstantsUtil.Delimeter.VERTICAL_BAR);
+                apPaterno = apellidos.substring(ConstantsUtil.Number.CERO,index);
+                apMaterno = apellidos.substring(index+ConstantsUtil.Number.UNO);
+            }
+            String fechaNacimiento = String.valueOf(dataInsured.get(LifeInsuranceInsuredData.FIELD_CUSTOMER_BIRTH_DATE));
+            if(StringUtils.isNotEmpty(fechaNacimiento)){
+                fechaNacimiento = fechaNacimiento.substring(ConstantsUtil.Number.CERO,ConstantsUtil.Number.DIEZ);
+            }
+
+            personaInsured.setNombres((String) dataInsured.get(LifeInsuranceInsuredData.FIELD_INSURED_CUSTOMER_NAME));
+            personaInsured.setApePaterno(apPaterno);
+            personaInsured.setApeMaterno(apMaterno);
+
+            personaInsured.setTipoDocumento((String) dataInsured.get("CUSTOMER_DOCUMENT_TYPE"));
+            personaInsured.setNroDocumento((String) dataInsured.get("PERSONAL_ID"));
+
+            personaInsured.setFechaNacimiento(fechaNacimiento);
+            personaInsured.setSexo((String) dataInsured.get(LifeInsuranceInsuredData.FIELD_GENDER_ID));
+            personaInsured.setCorreoElectronico((String) dataInsured.get(LifeInsuranceInsuredData.FIELD_USER_EMAIL_PERSONAL_DESC));
+            personaInsured.setRol(ConstantsUtil.Rol.INSURED.getValue());
+            personaInsured.setCelular((String) dataInsured.get(LifeInsuranceInsuredData.FIELD_PHONE_ID));
+
+            personaInsured.setTipoVia(ValidationUtil.validateAllVia(personManager.getTipoVia()));
+            personaInsured.setNombreVia(ValidationUtil.validateAllVia(personManager.getNombreVia()));
+            personaInsured.setNumeroVia(ValidationUtil.validateAllVia(personManager.getNumeroVia()));
+
+            personaInsured.setDistrito(personManager.getDistrito());
+            personaInsured.setProvincia(personManager.getProvincia());
+            personaInsured.setDepartamento(personManager.getDepartamento());
+            personaInsured.setDireccion(personManager.getDireccion());
         }
-        String fechaNacimiento = String.valueOf(dataInsured.get(LifeInsuranceInsuredData.FIELD_CUSTOMER_BIRTH_DATE));
-        if(StringUtils.isNotEmpty(fechaNacimiento)){
-            fechaNacimiento = fechaNacimiento.substring(ConstantsUtil.Number.CERO,ConstantsUtil.Number.DIEZ);
-        }
-
-        personaInsured.setNombres((String) dataInsured.get(LifeInsuranceInsuredData.FIELD_INSURED_CUSTOMER_NAME));
-        personaInsured.setApePaterno(apPaterno);
-        personaInsured.setApeMaterno(apMaterno);
-        personaInsured.setTipoDocumento(participans.getIdentityDocuments().get(0).getDocumentType().getId());
-        personaInsured.setNroDocumento(participans.getIdentityDocuments().get(0).getValue());
-        personaInsured.setFechaNacimiento(fechaNacimiento);
-        personaInsured.setSexo((String) dataInsured.get(LifeInsuranceInsuredData.FIELD_GENDER_ID));
-        personaInsured.setCorreoElectronico((String) dataInsured.get(LifeInsuranceInsuredData.FIELD_USER_EMAIL_PERSONAL_DESC));
-        personaInsured.setRol(ConstantsUtil.Rol.INSURED.getValue());
-        personaInsured.setCelular((String) dataInsured.get(LifeInsuranceInsuredData.FIELD_PHONE_ID));
-
-        personaInsured.setTipoVia(ValidationUtil.validateAllVia(personManager.getTipoVia()));
-        personaInsured.setNombreVia(ValidationUtil.validateAllVia(personManager.getNombreVia()));
-        personaInsured.setNumeroVia(ValidationUtil.validateAllVia(personManager.getNumeroVia()));
-
-        personaInsured.setDistrito(personManager.getDistrito());
-        personaInsured.setProvincia(personManager.getProvincia());
-        personaInsured.setDepartamento(personManager.getDepartamento());
-        personaInsured.setDireccion(personManager.getDireccion());
 
         personaList.add(personaInsured);
     }

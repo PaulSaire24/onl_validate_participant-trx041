@@ -31,13 +31,12 @@ public class ThirdDynamicLifeBusinessImpl implements IThirdDynamicLifeBusiness {
         List<PayloadCustomer> participantsPewuList = payloadConfig.getProperties();
 
         List<PersonaBO> personaList = new ArrayList<>();
-        participantsInputList.forEach(partInput->
-                participantsPewuList.forEach(parPewu->{
-                    if(parPewu.getDocumentType().equalsIgnoreCase(partInput.getIdentityDocuments().get(0).getDocumentType().getId())
-                            && parPewu.getDocumentNumber().equalsIgnoreCase(partInput.getIdentityDocuments().get(0).getValue())){
-                        personaList.add(PersonaBean.mapInRequestRimacDynamicLife(partInput,parPewu));
-                    }
-                }));
+        participantsInputList.forEach(partInput-> participantsPewuList.stream()
+                .filter(parPewu -> parPewu.getDocumentType().equalsIgnoreCase(partInput.getIdentityDocuments().get(0).getDocumentType().getId())
+                        && parPewu.getDocumentNumber().equalsIgnoreCase(partInput.getIdentityDocuments().get(0).getValue()))
+                .findFirst()
+                .ifPresent(parPewu -> personaList.add(PersonaBean.mapInRequestRimacDynamicLife(partInput, parPewu))));
+        LOGGER.info("** doDynamicLife - personaList -> {}",personaList);
 
         if(personaList.size()==1 && Objects.nonNull(personaList.get(0))){
             ContractorBean.builRolContractor(personaList);

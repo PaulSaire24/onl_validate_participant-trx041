@@ -16,23 +16,24 @@ import org.slf4j.LoggerFactory;
 public class RBVDR041Impl extends RBVDR041Abstract {
 	private static final Logger LOGGER = LoggerFactory.getLogger(RBVDR041Impl.class);
     private ParticipantProperties participantProperties;
-	@Override
+
+    @Override
     public AgregarTerceroBO executeValidateAddParticipant(InputParticipantsDTO input) {
-		LOGGER.info(" :: executeValidateAddParticipant :: START");
-		LOGGER.info(" :: executeValidateAddParticipant :: ValidateParticipant :: {}",input);
+        LOGGER.info(" :: executeValidateAddParticipant :: START");
+        LOGGER.info(" :: executeValidateAddParticipant :: ValidateParticipant :: {}",input);
 
         try{
-        String personType = input.getParticipants().get(0).getPerson().getPersonType();
-        LOGGER.info("** validateAllParticipantsByIndicatedType :: Person type {} ", personType);
-        ValidationUtil.validateAllParticipantsByIndicatedType(input.getParticipants(), personType);
-        ValidationParameter validationParameter = new ValidationParameter(pisdR601, pisdR012, rbvdR048, participantProperties);
-		QuotationJoinCustomerInformationDTO quotationInformation = validationParameter.getCustomerBasicInformation(input.getQuotationId());
-		LOGGER.info(" :: executeValidateAddParticipant :: productId -> {}",quotationInformation.getInsuranceProduct().getInsuranceProductType());
-        ParticipantValidations validate = FactoryProductValidate.getProductType(quotationInformation.getInsuranceProduct().getInsuranceProductType(),rbvdR048,validationParameter);
-		LOGGER.info(" :: executeValidateAddParticipant :: quotationId -> {}",quotationInformation.getQuotation().getInsuranceCompanyQuotaId());
-		PayloadStore payloadStore = validate.start(input,quotationInformation,this.applicationConfigurationService);
-		LOGGER.info(" :: executeValidateAddParticipant :: PayloadStore -> {}",payloadStore);
-		return payloadStore.getResponseRimac();
+            String personType = input.getParticipants().get(0).getPerson().getPersonType();
+            LOGGER.info("** validateAllParticipantsByIndicatedType :: Person type {} ", personType);
+            ValidationUtil.validateAllParticipantsByIndicatedType(input.getParticipants(), personType);
+            ValidationParameter validationParameter = new ValidationParameter(pisdR601, pisdR012, rbvdR048, participantProperties);
+            QuotationJoinCustomerInformationDTO quotationInformation = validationParameter.getCustomerBasicInformation(input.getQuotationId());
+            LOGGER.info(" :: executeValidateAddParticipant :: productId -> {}",quotationInformation.getInsuranceProduct().getInsuranceProductType());
+            ParticipantValidations validate = FactoryProductValidate.getProductType(quotationInformation.getInsuranceProduct().getInsuranceProductType(),rbvdR048,validationParameter);
+            LOGGER.info(" :: executeValidateAddParticipant :: quotationId -> {}",quotationInformation.getQuotation().getInsuranceCompanyQuotaId());
+            PayloadStore payloadStore = validate.start(input,quotationInformation,this.applicationConfigurationService);
+            LOGGER.info(" :: executeValidateAddParticipant :: PayloadStore -> {}",payloadStore);
+            return payloadStore.getResponseRimac();
         }catch (BusinessException businessException){
             this.addAdviceWithDescription(businessException.getAdviceCode(),businessException.getMessage());
             return null;
@@ -42,5 +43,4 @@ public class RBVDR041Impl extends RBVDR041Abstract {
     public void setParticipantProperties(ParticipantProperties participantProperties) {
         this.participantProperties = participantProperties;
     }
-
 }

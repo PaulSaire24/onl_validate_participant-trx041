@@ -2,7 +2,6 @@ package com.bbva.rbvd.lib.r041.transfer;
 
 import com.bbva.rbvd.dto.participant.request.InputParticipantsDTO;
 import com.bbva.pisd.dto.insurancedao.join.QuotationJoinCustomerInformationDTO;
-import com.bbva.rbvd.dto.validateparticipant.dto.RolDTO;
 import com.bbva.rbvd.lib.r041.properties.ParticipantProperties;
 import com.bbva.rbvd.dto.participant.mapper.RolDTO;
 

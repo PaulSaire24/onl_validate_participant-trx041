@@ -4,18 +4,14 @@ import com.bbva.apx.exception.business.BusinessException;
 import com.bbva.elara.configuration.manager.application.ApplicationConfigurationService;
 import com.bbva.elara.domain.transaction.Context;
 import com.bbva.elara.domain.transaction.ThreadContext;
-import javax.annotation.Resource;
-
 import com.bbva.pisd.dto.insurancedao.constants.PISDInsuranceErrors;
 import com.bbva.pisd.dto.insurancedao.entities.InsuranceProductEntity;
 import com.bbva.pisd.dto.insurancedao.entities.QuotationEntity;
 import com.bbva.pisd.dto.insurancedao.join.QuotationJoinCustomerInformationDTO;
-
 import com.bbva.pisd.lib.r012.PISDR012;
 import com.bbva.pisd.lib.r601.PISDR601;
 import com.bbva.rbvd.dto.insrncsale.bo.emision.AgregarTerceroBO;
 import com.bbva.rbvd.dto.insrncsale.bo.emision.PayloadAgregarTerceroBO;
-import com.bbva.rbvd.dto.participant.request.ParticipantsDTO;
 import com.bbva.rbvd.dto.participant.request.InputParticipantsDTO;
 import com.bbva.rbvd.lib.r048.RBVDR048;
 import com.bbva.rbvd.util.ParticipantsUtil;
@@ -31,16 +27,15 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import javax.annotation.Resource;
 import java.math.BigDecimal;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Map;
 import java.util.HashMap;
+import java.util.Map;
 
 import static org.junit.Assert.assertNull;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.anyObject;
 import static org.mockito.Matchers.anyMap;
-import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.when;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -135,7 +130,7 @@ public class RBVDR041Test {
         responseData.put("INSURANCE_PRODUCT_ID",new BigDecimal(21));
         responseData.put("INSURANCE_MODALITY_TYPE","02");
 
-        InputParticipantsDTO request = getMockRequestBodyValidateLegalParticipants();
+        InputParticipantsDTO request = ParticipantsUtil.getMockRequestBodyValidateLegalParticipants();
         when(this.applicationConfigurationService.getProperty(anyString())).thenReturn("L");
         when(pisdr601.executeFindQuotationJoinByPolicyQuotaInternalId(anyString())).thenReturn(quotationJoinCustomerInformation);
         when(rbvdr048.executeAddParticipants(anyObject(),anyString(),anyString(),anyString())).thenReturn(new AgregarTerceroBO());
@@ -356,21 +351,6 @@ public class RBVDR041Test {
         assertNull(response.getPayload());
     }
 
-    public static InputParticipantsDTO getMockRequestBodyValidateLegalParticipants(){
-        InputParticipantsDTO requestBody = new InputParticipantsDTO();
-        requestBody.setQuotationId("0123489304");
-        requestBody.setChannelId("PC");
-        requestBody.setTraceId("c05ed2bd-1a7c-47ca-b7c9-fc639f47790a");
-        List<ParticipantsDTO> participantsList = new ArrayList<>();
-        ParticipantsDTO participant1 = ParticipantsUtil.buildParticipant("PAYMENT_MANAGER","DNI", "46716129","LEGAL", true);
-        ParticipantsDTO participant2 = ParticipantsUtil.buildParticipant("CONTRACTOR","DNI", "45093558","LEGAL", true);
-        ParticipantsDTO participant3 = ParticipantsUtil.buildParticipant("INSURED","DNI", "00002023","LEGAL",false);
-        participantsList.add(participant1);
-        participantsList.add(participant2);
-        participantsList.add(participant3);
-        requestBody.setParticipants(participantsList);
-        return requestBody;
-    }
 	@Test
 	public void executeValidationWithWrongClientQuotationId(){
 		when(pisdr601.executeFindQuotationJoinByPolicyQuotaInternalId(anyString())).thenReturn(ParticipantsUtil.buildFindQuotationJoinByPolicyQuotaInternalId("20123453922"));

@@ -11,8 +11,8 @@ import com.bbva.rbvd.dto.insrncsale.aso.listbusinesses.ListBusinessesASO;
 import com.bbva.rbvd.dto.insrncsale.bo.emision.AgregarTerceroBO;
 import com.bbva.rbvd.dto.insuranceroyal.error.ErrorRequestDTO;
 import com.bbva.rbvd.dto.insuranceroyal.error.ErrorResponseDTO;
-import com.bbva.rbvd.lib.r048.impl.util.TypeErrorControllerEnum;
-import com.bbva.rbvd.lib.r048.impl.util.ValidateParticipantErrors;
+import com.bbva.rbvd.dto.participant.utils.TypeErrorControllerEnum;
+import com.bbva.rbvd.dto.participant.utils.ValidateParticipantErrors;
 import com.bbva.rbvd.lib.r048.impl.util.Constans;
 import com.bbva.rbvd.lib.r048.impl.util.JsonHelper;
 import com.bbva.rbvd.lib.r048.impl.util.RimacUrlForker;
@@ -40,7 +40,11 @@ import static java.util.Collections.singletonMap;
 public class RBVDR048Impl extends RBVDR048Abstract {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(RBVDR048Impl.class);
-
+    private static final String APP_NAME = "apx-pe";
+    private static final String OAUTH_TOKEN = "";
+    private static final String CRE_EXTRA_PARAMS = "user=KSMK;country=PE";
+    private static final String INPUT_TEXT_SECURITY = "operation=DO;type=fpextff1;origin=ASO;endpoint=ASO;securityLevel=5";
+    private static final String B64URL = "B64URL";
 	@Override
 	public AgregarTerceroBO executeAddParticipants(AgregarTerceroBO requestBody, String quotationId, String productId, String traceId) {
 

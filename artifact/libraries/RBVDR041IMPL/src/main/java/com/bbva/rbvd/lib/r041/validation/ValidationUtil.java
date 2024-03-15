@@ -1,9 +1,9 @@
 package com.bbva.rbvd.lib.r041.validation;
 
 import com.bbva.apx.exception.business.BusinessException;
-import com.bbva.rbvd.dto.validateparticipant.dto.RolDTO;
-import com.bbva.rbvd.dto.validateparticipant.utils.TypeErrorControllerEnum;
-import com.bbva.rbvd.dto.validateparticipant.utils.ValidateParticipantErrors;
+import com.bbva.rbvd.dto.participant.mapper.RolDTO;
+import com.bbva.rbvd.dto.participant.utils.TypeErrorControllerEnum;
+import com.bbva.rbvd.dto.participant.utils.ValidateParticipantErrors;
 import com.bbva.rbvd.lib.r041.properties.ParticipantProperties;
 import com.bbva.rbvd.dto.participant.request.ParticipantsDTO;
 import com.bbva.rbvd.lib.r041.util.ConstantsUtil;

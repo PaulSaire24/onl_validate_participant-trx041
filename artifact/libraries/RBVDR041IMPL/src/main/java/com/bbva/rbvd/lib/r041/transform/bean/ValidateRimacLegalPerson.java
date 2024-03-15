@@ -6,8 +6,8 @@ import com.bbva.rbvd.dto.insrncsale.aso.FormationASO;
 import com.bbva.rbvd.dto.insrncsale.aso.listbusinesses.BusinessASO;
 import com.bbva.rbvd.dto.insrncsale.bo.emision.OrganizacionBO;
 import com.bbva.rbvd.dto.insrncsale.bo.emision.PersonaBO;
-import com.bbva.rbvd.dto.insurance.commons.ContactDetailsDTO;
-import com.bbva.rbvd.dto.insurance.commons.ParticipantsDTO;
+import com.bbva.rbvd.dto.participant.request.ContactDetailsDTO;
+import com.bbva.rbvd.dto.participant.request.ParticipantsDTO;
 import com.bbva.rbvd.lib.r041.util.FunctionUtils;
 import org.apache.commons.lang3.StringUtils;
 

@@ -4,17 +4,17 @@ import com.bbva.rbvd.dto.insrncsale.bo.emision.AgregarTerceroBO;
 import com.bbva.rbvd.dto.insrncsale.bo.emision.OrganizacionBO;
 import com.bbva.rbvd.dto.insrncsale.bo.emision.PayloadAgregarTerceroBO;
 import com.bbva.rbvd.dto.insrncsale.bo.emision.PersonaBO;
-import com.bbva.rbvd.dto.insurance.commons.ParticipantsDTO;
-import static com.bbva.rbvd.dto.validateparticipant.constants.RBVDInternalConstants.ParticipantType;
+import com.bbva.rbvd.dto.participant.request.ParticipantsDTO;
+import com.bbva.rbvd.dto.participant.constants.RBVDInternalConstants.ParticipantType;
 
-import com.bbva.rbvd.dto.validateparticipant.constants.RBVDInternalConstants;
-import com.bbva.rbvd.dto.validateparticipant.dto.RolDTO;
+import com.bbva.rbvd.dto.participant.constants.RBVDInternalConstants;
+import com.bbva.rbvd.dto.participant.mapper.RolDTO;
 import com.bbva.rbvd.lib.r041.business.INonLifeProductBusiness;
 import com.bbva.rbvd.lib.r041.pattern.factory.Participant;
 import com.bbva.rbvd.lib.r041.pattern.factory.ParticipantFactory;
-import com.bbva.rbvd.lib.r041.pattern.factory.ProductFactory;
+import com.bbva.rbvd.lib.r041.pattern.factory.FactoryProductValidate;
 import com.bbva.rbvd.lib.r041.transfer.PayloadConfig;
-import com.bbva.rbvd.lib.r041.transfer.PayloadProperties;
+import com.bbva.rbvd.lib.r041.transfer.PayloadCustomer;
 import com.bbva.rbvd.lib.r041.transform.bean.ValidateRimacLegalPerson;
 import com.bbva.rbvd.lib.r041.transform.bean.ValidateRimacNaturalPerson;
 import com.bbva.rbvd.lib.r041.validation.ValidationUtil;
@@ -29,7 +29,7 @@ public class NonLifeProductBusinessImpl implements INonLifeProductBusiness {
         AgregarTerceroBO requestCompany = new AgregarTerceroBO();
         PayloadAgregarTerceroBO addTerceroByCompany = new PayloadAgregarTerceroBO();
         List<ParticipantsDTO> participantsInputList = payloadConfig.getInput().getParticipants();//input de la trx
-        List<PayloadProperties> participantsPropertiesList = payloadConfig.getProperties();//properties agrupadas
+        List<PayloadCustomer> participantsPropertiesList = payloadConfig.getProperties();//properties agrupadas
         List<RolDTO> selectedRoles = payloadConfig.getRegisteredRolesDB();//roles
 
         if(RBVDInternalConstants.TypeParticipant.NATURAL.toString().equalsIgnoreCase(payloadConfig.getPersonType())){
@@ -47,7 +47,7 @@ public class NonLifeProductBusinessImpl implements INonLifeProductBusiness {
                 }));
             addTerceroByCompany.setPersona(personaList);
             requestCompany.setPayload(addTerceroByCompany);
-            ProductFactory.enrichPayloadByProduct(addTerceroByCompany,payloadConfig.getQuotationInformation());
+            FactoryProductValidate.enrichPayloadByProduct(addTerceroByCompany,payloadConfig.getQuotationInformation());
         }else{
 
             List<OrganizacionBO> organizacionList = new ArrayList<>();
@@ -62,14 +62,14 @@ public class NonLifeProductBusinessImpl implements INonLifeProductBusiness {
                 }));
             addTerceroByCompany.setOrganizacion(organizacionList);
             requestCompany.setPayload(addTerceroByCompany);
-            ProductFactory.enrichPayloadByProduct(addTerceroByCompany,payloadConfig.getQuotationInformation());
+            FactoryProductValidate.enrichPayloadByProduct(addTerceroByCompany,payloadConfig.getQuotationInformation());
         }
 
         return requestCompany;
     }
 
-    private boolean validateDocumentEqualsCondition(ParticipantsDTO participant, PayloadProperties payloadProperties){
-        return payloadProperties.getDocumetType().equalsIgnoreCase(participant.getIdentityDocuments().get(0).getDocumentType().getId())
-                && payloadProperties.getDocumetNumber().equalsIgnoreCase(participant.getIdentityDocuments().get(0).getValue());
+    private boolean validateDocumentEqualsCondition(ParticipantsDTO participant, PayloadCustomer payloadProperties){
+        return payloadProperties.getDocumentType().equalsIgnoreCase(participant.getIdentityDocuments().get(0).getDocumentType().getId())
+                && payloadProperties.getDocumentNumber().equalsIgnoreCase(participant.getIdentityDocuments().get(0).getValue());
     }
 }

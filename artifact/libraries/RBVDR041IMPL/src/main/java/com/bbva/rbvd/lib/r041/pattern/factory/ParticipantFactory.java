@@ -1,6 +1,6 @@
 package com.bbva.rbvd.lib.r041.pattern.factory;
 
-import com.bbva.rbvd.dto.validateparticipant.constants.RBVDInternalConstants;
+import com.bbva.rbvd.dto.participant.constants.RBVDInternalConstants;
 
 public class ParticipantFactory {
 

@@ -1,6 +1,6 @@
 package com.bbva.rbvd.lib.r041.transform.bean;
 
-import com.bbva.rbvd.dto.validateparticipant.dto.RolDTO;
+import com.bbva.rbvd.dto.participant.mapper.RolDTO;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;

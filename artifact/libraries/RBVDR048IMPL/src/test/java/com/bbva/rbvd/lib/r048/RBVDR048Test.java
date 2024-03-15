@@ -26,6 +26,7 @@ import com.bbva.rbvd.dto.insrncsale.aso.listbusinesses.ListBusinessesASO;
 import com.bbva.rbvd.dto.insrncsale.bo.emision.AgregarTerceroBO;
 import com.bbva.rbvd.dto.insrncsale.bo.emision.PayloadAgregarTerceroBO;
 import com.bbva.rbvd.dto.insrncsale.mock.MockData;
+import com.bbva.rbvd.mock.MockBundleContext;
 import com.bbva.rbvd.dto.insuranceroyal.error.ErrorResponseDTO;;
 import com.bbva.rbvd.lib.r066.RBVDR066;
 import org.junit.Before;
@@ -63,6 +64,7 @@ import static org.mockito.Matchers.anyMap;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyList;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.mock;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {
@@ -110,8 +112,9 @@ public class RBVDR048Test {
 		context = new Context();
 		ThreadContext.set(context);
 		getObjectIntrospection();
+		MockBundleContext mockBundleContext = mock(MockBundleContext.class);
 
-
+		when(applicationConfigurationService.getDefaultProperty(anyString(),anyString())).thenReturn("PATCH");
 		when(pisdr014.executeSignatureConstruction(anyString(), anyString(), anyString(), anyString(), anyString()))
 				.thenReturn(new SignatureAWS("", "", "", ""));
 	}
@@ -128,7 +131,7 @@ public class RBVDR048Test {
 
 
 	@Test
-	public void testExecuteAddParticipantDynamicLifeOK() throws IOException {
+	public void testExecuteAddParticipantOK() throws IOException {
 		LOGGER.info("RBVDR048 - Executing testExecuteAddParticipantsService_OK...");
 		AgregarTerceroBO response = mockData.getAddParticipantsRimacResponse();
 
@@ -145,10 +148,23 @@ public class RBVDR048Test {
 		assertNotNull(validation.getPayload());
 		assertNotNull(validation.getPayload().getStatus());
 		assertNotNull(validation.getPayload().getMensaje());
-	}
+
+        AgregarTerceroBO validation1 = this.rbvdR048.executeAddParticipants(agregarTerceroBO,"quotationId","830","traceId");
+        assertNotNull(validation1);
+        assertNotNull(validation1.getPayload());
+        assertNotNull(validation1.getPayload().getStatus());
+        assertNotNull(validation1.getPayload().getMensaje());
+        assertEquals("1",validation1.getPayload().getStatus());
+        assertNotNull(validation1.getPayload().getTerceros());
+        assertEquals(3,validation1.getPayload().getTerceros().size());
+        assertNotNull(validation1.getPayload().getTerceros().get(0));
+        assertNotNull(validation1.getPayload().getTerceros().get(1));
+        assertNotNull(validation1.getPayload().getTerceros().get(2));
+        assertEquals(0,validation1.getPayload().getBeneficiario().size());
+    }
 
 	@Test
-	public void testExecuteGetDataInsuredOk() {
+	public void testExecuteGetDataInsured() {
 
 		Map<String,Object> responseInsuredBD = new HashMap<>();
 		responseInsuredBD.put("CLIENT_LAST_NAME","Romero|Aguilar");
@@ -165,7 +181,7 @@ public class RBVDR048Test {
 	}
 
 	@Test
-	public void testExecuteGetProductIdAndModalityTypeOk() {
+	public void testExecuteGetProductIdAndModalityType() {
 
 		Map<String,Object> responseData = new HashMap<>();
 		responseData.put("INSURANCE_PRODUCT_ID",new BigDecimal(21));
@@ -207,223 +223,241 @@ public class RBVDR048Test {
 		assertNotNull(validation);
 	}
 
-    @Test(expected = BusinessException.class)
-    public void testExecuteAddParticipantsServiceWithRestClientExceptionWrongErrorFormat() {
-        LOGGER.info("RBVDR048 - Executing testExecuteAddParticipantsServiceWithRestClientException...");
+	@Test(expected = BusinessException.class)
+	public void testExecuteAddParticipantsServiceWithRestClientExceptionWrongErrorFormat() {
+		LOGGER.info("RBVDR048 - Executing testExecuteAddParticipantsServiceWithRestClientException...");
 
-        String responseBody = "{\n" +
-                "    \"errorWrongFormat\": {\n" +
-                "        \"code\": \"VIDACOT005\",\n" +
-                "        \"message\": \"Validacion de Datos\",\n" +
-                "        \"details\": {\n" +
-                "            \"PE008002\": \"El campo apePaterno de persona en su elemento 3 es requerido\",\n" +
-                "            \"PE009002\": \"El campo apeMaterno de persona en su elemento 3 es requerido\",\n" +
-                "            \"PE011002\": \"El campo fechaNacimiento de persona en su elemento 3 es requerido\"\n" +
-                "        },\n" +
-                "        \"httpStatus\": 403\n" +
-                "    }\n" +
-                "}";
+		String responseBody = "{\n" +
+				"    \"errorWrongFormat\": {\n" +
+				"        \"code\": \"VIDACOT005\",\n" +
+				"        \"message\": \"Validacion de Datos\",\n" +
+				"        \"details\": {\n" +
+				"            \"PE008002\": \"El campo apePaterno de persona en su elemento 3 es requerido\",\n" +
+				"            \"PE009002\": \"El campo apeMaterno de persona en su elemento 3 es requerido\",\n" +
+				"            \"PE011002\": \"El campo fechaNacimiento de persona en su elemento 3 es requerido\"\n" +
+				"        },\n" +
+				"        \"httpStatus\": 403\n" +
+				"    }\n" +
+				"}";
 
-        ErrorResponseDTO res = new ErrorResponseDTO();
-        res.setCode("Bbva41255");
-        res.setMessage("Error al consumir serviciso rimac ");
-        when(this.applicationConfigurationService.getProperty(anyString())).thenReturn("https://apitest.rimac.com/api-vida/V1/cotizaciones/{cotizacion}/persona-agregar");
-        when(this.externalApiConnector.exchange(anyString(), anyObject(),anyObject(), (Class<AgregarTerceroBO>) any(), anyMap()))
-                .thenThrow(new HttpClientErrorException(HttpStatus.BAD_REQUEST, "", responseBody.getBytes(), StandardCharsets.UTF_8));
-        when(pisdr403.executeFindError(anyObject())).thenReturn(res);
-        AgregarTerceroBO validation = this.rbvdR048.executeAddParticipants(new AgregarTerceroBO(),"quotationId","productId","traceId");
+		ErrorResponseDTO res = new ErrorResponseDTO();
+		res.setCode("Bbva41255");
+		res.setMessage("Error al consumir serviciso rimac ");
+		when(this.applicationConfigurationService.getProperty(anyString())).thenReturn("https://apitest.rimac.com/api-vida/V1/cotizaciones/{cotizacion}/persona-agregar");
+		when(this.externalApiConnector.exchange(anyString(), anyObject(),anyObject(), (Class<AgregarTerceroBO>) any(), anyMap()))
+				.thenThrow(new HttpClientErrorException(HttpStatus.BAD_REQUEST, "", responseBody.getBytes(), StandardCharsets.UTF_8));
+		when(pisdr403.executeFindError(anyObject())).thenReturn(res);
+		AgregarTerceroBO validation = this.rbvdR048.executeAddParticipants(new AgregarTerceroBO(),"quotationId","productId","traceId");
 
-        assertNotNull(validation);
-    }
+		assertNotNull(validation);
+	}
 
-    @Test(expected = BusinessException.class)
-    public void testExecuteAddParticipantsServiceWithRestClientExceptionWrongDetailsFormat() {
-        LOGGER.info("RBVDR048 - Executing testExecuteAddParticipantsServiceWithRestClientException...");
+	@Test(expected = BusinessException.class)
+	public void testExecuteAddParticipantsServiceWithRestClientExceptionWrongDetailsFormat() {
+		LOGGER.info("RBVDR048 - Executing testExecuteAddParticipantsServiceWithRestClientException...");
 
-        String responseBody = "{\n" +
-                "    \"error\": {\n" +
-                "        \"code\": \"VIDACOT005\",\n" +
-                "        \"message\": \"Validacion de Datos\",\n" +
-                "        \"detailsWrongFormat\": {\n" +
-                "            \"PE008002\": \"El campo apePaterno de persona en su elemento 3 es requerido\",\n" +
-                "            \"PE009002\": \"El campo apeMaterno de persona en su elemento 3 es requerido\",\n" +
-                "            \"PE011002\": \"El campo fechaNacimiento de persona en su elemento 3 es requerido\"\n" +
-                "        },\n" +
-                "        \"httpStatus\": 403\n" +
-                "    }\n" +
-                "}";
+		String responseBody = "{\n" +
+				"    \"error\": {\n" +
+				"        \"code\": \"VIDACOT005\",\n" +
+				"        \"message\": \"Validacion de Datos\",\n" +
+				"        \"detailsWrongFormat\": {\n" +
+				"            \"PE008002\": \"El campo apePaterno de persona en su elemento 3 es requerido\",\n" +
+				"            \"PE009002\": \"El campo apeMaterno de persona en su elemento 3 es requerido\",\n" +
+				"            \"PE011002\": \"El campo fechaNacimiento de persona en su elemento 3 es requerido\"\n" +
+				"        },\n" +
+				"        \"httpStatus\": 403\n" +
+				"    }\n" +
+				"}";
 
-        ErrorResponseDTO res = new ErrorResponseDTO();
-        res.setCode("Bbva41255");
-        res.setMessage("Error al consumir serviciso rimac ");
-        when(this.applicationConfigurationService.getProperty(anyString())).thenReturn("https://apitest.rimac.com/api-vida/V1/cotizaciones/{cotizacion}/persona-agregar");
-        when(this.externalApiConnector.exchange(anyString(), anyObject(),anyObject(), (Class<AgregarTerceroBO>) any(), anyMap()))
-                .thenThrow(new HttpClientErrorException(HttpStatus.BAD_REQUEST, "", responseBody.getBytes(), StandardCharsets.UTF_8));
-        when(pisdr403.executeFindError(anyObject())).thenReturn(res);
-        AgregarTerceroBO validation = this.rbvdR048.executeAddParticipants(new AgregarTerceroBO(),"quotationId","productId","traceId");
+		ErrorResponseDTO res = new ErrorResponseDTO();
+		res.setCode("Bbva41255");
+		res.setMessage("Error al consumir serviciso rimac ");
+		when(this.applicationConfigurationService.getProperty(anyString())).thenReturn("https://apitest.rimac.com/api-vida/V1/cotizaciones/{cotizacion}/persona-agregar");
+		when(this.externalApiConnector.exchange(anyString(), anyObject(),anyObject(), (Class<AgregarTerceroBO>) any(), anyMap()))
+				.thenThrow(new HttpClientErrorException(HttpStatus.BAD_REQUEST, "", responseBody.getBytes(), StandardCharsets.UTF_8));
+		when(pisdr403.executeFindError(anyObject())).thenReturn(res);
+		AgregarTerceroBO validation = this.rbvdR048.executeAddParticipants(new AgregarTerceroBO(),"quotationId","productId","traceId");
 
-        assertNotNull(validation);
-    }
+		assertNotNull(validation);
+	}
 
-    @Test(expected = BusinessException.class)
-    public void testExecuteAddParticipantsServiceWithRestClientExceptionWrongHttpStatusFormat() {
-        LOGGER.info("RBVDR048 - Executing testExecuteAddParticipantsServiceWithRestClientException...");
+	@Test(expected = BusinessException.class)
+	public void testExecuteAddParticipantsServiceWithRestClientExceptionWrongHttpStatusFormat() {
+		LOGGER.info("RBVDR048 - Executing testExecuteAddParticipantsServiceWithRestClientException...");
 
-        String responseBody = "{\n" +
-                "    \"error\": {\n" +
-                "        \"code\": \"VIDACOT005\",\n" +
-                "        \"message\": \"Validacion de Datos\",\n" +
-                "        \"details\": {\n" +
-                "            \"PE008002\": \"El campo apePaterno de persona en su elemento 3 es requerido\",\n" +
-                "            \"PE009002\": \"El campo apeMaterno de persona en su elemento 3 es requerido\",\n" +
-                "            \"PE011002\": \"El campo fechaNacimiento de persona en su elemento 3 es requerido\"\n" +
-                "        },\n" +
-                "        \"httpStatusWrongFormat\": 403\n" +
-                "    }\n" +
-                "}";
+		String responseBody = "{\n" +
+				"    \"error\": {\n" +
+				"        \"code\": \"VIDACOT005\",\n" +
+				"        \"message\": \"Validacion de Datos\",\n" +
+				"        \"details\": {\n" +
+				"            \"PE008002\": \"El campo apePaterno de persona en su elemento 3 es requerido\",\n" +
+				"            \"PE009002\": \"El campo apeMaterno de persona en su elemento 3 es requerido\",\n" +
+				"            \"PE011002\": \"El campo fechaNacimiento de persona en su elemento 3 es requerido\"\n" +
+				"        },\n" +
+				"        \"httpStatusWrongFormat\": 403\n" +
+				"    }\n" +
+				"}";
 
-        ErrorResponseDTO res = new ErrorResponseDTO();
-        res.setCode("Bbva41255");
-        res.setMessage("Error al consumir serviciso rimac ");
-        when(this.applicationConfigurationService.getProperty(anyString())).thenReturn("https://apitest.rimac.com/api-vida/V1/cotizaciones/{cotizacion}/persona-agregar");
-        when(this.externalApiConnector.exchange(anyString(), anyObject(),anyObject(), (Class<AgregarTerceroBO>) any(), anyMap()))
-                .thenThrow(new HttpClientErrorException(HttpStatus.BAD_REQUEST, "", responseBody.getBytes(), StandardCharsets.UTF_8));
-        when(pisdr403.executeFindError(anyObject())).thenReturn(res);
-        AgregarTerceroBO validation = this.rbvdR048.executeAddParticipants(new AgregarTerceroBO(),"quotationId","productId","traceId");
+		ErrorResponseDTO res = new ErrorResponseDTO();
+		res.setCode("Bbva41255");
+		res.setMessage("Error al consumir serviciso rimac ");
+		when(this.applicationConfigurationService.getProperty(anyString())).thenReturn("https://apitest.rimac.com/api-vida/V1/cotizaciones/{cotizacion}/persona-agregar");
+		when(this.externalApiConnector.exchange(anyString(), anyObject(),anyObject(), (Class<AgregarTerceroBO>) any(), anyMap()))
+				.thenThrow(new HttpClientErrorException(HttpStatus.BAD_REQUEST, "", responseBody.getBytes(), StandardCharsets.UTF_8));
+		when(pisdr403.executeFindError(anyObject())).thenReturn(res);
+		AgregarTerceroBO validation = this.rbvdR048.executeAddParticipants(new AgregarTerceroBO(),"quotationId","productId","traceId");
 
-        assertNotNull(validation);
-    }
+		assertNotNull(validation);
+	}
 
-    @Test(expected = BusinessException.class)
-    public void testExecuteAddParticipantsServiceWithRestClientExceptionInstance() {
-        LOGGER.info("RBVDR048 - Executing testExecuteAddParticipantsServiceWithRestClientExceptionInstance...");
+	@Test(expected = BusinessException.class)
+	public void testExecuteAddParticipantsServiceWithRestClientExceptionUnrecognized() {
+		LOGGER.info("RBVDR048 - Executing testExecuteAddParticipantsServiceWithRestClientExceptionUnrecognized...");
 
-        String responseBody = "";
+		String responseBody = "";
 
-        ErrorResponseDTO res = new ErrorResponseDTO();
-        res.setCode("Bbva41255");
-        res.setMessage("Error al consumir serviciso rimac ");
-        when(this.applicationConfigurationService.getProperty(anyString())).thenReturn("https://apitest.rimac.com/api-vida/V1/cotizaciones/{cotizacion}/persona-agregar");
-        when(this.externalApiConnector.exchange(anyString(), anyObject(),anyObject(), (Class<AgregarTerceroBO>) any(), anyMap()))
-                .thenThrow(new RestClientException(responseBody));
-        when(pisdr403.executeFindError(anyObject())).thenReturn(res);
-        AgregarTerceroBO validation = this.rbvdR048.executeAddParticipants(new AgregarTerceroBO(),"quotationId","productId","traceId");
+		ErrorResponseDTO res = new ErrorResponseDTO();
+		res.setCode("Bbva41255");
+		res.setMessage("Error al consumir serviciso rimac ");
+		when(this.applicationConfigurationService.getProperty(anyString())).thenReturn("https://apitest.rimac.com/api-vida/V1/cotizaciones/{cotizacion}/persona-agregar");
+		when(this.externalApiConnector.exchange(anyString(), anyObject(),anyObject(), (Class<AgregarTerceroBO>) any(), anyMap()))
+				.thenThrow(new HttpClientErrorException(HttpStatus.BAD_REQUEST, "", responseBody.getBytes(), StandardCharsets.UTF_8));
+		when(pisdr403.executeFindError(anyObject())).thenReturn(res);
+		AgregarTerceroBO validation = this.rbvdR048.executeAddParticipants(new AgregarTerceroBO(),"quotationId","productId","traceId");
 
-        assertNotNull(validation);
-    }
+		assertNotNull(validation);
+	}
 
-    @Test(expected = BusinessException.class)
-    public void testExecuteAddParticipantsServiceWithTimeoutException() {
-        LOGGER.info("RBVDR048 - Executing testExecuteAddParticipantsServiceWithTimeoutException...");
+	@Test(expected = BusinessException.class)
+	public void testExecuteAddParticipantsServiceWithRestClientExceptionInstance() {
+		LOGGER.info("RBVDR048 - Executing testExecuteAddParticipantsServiceWithRestClientExceptionInstance...");
 
-        ErrorResponseDTO res = new ErrorResponseDTO();
-        res.setCode("Bbva41255");
-        res.setMessage("Error al consumir serviciso rimac ");
-        when(this.applicationConfigurationService.getProperty(anyString())).thenReturn("https://apitest.rimac.com/api-vida/V1/cotizaciones/{cotizacion}/persona-agregar");
-        when(this.externalApiConnector.exchange(anyString(), anyObject(),anyObject(), (Class<AgregarTerceroBO>) any(), anyMap()))
-                .thenThrow(new TimeoutException("RBVD01020044"));
-        when(pisdr403.executeFindError(anyObject())).thenReturn(res);
-        AgregarTerceroBO validation = this.rbvdR048.executeAddParticipants(new AgregarTerceroBO(),"quotationId","productId","traceId");
+		String responseBody = "";
 
-        assertNotNull(validation);
-    }
+		ErrorResponseDTO res = new ErrorResponseDTO();
+		res.setCode("Bbva41255");
+		res.setMessage("Error al consumir serviciso rimac ");
+		when(this.applicationConfigurationService.getProperty(anyString())).thenReturn("https://apitest.rimac.com/api-vida/V1/cotizaciones/{cotizacion}/persona-agregar");
+		when(this.externalApiConnector.exchange(anyString(), anyObject(),anyObject(), (Class<AgregarTerceroBO>) any(), anyMap()))
+				.thenThrow(new RestClientException(responseBody));
+		when(pisdr403.executeFindError(anyObject())).thenReturn(res);
+		AgregarTerceroBO validation = this.rbvdR048.executeAddParticipants(new AgregarTerceroBO(),"quotationId","productId","traceId");
 
-    @Test
-    public void executeGetListCustomerHostOk() {
-        LOGGER.info("RBVDR048 - Executing executeGetListCustomerHostOk...");
+		assertNotNull(validation);
+	}
 
-        PEWUResponse responseHost = new PEWUResponse();
-        PEMSALW4 dataAdress = new PEMSALW4();
-        PEMSALWU data = new PEMSALWU();
-        data.setTdoi("L");
-        data.setSexo("M");
-        data.setContact("123123123");
-        data.setContac2("123123123");
-        data.setContac3("123123123");
-        data.setContac3("123123123");
-        dataAdress.setDesrela("FAMILIA");
+	@Test(expected = BusinessException.class)
+	public void testExecuteAddParticipantsServiceWithTimeoutException() {
+		LOGGER.info("RBVDR048 - Executing testExecuteAddParticipantsServiceWithTimeoutException...");
 
-        data.setTipodir("dep"); // map address type
+		ErrorResponseDTO res = new ErrorResponseDTO();
+		res.setCode("Bbva41255");
+		res.setMessage("Error al consumir serviciso rimac ");
+		when(this.applicationConfigurationService.getProperty(anyString())).thenReturn("https://apitest.rimac.com/api-vida/V1/cotizaciones/{cotizacion}/persona-agregar");
+		when(this.externalApiConnector.exchange(anyString(), anyObject(),anyObject(), (Class<AgregarTerceroBO>) any(), anyMap()))
+				.thenThrow(new TimeoutException("RBVD01020044"));
+		when(pisdr403.executeFindError(anyObject())).thenReturn(res);
+		AgregarTerceroBO validation = this.rbvdR048.executeAddParticipants(new AgregarTerceroBO(),"quotationId","productId","traceId");
 
-        responseHost.setPemsalwu(data);
-        responseHost.setPemsalw4(dataAdress);
-        responseHost.setPemsalw5(new PEMSALW5());
-        responseHost.setHostAdviceCode(null);
+		assertNotNull(validation);
+	}
 
-        when(pbtqr002.executeSearchInHostByDocument(Mockito.anyString(), Mockito.anyString()))
-                .thenReturn(responseHost);
-        when(applicationConfigurationService.getProperty(anyString())).thenReturn("DNI");
+	@Test
+	public void executeGetListCustomerHostOk() {
+		LOGGER.info("RBVDR048 - Executing executeGetListCustomerHostOk...");
 
-        PEWUResponse validation = rbvdR048.executeGetCustomerByDocType("00000000","L");
-        assertNotNull(validation);
-    }
+		PEWUResponse responseHost = new PEWUResponse();
+		PEMSALW4 dataAdress = new PEMSALW4();
+		PEMSALWU data = new PEMSALWU();
+		data.setTdoi("L");
+		data.setSexo("M");
+		data.setContact("123123123");
+		data.setContac2("123123123");
+		data.setContac3("123123123");
+		data.setContac3("123123123");
+		dataAdress.setDesrela("FAMILIA");
 
-    @Test(expected = BusinessException.class)
-    public void executeGetListCustomerHostWithAdvice() {
-        LOGGER.info("RBVDR048 - Executing executeGetListCustomerHostWithAdvice...");
+		data.setTipodir("dep"); // map address type
 
-        PEWUResponse responseHost = new PEWUResponse();
-        responseHost.setHostAdviceCode("code");
-        responseHost.setHostMessage("some error");
-        List<ContactDetailsBO> contactDetailsBO = new ArrayList<>();
-        GetContactDetailsASO contactDetailsASO = new GetContactDetailsASO();
-        contactDetailsASO.setData(contactDetailsBO);
+		responseHost.setPemsalwu(data);
+		responseHost.setPemsalw4(dataAdress);
+		responseHost.setPemsalw5(new PEMSALW5());
+		responseHost.setHostAdviceCode(null);
 
-        when(pbtqr002.executeSearchInHostByDocument(Mockito.anyString(), Mockito.anyString()))
-                .thenReturn(responseHost);
+		when(pbtqr002.executeSearchInHostByDocument(Mockito.anyString(), Mockito.anyString()))
+				.thenReturn(responseHost);
+		when(applicationConfigurationService.getProperty(anyString())).thenReturn("DNI");
 
-        PEWUResponse validation = rbvdR048.executeGetCustomerByDocType("00000000","L");
-        assertNull(validation);
-    }
+		PEWUResponse validation = rbvdR048.executeGetCustomerByDocType("00000000","L");
+		assertNotNull(validation);
+	}
 
-    @Test
-    public void executeInvokeCypherServiceOk(){
-        LOGGER.info("RBVDR048 - Executing executeInvokeCypherServiceOk...");
-        OutputDTO firstOutput = new OutputDTO();
-        firstOutput.setData("emhSTGcxRnM");
-        when(ksmkr002.executeKSMKR002(anyList(), anyString(), anyString(), anyObject())).thenReturn(singletonList(firstOutput));
+	@Test(expected = BusinessException.class)
+	public void executeGetListCustomerHostWithAdvice() {
+		LOGGER.info("RBVDR048 - Executing executeGetListCustomerHostWithAdvice...");
 
-        String validation = rbvdR048.executeKsmkCryptography("customerId");
-        assertNotNull(validation);
-        assertEquals("emhSTGcxRnM",validation);
-    }
+		PEWUResponse responseHost = new PEWUResponse();
+		responseHost.setHostAdviceCode("code");
+		responseHost.setHostMessage("some error");
+		List<ContactDetailsBO> contactDetailsBO = new ArrayList<>();
+		GetContactDetailsASO contactDetailsASO = new GetContactDetailsASO();
+		contactDetailsASO.setData(contactDetailsBO);
 
-    @Test(expected = BusinessException.class)
-    public void executeInvokeCypherServiceWithEmptyResult(){
-        LOGGER.info("RBVDR048 - Executing executeInvokeCypherServiceOk...");
-        when(ksmkr002.executeKSMKR002(anyList(), anyString(), anyString(), anyObject())).thenReturn(emptyList());
+		when(pbtqr002.executeSearchInHostByDocument(Mockito.anyString(), Mockito.anyString()))
+				.thenReturn(responseHost);
 
-        String validation = rbvdR048.executeKsmkCryptography("customerId");
-        assertNull(validation);
-    }
+		PEWUResponse validation = rbvdR048.executeGetCustomerByDocType("00000000","L");
+		assertNull(validation);
+	}
 
-    @Test
-    public void executeInvokeListBusinesServiceOk(){
-        LOGGER.info("RBVDR048 - Executing executeInvokeListBusinesServiceOk...");
-        ListBusinessesASO businesses = new ListBusinessesASO();
-        BusinessASO businessASO = new BusinessASO();
-        businessASO.setDoingBusinessAs("doingBusinessAs");
-        List<BusinessASO> businessASOList = new ArrayList<>();
-        businessASOList.add(businessASO);
-        businesses.setData(businessASOList);
-        when(rbvdr066.executeGetListBusinesses(anyString(),anyObject())).thenReturn(businesses);
+	@Test
+	public void executeInvokeCypherServiceOk(){
+		LOGGER.info("RBVDR048 - Executing executeInvokeCypherServiceOk...");
+		OutputDTO firstOutput = new OutputDTO();
+		firstOutput.setData("emhSTGcxRnM");
+		when(ksmkr002.executeKSMKR002(anyList(), anyString(), anyString(), anyObject())).thenReturn(singletonList(firstOutput));
 
-        ListBusinessesASO validation = rbvdR048.executeListBusiness("customerId");
-        assertNotNull(validation);
-        assertNotNull(validation.getData());
-        assertNotNull(validation.getData().get(0));
-    }
+		String validation = rbvdR048.executeKsmkCryptography("customerId");
+		assertNotNull(validation);
+		assertEquals("emhSTGcxRnM",validation);
+	}
 
-    @Test(expected = BusinessException.class)
-    public void executeInvokeListBusinesServiceWithEmptyResult(){
-        LOGGER.info("RBVDR048 - Executing executeInvokeListBusinesServiceWithEmptyResult...");
-        ListBusinessesASO businesses = new ListBusinessesASO();
-        businesses.setData(new ArrayList<>());
-        when(rbvdr066.executeGetListBusinesses(anyString(),anyObject())).thenReturn(businesses);
+	@Test(expected = BusinessException.class)
+	public void executeInvokeCypherServiceWithEmptyResult(){
+		LOGGER.info("RBVDR048 - Executing executeInvokeCypherServiceOk...");
+		when(ksmkr002.executeKSMKR002(anyList(), anyString(), anyString(), anyObject())).thenReturn(emptyList());
 
-        ListBusinessesASO validation = rbvdR048.executeListBusiness("customerId");
-        assertNull(validation);
-    }
+		String validation = rbvdR048.executeKsmkCryptography("customerId");
+		assertNull(validation);
+	}
+
+	@Test
+	public void executeInvokeListBusinesServiceOk(){
+		LOGGER.info("RBVDR048 - Executing executeInvokeListBusinesServiceOk...");
+		ListBusinessesASO businesses = new ListBusinessesASO();
+		BusinessASO businessASO = new BusinessASO();
+		businessASO.setDoingBusinessAs("doingBusinessAs");
+		List<BusinessASO> businessASOList = new ArrayList<>();
+		businessASOList.add(businessASO);
+		businesses.setData(businessASOList);
+		when(rbvdr066.executeGetListBusinesses(anyString(),anyObject())).thenReturn(businesses);
+
+		ListBusinessesASO validation = rbvdR048.executeListBusiness("customerId");
+		assertNotNull(validation);
+		assertNotNull(validation.getData());
+		assertNotNull(validation.getData().get(0));
+	}
+
+	@Test(expected = BusinessException.class)
+	public void executeInvokeListBusinesServiceWithEmptyResult(){
+		LOGGER.info("RBVDR048 - Executing executeInvokeListBusinesServiceWithEmptyResult...");
+		ListBusinessesASO businesses = new ListBusinessesASO();
+		businesses.setData(new ArrayList<>());
+		when(rbvdr066.executeGetListBusinesses(anyString(),anyObject())).thenReturn(businesses);
+
+		ListBusinessesASO validation = rbvdR048.executeListBusiness("customerId");
+		assertNull(validation);
+	}
 
 
 	@Test

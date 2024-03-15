@@ -97,6 +97,9 @@ public class RBVDR041Test {
 
 	@Test
 	public void executeNaturalPersonTestOkNonLifeProduct(){
+		Map<String,Object> responseData = new HashMap<>();
+		responseData.put("INSURANCE_PRODUCT_ID",new BigDecimal(21));
+		responseData.put("INSURANCE_MODALITY_TYPE","02");
 		InputParticipantsDTO request = ParticipantsUtil.getMockRequestBodyValidateNaturalParticipants();
 		when(pisdr601.executeFindQuotationJoinByPolicyQuotaInternalId(anyString())).thenReturn(ParticipantsUtil.buildFindQuotationJoinByPolicyQuotaInternalId("789956435"));
 		when(pisdr012.executeGetParticipantRolesByCompany(anyMap())).thenReturn(ParticipantsUtil.buildRolByParticipantTypeResponse());
@@ -104,6 +107,7 @@ public class RBVDR041Test {
 		PayloadAgregarTerceroBO payloadAgregarTerceroBO = new PayloadAgregarTerceroBO();
 		payloadAgregarTerceroBO.setCotizacion("cotizacion");
 		agregarTerceroBO.setPayload(payloadAgregarTerceroBO);
+		when(rbvdr048.executeGetProducAndPlanByQuotation(anyString())).thenReturn(responseData);
 		when(rbvdr048.executeAddParticipants(anyObject(),anyString(),anyString(),anyString())).thenReturn(agregarTerceroBO);
 		when(rbvdr048.executeGetCustomerByDocType(anyString(),anyString())).thenReturn(ParticipantsUtil.buildPersonHostDataResponseCase3());
 		AgregarTerceroBO response = rbvdR041.executeValidateAddParticipant(request);
@@ -146,6 +150,16 @@ public class RBVDR041Test {
 	public void executeNaturalPersonTestOkLifeProduct(){
 		QuotationJoinCustomerInformationDTO quotation = ParticipantsUtil.buildFindQuotationJoinByPolicyQuotaInternalId("789956435");
 		quotation.getInsuranceProduct().setInsuranceProductType("841");
+		Map<String,Object> responseInsuredBD = new HashMap<>();
+		responseInsuredBD.put("CLIENT_LAST_NAME","Romero|Aguilar");
+		responseInsuredBD.put("INSURED_CUSTOMER_NAME","Paul");
+		responseInsuredBD.put("GENDER_ID","F");
+		responseInsuredBD.put("USER_EMAIL_PERSONAL_DESC","huhuh@gmail.com");
+		responseInsuredBD.put("PHONE_ID","960675837");
+		responseInsuredBD.put("CUSTOMER_BIRTH_DATE","2023-05-15");
+		Map<String,Object> responseData = new HashMap<>();
+		responseData.put("INSURANCE_PRODUCT_ID",new BigDecimal(21));
+		responseData.put("INSURANCE_MODALITY_TYPE","02");
 		when(pisdr601.executeFindQuotationJoinByPolicyQuotaInternalId(anyString())).thenReturn(quotation);
 		when(pisdr012.executeGetParticipantRolesByCompany(anyMap())).thenReturn(ParticipantsUtil.buildRolByParticipantTypeResponse());
 		AgregarTerceroBO agregarTerceroBO = new AgregarTerceroBO();
@@ -154,6 +168,8 @@ public class RBVDR041Test {
 		agregarTerceroBO.setPayload(payloadAgregarTerceroBO);
 		when(rbvdr048.executeAddParticipants(anyObject(),anyString(),anyString(),anyString())).thenReturn(agregarTerceroBO);
 		when(rbvdr048.executeGetCustomerByDocType(anyString(),anyString())).thenReturn(ParticipantsUtil.buildPersonHostDataResponseCase3());
+		when(rbvdr048.executeGetProducAndPlanByQuotation(anyString())).thenReturn(responseData);
+		when(rbvdr048.executeGetDataInsuredBD(anyString(),anyString(),anyString())).thenReturn(responseInsuredBD);
 		AgregarTerceroBO response = rbvdR041.executeValidateAddParticipant(ParticipantsUtil.getMockRequestBodyValidateNaturalParticipantsLifeCase1());
 		Assert.assertNotNull(response);
 		Assert.assertEquals(0,this.context.getAdviceList().size());

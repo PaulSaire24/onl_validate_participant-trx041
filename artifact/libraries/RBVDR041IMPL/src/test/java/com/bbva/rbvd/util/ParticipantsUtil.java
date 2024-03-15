@@ -70,6 +70,44 @@ public class ParticipantsUtil {
             contactDetailList.add(contactDetail2);
             contactDetailList.add(contactDetail3);
             participant.setContactDetails(contactDetailList);
+        AddressesDTO addressesDTO = new AddressesDTO();
+        List<AddressesDTO> addressesDTOList = new ArrayList<>();
+        addressesDTO.setFormattedAddress("CAL CIRCUNVALACION BRENA 200, AHH LOS NARANJOS");
+        LocationDTO locationDTO = new LocationDTO();
+        AddressComponentsDTO addressComponentsDTO1 = new AddressComponentsDTO();
+        addressComponentsDTO1.setComponentTypes(Collections.singletonList("STREET"));
+        addressComponentsDTO1.setName("CIRCUNVALACION BRENA");
+        AddressComponentsDTO addressComponentsDTO2 = new AddressComponentsDTO();
+        addressComponentsDTO2.setComponentTypes(Collections.singletonList("AAHH"));
+        addressComponentsDTO2.setName("LOS NARANJOS");
+        AddressComponentsDTO addressComponentsDTO3 = new AddressComponentsDTO();
+        addressComponentsDTO3.setComponentTypes(Collections.singletonList("DEPARTMENT"));
+        addressComponentsDTO3.setName("LIMA");
+        AddressComponentsDTO addressComponentsDTO4 = new AddressComponentsDTO();
+        addressComponentsDTO4.setComponentTypes(Collections.singletonList("PROVINCE"));
+        addressComponentsDTO4.setName("LIMA");
+        AddressComponentsDTO addressComponentsDTO5 = new AddressComponentsDTO();
+        addressComponentsDTO5.setComponentTypes(Collections.singletonList("DISTRICT"));
+        addressComponentsDTO5.setName("CHORRILLOS");
+        AddressComponentsDTO addressComponentsDTO6 = new AddressComponentsDTO();
+        addressComponentsDTO6.setComponentTypes(Collections.singletonList("EXTERIOR_NUMBER"));
+        addressComponentsDTO6.setName("200");
+        AddressComponentsDTO addressComponentsDTO7 = new AddressComponentsDTO();
+        addressComponentsDTO7.setComponentTypes(Collections.singletonList("UBIGEO"));
+        addressComponentsDTO7.setName("0101009");
+
+        List<AddressComponentsDTO> addressComponentsDTOList = new ArrayList<>();
+        addressComponentsDTOList.add(addressComponentsDTO1);
+        addressComponentsDTOList.add(addressComponentsDTO2);
+        addressComponentsDTOList.add(addressComponentsDTO3);
+        addressComponentsDTOList.add(addressComponentsDTO4);
+        addressComponentsDTOList.add(addressComponentsDTO5);
+        addressComponentsDTOList.add(addressComponentsDTO6);
+        addressComponentsDTOList.add(addressComponentsDTO7);
+        locationDTO.setAddressComponent(addressComponentsDTOList);
+        addressesDTO.setLocation(locationDTO);
+        addressesDTOList.add(addressesDTO);
+        participant.setAddresses(addressesDTOList);
         return participant;
 
     }

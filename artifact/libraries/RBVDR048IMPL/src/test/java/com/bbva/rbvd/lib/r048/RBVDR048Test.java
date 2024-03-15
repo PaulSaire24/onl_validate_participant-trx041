@@ -26,11 +26,8 @@ import com.bbva.rbvd.dto.insrncsale.aso.listbusinesses.ListBusinessesASO;
 import com.bbva.rbvd.dto.insrncsale.bo.emision.AgregarTerceroBO;
 import com.bbva.rbvd.dto.insrncsale.bo.emision.PayloadAgregarTerceroBO;
 import com.bbva.rbvd.dto.insrncsale.mock.MockData;
-import com.bbva.rbvd.dto.insuranceroyal.error.ErrorResponseDTO;
-import com.bbva.rbvd.lib.r048.factory.ApiConnectorFactoryTest;
-import com.bbva.rbvd.lib.r048.impl.RBVDR048Impl;
+import com.bbva.rbvd.dto.insuranceroyal.error.ErrorResponseDTO;;
 import com.bbva.rbvd.lib.r066.RBVDR066;
-import com.bbva.rbvd.mock.MockBundleContext;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -57,9 +54,13 @@ import java.util.Map;
 
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
-import static org.junit.Assert.*;
 import static org.junit.Assert.assertNull;
-import static org.mockito.Matchers.*;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.anyObject;
+import static org.mockito.Matchers.anyMap;
+import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyList;
 import static org.mockito.Mockito.when;
 
@@ -127,7 +128,7 @@ public class RBVDR048Test {
 
 
 	@Test
-	public void testExecuteAddParticipantOK() throws IOException {
+	public void testExecuteAddParticipantDynamicLifeOK() throws IOException {
 		LOGGER.info("RBVDR048 - Executing testExecuteAddParticipantsService_OK...");
 		AgregarTerceroBO response = mockData.getAddParticipantsRimacResponse();
 
@@ -147,7 +148,7 @@ public class RBVDR048Test {
 	}
 
 	@Test
-	public void testExecuteGetDataInsured() {
+	public void testExecuteGetDataInsuredOk() {
 
 		Map<String,Object> responseInsuredBD = new HashMap<>();
 		responseInsuredBD.put("CLIENT_LAST_NAME","Romero|Aguilar");
@@ -164,7 +165,7 @@ public class RBVDR048Test {
 	}
 
 	@Test
-	public void testExecuteGetProductIdAndModalityType() {
+	public void testExecuteGetProductIdAndModalityTypeOk() {
 
 		Map<String,Object> responseData = new HashMap<>();
 		responseData.put("INSURANCE_PRODUCT_ID",new BigDecimal(21));
@@ -201,7 +202,7 @@ public class RBVDR048Test {
 		when(this.externalApiConnector.exchange(anyString(), anyObject(),anyObject(), (Class<AgregarTerceroBO>) any(), anyMap()))
 				.thenThrow(new HttpClientErrorException(HttpStatus.BAD_REQUEST, "", responseBody.getBytes(), StandardCharsets.UTF_8));
 		when(pisdr403.executeFindError(anyObject())).thenReturn(res);
-		AgregarTerceroBO validation = this.rbvdR048.executeAddParticipantsDynamicLife(new AgregarTerceroBO(),"quotationId","productId","traceId");
+		AgregarTerceroBO validation = this.rbvdR048.executeAddParticipants(new AgregarTerceroBO(),"quotationId","productId","traceId");
 
 		assertNotNull(validation);
 	}
@@ -429,18 +430,18 @@ public class RBVDR048Test {
 	public void testExecutegetCustomerok() {
 		LOGGER.info("RBVDR048 - Executing executeGetCustomerService ...");
 		when(this.pbtqr002.executeSearchInHostByDocument(anyString(),anyString())).thenReturn(buildPersonHostDataResponseCase3());
-		PEWUResponse response = this.rbvdR048.executeGetCustomerService(anyString(),anyString());
+		PEWUResponse response = this.rbvdR048.executeGetCustomerByDocType(anyString(),anyString());
 		assertNotNull(response);
 
 	}
 
 	@Test(expected = BusinessException.class)
-	public void testExecutegetCustomerError() {
+	public void testExecuteGetCustomerError() {
 		LOGGER.info("RBVDR048 - Executing executeGetCustomerService ...");
 		PEWUResponse pemsalwu = new PEWUResponse();
 		pemsalwu.setHostAdviceCode("124567");
 		when(this.pbtqr002.executeSearchInHostByDocument(anyString(),anyString())).thenReturn(pemsalwu);
-		PEWUResponse response = this.rbvdR048.executeGetCustomerService(anyString(),anyString());
+		PEWUResponse response = this.rbvdR048.executeGetCustomerByDocType(anyString(),anyString());
 		assertNotNull(response);
 	}
 

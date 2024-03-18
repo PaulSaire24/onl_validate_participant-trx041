@@ -3,7 +3,7 @@ package com.bbva.rbvd.lib.r041.pattern.decorator.impl;
 import com.bbva.apx.exception.business.BusinessException;
 import com.bbva.elara.configuration.manager.application.ApplicationConfigurationService;
 import com.bbva.pbtq.dto.validatedocument.response.host.pewu.PEWUResponse;
-import com.bbva.pisd.dto.insurancedao.join.QuotationJoinCustomerInformationDTO;
+import com.bbva.pisd.dto.insurancedao.join.QuotationCustomerDTO;
 import com.bbva.pisd.lib.r012.PISDR012;
 import com.bbva.pisd.lib.r601.PISDR601;
 import com.bbva.rbvd.dto.insrncsale.aso.listbusinesses.ListBusinessesASO;
@@ -96,7 +96,7 @@ public class ValidationParameter implements PreParticipantValidations {
     }
 
     @Override
-    public PayloadConfig getConfig(InputParticipantsDTO input,ApplicationConfigurationService applicationConfigurationService, QuotationJoinCustomerInformationDTO quotationInformation, String personType) {
+    public PayloadConfig getConfig(InputParticipantsDTO input,ApplicationConfigurationService applicationConfigurationService, QuotationCustomerDTO quotationInformation, String personType) {
         LOGGER.info(" ** GetConfig :: start");
         String insuranceProductId = quotationInformation.getQuotationMod().getInsuranceProductId().toPlainString();
         String modalityTypeProduct = quotationInformation.getQuotationMod().getInsuranceModalityType();
@@ -142,10 +142,10 @@ public class ValidationParameter implements PreParticipantValidations {
 
 
     @Override
-    public QuotationJoinCustomerInformationDTO getCustomerFromQuotation(String quotationId) {
+    public QuotationCustomerDTO getCustomerFromQuotation(String quotationId) {
         try{
             LOGGER.info("***** CustomerInformationDAOImpl - getCustomerBasicInformation START *****");
-            QuotationJoinCustomerInformationDTO responseQueryCustomerProductInformation = pisdr601.executeFindQuotationJoinByPolicyQuotaInternalId(quotationId);
+            QuotationCustomerDTO responseQueryCustomerProductInformation = pisdr601.executeFindQuotationJoinByPolicyQuotaInternalId(quotationId);
             LOGGER.info("***** CustomerInformationDAOImpl - getCustomerBasicInformation | responseQueryCustomerProductInformation {} *****",responseQueryCustomerProductInformation);
             return responseQueryCustomerProductInformation;
         }catch (BusinessException be){

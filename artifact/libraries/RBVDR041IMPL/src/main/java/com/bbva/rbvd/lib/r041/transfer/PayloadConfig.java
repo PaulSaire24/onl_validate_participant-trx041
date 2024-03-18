@@ -1,7 +1,7 @@
 package com.bbva.rbvd.lib.r041.transfer;
 
 import com.bbva.rbvd.dto.participant.request.InputParticipantsDTO;
-import com.bbva.pisd.dto.insurancedao.join.QuotationJoinCustomerInformationDTO;
+import com.bbva.pisd.dto.insurancedao.join.QuotationCustomerDTO;
 import com.bbva.rbvd.lib.r041.properties.ParticipantProperties;
 import com.bbva.rbvd.dto.participant.mapper.RolDTO;
 
@@ -16,7 +16,7 @@ public class PayloadConfig {
     private Map<String,Object> dataInsuredBD;
     private String personType;
     private List<RolDTO> registeredRolesDB;
-    private QuotationJoinCustomerInformationDTO quotationInformation;
+    private QuotationCustomerDTO quotationInformation;
     private ParticipantProperties participantProperties;
 
     public InputParticipantsDTO getInput() {
@@ -67,11 +67,11 @@ public class PayloadConfig {
         this.personType = personType;
     }
 
-    public QuotationJoinCustomerInformationDTO getQuotationInformation() {
+    public QuotationCustomerDTO getQuotationInformation() {
         return quotationInformation;
     }
 
-    public void setQuotationInformation(QuotationJoinCustomerInformationDTO quotationInformation) {
+    public void setQuotationInformation(QuotationCustomerDTO quotationInformation) {
         this.quotationInformation = quotationInformation;
     }
 

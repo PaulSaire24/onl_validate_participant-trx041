@@ -1,6 +1,6 @@
 package com.bbva.rbvd.lib.r041.transform.bean;
 
-import com.bbva.pisd.dto.insurancedao.join.QuotationJoinCustomerInformationDTO;
+import com.bbva.pisd.dto.insurancedao.join.QuotationCustomerDTO;
 import com.bbva.rbvd.dto.insrncsale.aso.CommonFieldsASO;
 import com.bbva.rbvd.dto.insrncsale.aso.FormationASO;
 import com.bbva.rbvd.dto.insrncsale.aso.listbusinesses.BusinessASO;
@@ -21,12 +21,12 @@ public class ValidateRimacLegalPerson {
     private static final String TAG_OTROS = "OTROS";
     private static final String COUNTRY_REQUIRED = "PERU";
 
-    public static OrganizacionBO getDataOrganization(final BusinessASO businesses, PersonaBO persona, QuotationJoinCustomerInformationDTO registerInsuranceQuotationDAO, Integer rolId, ParticipantsDTO requestBody) {
+    public static OrganizacionBO getDataOrganization(final BusinessASO businesses, PersonaBO persona, QuotationCustomerDTO registerInsuranceQuotationDAO, Integer rolId, ParticipantsDTO requestBody) {
         return mapOrganizations(businesses, persona, registerInsuranceQuotationDAO, rolId, requestBody);
 
     }
 
-    private static OrganizacionBO mapOrganizations(final BusinessASO business, PersonaBO persona, QuotationJoinCustomerInformationDTO quotation, Integer rolId, ParticipantsDTO requestBody) {
+    private static OrganizacionBO mapOrganizations(final BusinessASO business, PersonaBO persona, QuotationCustomerDTO quotation, Integer rolId, ParticipantsDTO requestBody) {
 
         List<ContactDetailsDTO> contactDetail = requestBody.getContactDetails().stream().filter(Objects::nonNull).collect(Collectors.toList());
 

@@ -7,7 +7,7 @@ import com.bbva.pisd.dto.insurancedao.entities.InsuranceBusinessEntity;
 import com.bbva.pisd.dto.insurancedao.entities.InsuranceProductEntity;
 import com.bbva.pisd.dto.insurancedao.entities.QuotationEntity;
 import com.bbva.pisd.dto.insurancedao.entities.QuotationModEntity;
-import com.bbva.pisd.dto.insurancedao.join.QuotationJoinCustomerInformationDTO;
+import com.bbva.pisd.dto.insurancedao.join.QuotationCustomerDTO;
 import com.bbva.rbvd.dto.participant.request.ParticipantsDTO;
 import com.bbva.rbvd.dto.participant.request.ContactDetailsDTO;
 import com.bbva.rbvd.dto.participant.request.ParticipantTypeDTO;
@@ -195,8 +195,8 @@ InputParticipantsDTO requestBody = new InputParticipantsDTO();
         return requestBody;
     }
 
-    public static QuotationJoinCustomerInformationDTO buildFindQuotationJoinByPolicyQuotaInternalId(String participantPersonalId){
-        QuotationJoinCustomerInformationDTO quotationJoinInformation = new QuotationJoinCustomerInformationDTO();
+    public static QuotationCustomerDTO buildFindQuotationJoinByPolicyQuotaInternalId(String participantPersonalId){
+        QuotationCustomerDTO quotationJoinInformation = new QuotationCustomerDTO();
 
         QuotationEntity quotationEntity = new QuotationEntity();
         QuotationModEntity quotationModEntity = new QuotationModEntity();
@@ -851,9 +851,9 @@ InputParticipantsDTO requestBody = new InputParticipantsDTO();
         requestBody.setChannelId("PC");
         requestBody.setTraceId("c05ed2bd-1a7c-47ca-b7c9-fc639f47790a");
         List<ParticipantsDTO> participantsList = new ArrayList<>();
-        ParticipantsDTO participant1 = buildParticipant("PAYMENT_MANAGER","DNI", "46716129","LEGAL", true);
-        ParticipantsDTO participant2 = buildParticipant("CONTRACTOR","DNI", "45093558","LEGAL", true);
-        ParticipantsDTO participant3 = buildParticipant("INSURED","DNI", "00002023","LEGAL",false);
+        ParticipantsDTO participant1 = buildParticipant("PAYMENT_MANAGER","RUC", "201928394221","LEGAL", true);
+        ParticipantsDTO participant2 = buildParticipant("CONTRACTOR","RUC", "201928394221","LEGAL", true);
+        ParticipantsDTO participant3 = buildParticipant("INSURED","RUC", "201928394221","LEGAL",false);
         participantsList.add(participant1);
         participantsList.add(participant2);
         participantsList.add(participant3);

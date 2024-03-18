@@ -1,6 +1,6 @@
 package com.bbva.rbvd.lib.r041.pattern.factory;
 
-import com.bbva.pisd.dto.insurancedao.join.QuotationJoinCustomerInformationDTO;
+import com.bbva.pisd.dto.insurancedao.join.QuotationCustomerDTO;
 import com.bbva.rbvd.dto.insrncsale.bo.emision.OrganizacionBO;
 import com.bbva.rbvd.dto.insrncsale.bo.emision.PayloadAgregarTerceroBO;
 import com.bbva.rbvd.dto.insrncsale.bo.emision.PersonaBO;
@@ -34,7 +34,7 @@ public class FactoryProductValidate {
         }
     }
 
-    public static void enrichPayloadByProduct(PayloadAgregarTerceroBO payloadAgregarTerceroBO, QuotationJoinCustomerInformationDTO quotationInformation) {
+    public static void enrichPayloadByProduct(PayloadAgregarTerceroBO payloadAgregarTerceroBO, QuotationCustomerDTO quotationInformation) {
         String insuranceProductType = quotationInformation.getInsuranceProduct().getInsuranceProductType();
         switch (insuranceProductType) {
             case "830":

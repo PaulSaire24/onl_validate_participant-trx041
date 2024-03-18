@@ -1,7 +1,7 @@
 package com.bbva.rbvd.lib.r041.impl;
 
 import com.bbva.apx.exception.business.BusinessException;
-import com.bbva.pisd.dto.insurancedao.join.QuotationJoinCustomerInformationDTO;
+import com.bbva.pisd.dto.insurancedao.join.QuotationCustomerDTO;
 import com.bbva.rbvd.dto.insrncsale.bo.emision.AgregarTerceroBO;
 import com.bbva.rbvd.dto.participant.request.InputParticipantsDTO;
 import com.bbva.rbvd.lib.r041.pattern.decorator.ParticipantValidations;
@@ -27,7 +27,7 @@ public class RBVDR041Impl extends RBVDR041Abstract {
             LOGGER.info("** validateAllParticipantsByIndicatedType :: Person type {} ", personType);
             ValidationUtil.validateAllParticipantsByIndicatedType(input.getParticipants(), personType);
             ValidationParameter validationParameter = new ValidationParameter(pisdR601, pisdR012, rbvdR048, participantProperties);
-            QuotationJoinCustomerInformationDTO quotationInformation = validationParameter.getCustomerFromQuotation(input.getQuotationId());
+            QuotationCustomerDTO quotationInformation = validationParameter.getCustomerFromQuotation(input.getQuotationId());
             LOGGER.info(" :: executeValidateAddParticipant :: productId -> {}",quotationInformation.getInsuranceProduct().getInsuranceProductType());
             ParticipantValidations participantsOfProduct = FactoryProductValidate.getProductToValidateParticipants(quotationInformation.getInsuranceProduct().getInsuranceProductType(),rbvdR048,validationParameter);
             LOGGER.info(" :: executeValidateAddParticipant :: quotationId -> {}",quotationInformation.getQuotation().getInsuranceCompanyQuotaId());

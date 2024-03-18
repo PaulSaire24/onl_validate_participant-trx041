@@ -7,13 +7,14 @@ import com.bbva.elara.domain.transaction.ThreadContext;
 import com.bbva.pisd.dto.insurancedao.constants.PISDInsuranceErrors;
 import com.bbva.pisd.dto.insurancedao.entities.InsuranceProductEntity;
 import com.bbva.pisd.dto.insurancedao.entities.QuotationEntity;
-import com.bbva.pisd.dto.insurancedao.join.QuotationJoinCustomerInformationDTO;
+import com.bbva.pisd.dto.insurancedao.join.QuotationCustomerDTO;
 import com.bbva.pisd.lib.r012.PISDR012;
 import com.bbva.pisd.lib.r601.PISDR601;
 import com.bbva.rbvd.dto.insrncsale.bo.emision.AgregarTerceroBO;
 import com.bbva.rbvd.dto.insrncsale.bo.emision.PayloadAgregarTerceroBO;
 import com.bbva.rbvd.dto.participant.request.InputParticipantsDTO;
 import com.bbva.rbvd.lib.r048.RBVDR048;
+import com.bbva.rbvd.util.MockDTO;
 import com.bbva.rbvd.util.ParticipantsUtil;
 import org.junit.Assert;
 import org.junit.Before;
@@ -28,6 +29,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import javax.annotation.Resource;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
@@ -117,7 +119,7 @@ public class RBVDR041Test {
 
     @Test
     public void executeTestDynamcLifeOk(){
-        QuotationJoinCustomerInformationDTO quotationJoinCustomerInformation = new QuotationJoinCustomerInformationDTO();
+        QuotationCustomerDTO quotationJoinCustomerInformation = new QuotationCustomerDTO();
         quotationJoinCustomerInformation.setInsuranceProduct(new InsuranceProductEntity());
         quotationJoinCustomerInformation.setQuotation(new QuotationEntity());
         quotationJoinCustomerInformation.getInsuranceProduct().setInsuranceProductType("841");
@@ -148,7 +150,7 @@ public class RBVDR041Test {
 
 	@Test
 	public void executeNaturalPersonTestOkLifeProduct(){
-		QuotationJoinCustomerInformationDTO quotation = ParticipantsUtil.buildFindQuotationJoinByPolicyQuotaInternalId("789956435");
+		QuotationCustomerDTO quotation = ParticipantsUtil.buildFindQuotationJoinByPolicyQuotaInternalId("789956435");
 		quotation.getInsuranceProduct().setInsuranceProductType("841");
 		Map<String,Object> responseInsuredBD = new HashMap<>();
 		responseInsuredBD.put("CLIENT_LAST_NAME","Romero|Aguilar");
@@ -269,11 +271,46 @@ public class RBVDR041Test {
 
 	}
 
+	@Test
+	public void executeLegalPersonTestOk() throws IOException {
+		InputParticipantsDTO request = ParticipantsUtil.getMockRequestBodyValidateLegalParticipants();
+		when(pisdr601.executeFindQuotationJoinByPolicyQuotaInternalId(anyString())).thenReturn(ParticipantsUtil.buildFindQuotationJoinByPolicyQuotaInternalId("20123453922"));
+		when(pisdr012.executeGetParticipantRolesByCompany(anyMap())).thenReturn(ParticipantsUtil.buildRolByParticipantTypeResponse());
+		Mockito.when(rbvdr048.executeKsmkCryptography(Mockito.anyString())).thenReturn("getKSMKResponseOkMock");
+		Mockito.when(rbvdr048.executeListBusiness(Mockito.anyString())).thenReturn(MockDTO.getInstance().getListBusinessesOkMock());
+		AgregarTerceroBO agregarTerceroBO = new AgregarTerceroBO();
+		PayloadAgregarTerceroBO payloadAgregarTerceroBO = new PayloadAgregarTerceroBO();
+		payloadAgregarTerceroBO.setCotizacion("cotizacion");
+		agregarTerceroBO.setPayload(payloadAgregarTerceroBO);
+		when(rbvdr048.executeAddParticipants(anyObject(),anyString(),anyString(),anyString())).thenReturn(agregarTerceroBO);
+		when(rbvdr048.executeGetCustomerByDocType(anyString(),anyString())).thenReturn(ParticipantsUtil.buildPersonHostDataResponseCase3());
+		AgregarTerceroBO response = rbvdR041.executeValidateAddParticipant(request);
+		Assert.assertNotNull(response);
+		Assert.assertEquals(0,this.context.getAdviceList().size());
 
+	}
+
+	@Test
+	public void executeLegalPersonTestOkCase2() throws IOException {
+		InputParticipantsDTO request = ParticipantsUtil.getMockRequestBodyValidateLegalParticipants();
+		when(pisdr601.executeFindQuotationJoinByPolicyQuotaInternalId(anyString())).thenReturn(ParticipantsUtil.buildFindQuotationJoinByPolicyQuotaInternalId("20123453922"));
+		when(pisdr012.executeGetParticipantRolesByCompany(anyMap())).thenReturn(ParticipantsUtil.buildRolByParticipantTypeResponse());
+		Mockito.when(rbvdr048.executeKsmkCryptography(Mockito.anyString())).thenReturn("getKSMKResponseOkMock");
+		Mockito.when(rbvdr048.executeListBusiness(Mockito.anyString())).thenReturn(MockDTO.getInstance().getListBusinessesOkMockCase2());
+		AgregarTerceroBO agregarTerceroBO = new AgregarTerceroBO();
+		PayloadAgregarTerceroBO payloadAgregarTerceroBO = new PayloadAgregarTerceroBO();
+		payloadAgregarTerceroBO.setCotizacion("cotizacion");
+		agregarTerceroBO.setPayload(payloadAgregarTerceroBO);
+		when(rbvdr048.executeAddParticipants(anyObject(),anyString(),anyString(),anyString())).thenReturn(agregarTerceroBO);
+		when(rbvdr048.executeGetCustomerByDocType(anyString(),anyString())).thenReturn(ParticipantsUtil.buildPersonHostDataResponseCase3());
+		AgregarTerceroBO response = rbvdR041.executeValidateAddParticipant(request);
+		Assert.assertNotNull(response);
+		Assert.assertEquals(0,this.context.getAdviceList().size());
+	}
 
     @Test
     public void executeTestDynamicLifeWithTwoPersonOK(){
-        QuotationJoinCustomerInformationDTO quotationJoinCustomerInformation = new QuotationJoinCustomerInformationDTO();
+        QuotationCustomerDTO quotationJoinCustomerInformation = new QuotationCustomerDTO();
         quotationJoinCustomerInformation.setInsuranceProduct(new InsuranceProductEntity());
         quotationJoinCustomerInformation.setQuotation(new QuotationEntity());
         quotationJoinCustomerInformation.getInsuranceProduct().setInsuranceProductType("841");
@@ -305,7 +342,7 @@ public class RBVDR041Test {
 
     @Test
     public void executeTestDynamicLifeWithOnePersonOK(){
-        QuotationJoinCustomerInformationDTO quotationJoinCustomerInformation = new QuotationJoinCustomerInformationDTO();
+        QuotationCustomerDTO quotationJoinCustomerInformation = new QuotationCustomerDTO();
         quotationJoinCustomerInformation.setInsuranceProduct(new InsuranceProductEntity());
         quotationJoinCustomerInformation.setQuotation(new QuotationEntity());
         quotationJoinCustomerInformation.getInsuranceProduct().setInsuranceProductType("841");
@@ -338,7 +375,7 @@ public class RBVDR041Test {
 
     @Test
     public void testExecuteDynamicLifeBusinessException() {
-        QuotationJoinCustomerInformationDTO quotationJoinCustomerInformation = new QuotationJoinCustomerInformationDTO();
+        QuotationCustomerDTO quotationJoinCustomerInformation = new QuotationCustomerDTO();
         quotationJoinCustomerInformation.setInsuranceProduct(new InsuranceProductEntity());
         quotationJoinCustomerInformation.setQuotation(new QuotationEntity());
         quotationJoinCustomerInformation.getInsuranceProduct().setInsuranceProductType("841");

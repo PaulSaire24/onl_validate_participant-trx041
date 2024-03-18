@@ -13,7 +13,7 @@ import com.bbva.rbvd.dto.insuranceroyal.error.ErrorRequestDTO;
 import com.bbva.rbvd.dto.insuranceroyal.error.ErrorResponseDTO;
 import com.bbva.rbvd.dto.participant.utils.TypeErrorControllerEnum;
 import com.bbva.rbvd.dto.participant.utils.ValidateParticipantErrors;
-import com.bbva.rbvd.lib.r048.impl.util.Constans;
+import com.bbva.rbvd.lib.r048.impl.util.Constants;
 import com.bbva.rbvd.lib.r048.impl.util.JsonHelper;
 import com.bbva.rbvd.lib.r048.impl.util.RimacUrlForker;
 import org.slf4j.Logger;
@@ -40,11 +40,7 @@ import static java.util.Collections.singletonMap;
 public class RBVDR048Impl extends RBVDR048Abstract {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(RBVDR048Impl.class);
-    private static final String APP_NAME = "apx-pe";
-    private static final String OAUTH_TOKEN = "";
-    private static final String CRE_EXTRA_PARAMS = "user=KSMK;country=PE";
-    private static final String INPUT_TEXT_SECURITY = "operation=DO;type=fpextff1;origin=ASO;endpoint=ASO;securityLevel=5";
-    private static final String B64URL = "B64URL";
+
 	@Override
 	public AgregarTerceroBO executeAddParticipants(AgregarTerceroBO requestBody, String quotationId, String productId, String traceId) {
 
@@ -82,6 +78,7 @@ public class RBVDR048Impl extends RBVDR048Abstract {
             LOGGER.info("** RBVDR048Impl - executeAddParticipantsService catch {} **",err);
 			if(Objects.nonNull(err.getHttpCode()) && !CollectionUtils.isEmpty(err.getDetails())){
 				err.setTypeErrorScope("RIMAC");
+                err.setReference(Constants.getCodeFromDBByCode(productId));
 				ErrorResponseDTO responseErr = this.pisdR403.executeFindError(err);
 				throw new BusinessException(responseErr.getCode(), false, responseErr.getMessage());
 			}
@@ -113,11 +110,11 @@ public class RBVDR048Impl extends RBVDR048Abstract {
     @Override
     public Map<String, Object> executeGetDataInsuredBD(String quotationId, String productId, String planId) {
         Map<String, Object> arguments = new HashMap<>();
-        arguments.put(Constans.POLICY_QUOTA_INTERNAL_ID,quotationId);
-        arguments.put(Constans.INSURANCE_PRODUCT_ID,productId);
-        arguments.put(Constans.INSURANCE_MODALITY_TYPE,planId);
+        arguments.put(Constants.POLICY_QUOTA_INTERNAL_ID,quotationId);
+        arguments.put(Constants.INSURANCE_PRODUCT_ID,productId);
+        arguments.put(Constants.INSURANCE_MODALITY_TYPE,planId);
         LOGGER.info("***** RBVDR048Impl - getDataInsuredBD ***** arguments: {}", arguments);
-        Map<String, Object> dataInsured = this.pisdR350.executeGetASingleRow(Constans.QUERY_GET_DATA_INSURED_BY_QUOTATION,arguments);
+        Map<String, Object> dataInsured = this.pisdR350.executeGetASingleRow(Constants.QUERY_GET_DATA_INSURED_BY_QUOTATION,arguments);
         LOGGER.info("***** RBVDR048Impl - getDataInsuredBD ***** result: {}", dataInsured);
         return dataInsured;
     }
@@ -125,9 +122,9 @@ public class RBVDR048Impl extends RBVDR048Abstract {
     @Override
     public Map<String, Object> executeGetProducAndPlanByQuotation(String quotationId) {
         Map<String, Object> arguments = new HashMap<>();
-        arguments.put(Constans.POLICY_QUOTA_INTERNAL_ID,quotationId);
+        arguments.put(Constants.POLICY_QUOTA_INTERNAL_ID,quotationId);
         LOGGER.info("***** RBVDR048Impl - getProducAndPlanByQuotation ***** arguments: {}", arguments);
-        Map<String, Object> result = this.pisdR350.executeGetASingleRow(Constans.QUERY_GET_PRODUCT_AND_MODALITY_TYPE_BY_QUOTATION,arguments);
+        Map<String, Object> result = this.pisdR350.executeGetASingleRow(Constants.QUERY_GET_PRODUCT_AND_MODALITY_TYPE_BY_QUOTATION,arguments);
         LOGGER.info("***** RBVDR048Impl - getDataInsuredBD ***** result: {}", result);
         return result;
     }
@@ -136,7 +133,11 @@ public class RBVDR048Impl extends RBVDR048Abstract {
     public String executeKsmkCryptography(String customerId) {
         LOGGER.info("***** RBVDR048Impl - executeKsmkCryptographyService Start *****");
         String b64CustomerId =  Base64.getUrlEncoder().withoutPadding().encodeToString(customerId.getBytes(StandardCharsets.UTF_8));
-        List<OutputDTO> output = ksmkR002.executeKSMKR002(Collections.singletonList(new InputDTO(b64CustomerId, B64URL)), OAUTH_TOKEN, INPUT_TEXT_SECURITY, new CredentialsDTO(APP_NAME, OAUTH_TOKEN, CRE_EXTRA_PARAMS));
+        List<OutputDTO> output = ksmkR002.executeKSMKR002(
+                Collections.singletonList(new InputDTO(b64CustomerId, Constants.ConfigurationValues.B64URL)),
+                Constants.ConfigurationValues.OAUTH_TOKEN, Constants.ConfigurationValues.INPUT_TEXT_SECURITY,
+                new CredentialsDTO(Constants.ConfigurationValues.APP_NAME, Constants.ConfigurationValues.OAUTH_TOKEN,
+                        Constants.ConfigurationValues.CRE_EXTRA_PARAMS));
         LOGGER.info("***** RBVDR048Impl - executeKsmkCryptographyService  ***** Response: {}", output);
         if (CollectionUtils.isEmpty(output)){
             throw new BusinessException(ValidateParticipantErrors.ERROR_INTERNAL_SERVICE_INVOKATION.getAdviceCode(), false,
@@ -165,10 +166,10 @@ public class RBVDR048Impl extends RBVDR048Abstract {
 		HttpHeaders headers = new HttpHeaders();
 		MediaType mediaType = new MediaType("application","json", StandardCharsets.UTF_8);
 		headers.setContentType(mediaType);
-		headers.set(Constans.Headers.AUTHORIZATION_HEADER, signature.getAuthorization());
-		headers.set(Constans.Headers.X_AMZ_DATE_HEADER, signature.getxAmzDate());
-		headers.set(Constans.Headers.X_API_KEY_HEADER, signature.getxApiKey());
-		headers.set(Constans.Headers.TRACE_ID_HEADER, signature.getTraceId());
+		headers.set(Constants.Headers.AUTHORIZATION_HEADER, signature.getAuthorization());
+		headers.set(Constants.Headers.X_AMZ_DATE_HEADER, signature.getxAmzDate());
+		headers.set(Constants.Headers.X_API_KEY_HEADER, signature.getxApiKey());
+		headers.set(Constants.Headers.TRACE_ID_HEADER, signature.getTraceId());
 
 		LOGGER.info("createHttpHeadersAWS END *****");
 		return headers;

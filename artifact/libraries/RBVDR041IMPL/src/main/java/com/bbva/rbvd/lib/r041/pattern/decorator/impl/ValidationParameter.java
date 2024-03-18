@@ -114,7 +114,7 @@ public class ValidationParameter implements PreParticipantValidations {
                 payloadProperties.setDocumentType(documentTypeHost);
                 payloadProperties.setCustomerId(part.getParticipantList().get(0).getPerson().getCustomerId());
                 payloadProperties.setDocumentNumber(part.getDocumentNumber());
-                PEWUResponse customer = executeGetCustomer(documentTypeHost,part.getDocumentNumber());
+                PEWUResponse customer = executeGetCustomer(part.getDocumentNumber(),documentTypeHost);
                 payloadProperties.setCustomer(customer);
 
                 if(StringUtils.startsWith(part.getDocumentNumber(), RBVDInternalConstants.Number.VEINTE)){

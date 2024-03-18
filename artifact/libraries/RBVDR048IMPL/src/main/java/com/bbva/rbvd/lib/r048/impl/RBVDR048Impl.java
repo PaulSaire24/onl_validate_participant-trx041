@@ -40,11 +40,7 @@ import static java.util.Collections.singletonMap;
 public class RBVDR048Impl extends RBVDR048Abstract {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(RBVDR048Impl.class);
-    private static final String APP_NAME = "apx-pe";
-    private static final String OAUTH_TOKEN = "";
-    private static final String CRE_EXTRA_PARAMS = "user=KSMK;country=PE";
-    private static final String INPUT_TEXT_SECURITY = "operation=DO;type=fpextff1;origin=ASO;endpoint=ASO;securityLevel=5";
-    private static final String B64URL = "B64URL";
+
 	@Override
 	public AgregarTerceroBO executeAddParticipants(AgregarTerceroBO requestBody, String quotationId, String productId, String traceId) {
 
@@ -137,7 +133,11 @@ public class RBVDR048Impl extends RBVDR048Abstract {
     public String executeKsmkCryptography(String customerId) {
         LOGGER.info("***** RBVDR048Impl - executeKsmkCryptographyService Start *****");
         String b64CustomerId =  Base64.getUrlEncoder().withoutPadding().encodeToString(customerId.getBytes(StandardCharsets.UTF_8));
-        List<OutputDTO> output = ksmkR002.executeKSMKR002(Collections.singletonList(new InputDTO(b64CustomerId, B64URL)), OAUTH_TOKEN, INPUT_TEXT_SECURITY, new CredentialsDTO(APP_NAME, OAUTH_TOKEN, CRE_EXTRA_PARAMS));
+        List<OutputDTO> output = ksmkR002.executeKSMKR002(
+                Collections.singletonList(new InputDTO(b64CustomerId, Constants.ConfigurationValues.B64URL)),
+                Constants.ConfigurationValues.OAUTH_TOKEN, Constants.ConfigurationValues.INPUT_TEXT_SECURITY,
+                new CredentialsDTO(Constants.ConfigurationValues.APP_NAME, Constants.ConfigurationValues.OAUTH_TOKEN,
+                        Constants.ConfigurationValues.CRE_EXTRA_PARAMS));
         LOGGER.info("***** RBVDR048Impl - executeKsmkCryptographyService  ***** Response: {}", output);
         if (CollectionUtils.isEmpty(output)){
             throw new BusinessException(ValidateParticipantErrors.ERROR_INTERNAL_SERVICE_INVOKATION.getAdviceCode(), false,

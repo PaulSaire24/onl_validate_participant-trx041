@@ -4,32 +4,43 @@ import com.bbva.rbvd.dto.insrncsale.bo.emision.AgregarTerceroBO;
 import com.bbva.rbvd.dto.insrncsale.bo.emision.OrganizacionBO;
 import com.bbva.rbvd.dto.insrncsale.bo.emision.PayloadAgregarTerceroBO;
 import com.bbva.rbvd.dto.insrncsale.bo.emision.PersonaBO;
-import com.bbva.rbvd.dto.insurance.commons.ParticipantsDTO;
-import static com.bbva.rbvd.dto.validateparticipant.constants.RBVDInternalConstants.ParticipantType;
+import com.bbva.rbvd.dto.participant.request.ParticipantsDTO;
+import com.bbva.rbvd.dto.participant.constants.RBVDInternalConstants.ParticipantType;
 
-import com.bbva.rbvd.dto.validateparticipant.constants.RBVDInternalConstants;
-import com.bbva.rbvd.dto.validateparticipant.dto.RolDTO;
+import com.bbva.rbvd.dto.participant.constants.RBVDInternalConstants;
+import com.bbva.rbvd.dto.participant.mapper.RolDTO;
 import com.bbva.rbvd.lib.r041.business.INonLifeProductBusiness;
-import com.bbva.rbvd.lib.r041.pattern.factory.Participant;
 import com.bbva.rbvd.lib.r041.pattern.factory.ParticipantFactory;
-import com.bbva.rbvd.lib.r041.pattern.factory.ProductFactory;
+import com.bbva.rbvd.lib.r041.pattern.factory.FactoryProductValidate;
+import com.bbva.rbvd.lib.r041.service.api.ConsumerExternalService;
 import com.bbva.rbvd.lib.r041.transfer.PayloadConfig;
-import com.bbva.rbvd.lib.r041.transfer.PayloadProperties;
+import com.bbva.rbvd.lib.r041.transfer.Participant;
 import com.bbva.rbvd.lib.r041.transform.bean.ValidateRimacLegalPerson;
 import com.bbva.rbvd.lib.r041.transform.bean.ValidateRimacNaturalPerson;
 import com.bbva.rbvd.lib.r041.validation.ValidationUtil;
+import com.bbva.rbvd.lib.r048.RBVDR048;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class NonLifeProductBusinessImpl implements INonLifeProductBusiness {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(NonLifeProductBusinessImpl.class);
+
+    private RBVDR048 rbvdr048;
+
+    public NonLifeProductBusinessImpl(RBVDR048 rbvdr048) {
+        this.rbvdr048 = rbvdr048;
+    }
+
     @Override
     public AgregarTerceroBO createRequestByCompany(PayloadConfig payloadConfig) {
         AgregarTerceroBO requestCompany = new AgregarTerceroBO();
         PayloadAgregarTerceroBO addTerceroByCompany = new PayloadAgregarTerceroBO();
         List<ParticipantsDTO> participantsInputList = payloadConfig.getInput().getParticipants();//input de la trx
-        List<PayloadProperties> participantsPropertiesList = payloadConfig.getProperties();//properties agrupadas
+        List<Participant> participantsPropertiesList = payloadConfig.getParticipants();//properties agrupadas
         List<RolDTO> selectedRoles = payloadConfig.getRegisteredRolesDB();//roles
 
         if(RBVDInternalConstants.TypeParticipant.NATURAL.toString().equalsIgnoreCase(payloadConfig.getPersonType())){
@@ -39,7 +50,7 @@ public class NonLifeProductBusinessImpl implements INonLifeProductBusiness {
                 participantsPropertiesList.forEach(partProp->{
                     //Factoria cliente,
                     ParticipantType participantType = ValidationUtil.isBBVAClient(partInput.getPerson().getCustomerId()) ? ParticipantType.CUSTOMER : ParticipantType.NON_CUSTOMER;
-                    Participant participant = ParticipantFactory.buildParticipant(participantType);
+                    com.bbva.rbvd.lib.r041.pattern.factory.Participant participant = ParticipantFactory.buildParticipant(participantType);
 
                     if(validateDocumentEqualsCondition(partInput, partProp)){
                         personaList.add(participant.createRequestParticipant(partProp.getCustomer(),partInput, payloadConfig.getQuotationInformation(), ValidationUtil.obtainExistingCompanyRole(partInput,payloadConfig.getParticipantProperties(),selectedRoles)));
@@ -47,7 +58,7 @@ public class NonLifeProductBusinessImpl implements INonLifeProductBusiness {
                 }));
             addTerceroByCompany.setPersona(personaList);
             requestCompany.setPayload(addTerceroByCompany);
-            ProductFactory.enrichPayloadByProduct(addTerceroByCompany,payloadConfig.getQuotationInformation());
+            FactoryProductValidate.enrichPayloadByProduct(addTerceroByCompany,payloadConfig.getQuotationInformation());
         }else{
 
             List<OrganizacionBO> organizacionList = new ArrayList<>();
@@ -62,14 +73,23 @@ public class NonLifeProductBusinessImpl implements INonLifeProductBusiness {
                 }));
             addTerceroByCompany.setOrganizacion(organizacionList);
             requestCompany.setPayload(addTerceroByCompany);
-            ProductFactory.enrichPayloadByProduct(addTerceroByCompany,payloadConfig.getQuotationInformation());
+            FactoryProductValidate.enrichPayloadByProduct(addTerceroByCompany,payloadConfig.getQuotationInformation());
         }
 
-        return requestCompany;
+        LOGGER.info("** createRequestByCompany - request Company -> {}",requestCompany);
+
+        //call to RIMAC add third
+        ConsumerExternalService consumerService = new ConsumerExternalService(rbvdr048);
+
+        String quotationId = payloadConfig.getQuotationInformation().getQuotation().getInsuranceCompanyQuotaId();
+        String productId = payloadConfig.getQuotationInformation().getInsuranceProduct().getInsuranceProductType();
+        String traceId = payloadConfig.getInput().getTraceId();
+
+        return consumerService.executeValidateParticipantRimacService(requestCompany,quotationId,productId,traceId);
     }
 
-    private boolean validateDocumentEqualsCondition(ParticipantsDTO participant, PayloadProperties payloadProperties){
-        return payloadProperties.getDocumetType().equalsIgnoreCase(participant.getIdentityDocuments().get(0).getDocumentType().getId())
-                && payloadProperties.getDocumetNumber().equalsIgnoreCase(participant.getIdentityDocuments().get(0).getValue());
+    private boolean validateDocumentEqualsCondition(ParticipantsDTO participant, Participant payloadProperties){
+        return payloadProperties.getDocumentType().equalsIgnoreCase(participant.getIdentityDocuments().get(0).getDocumentType().getId())
+                && payloadProperties.getDocumentNumber().equalsIgnoreCase(participant.getIdentityDocuments().get(0).getValue());
     }
 }

@@ -82,7 +82,7 @@
 		<dependency>
 			<groupId>com.bbva.pisd</groupId>
 			<artifactId>PISDR601</artifactId>
-			<version>0.1.1</version>
+			<version>0.2.1</version>
 		</dependency>
 		<dependency>
 			<groupId>com.bbva.rbvd</groupId>
@@ -110,7 +110,6 @@
 							!*;version="${osgi.version.manifest}"
 						</Export-Package>
 						<Import-Package>
-
 							com.bbva.elara.aspect;version="${osgi.version.manifest}",
 							org.aopalliance.aop;version="${osgi.version.manifest}",
 							org.osgi.framework;version="${osgi.version.manifest}",

@@ -23,8 +23,8 @@ public class ConsumerExternalService extends AbstractLibrary {
            output = rbvdr048.executeAddParticipants(payload, quotationId, productId, traceId);
             LOGGER.info("**** executeValidateParticipantRimacService successful execution");
         }catch(BusinessException ex){
-            this.addAdviceWithDescription(ex.getAdviceCode(), ex.getMessage());
             LOGGER.info("**** executeValidateParticipantRimacService failed execution");
+            this.addAdviceWithDescription(ex.getAdviceCode(), ex.getMessage());
         }
         LOGGER.info("***** RBVDR041Impl - executeValidateParticipantRimacService  ***** Response Rimac: {}", output);
         return output;

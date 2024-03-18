@@ -4,12 +4,11 @@ import com.bbva.elara.configuration.manager.application.ApplicationConfiguration
 import com.bbva.elara.library.AbstractLibrary;
 import com.bbva.pisd.lib.r012.PISDR012;
 import com.bbva.pisd.lib.r601.PISDR601;
+import com.bbva.rbvd.dto.insrncsale.bo.emision.AgregarTerceroBO;
+import com.bbva.rbvd.dto.participant.request.InputParticipantsDTO;
 import com.bbva.rbvd.lib.r041.RBVDR041;
 import com.bbva.rbvd.lib.r048.RBVDR048;
 
-/**
- * This class automatically defines the libraries and utilities that it will use.
- */
 public abstract class RBVDR041Abstract extends AbstractLibrary implements RBVDR041 {
 
 	protected ApplicationConfigurationService applicationConfigurationService;
@@ -18,7 +17,7 @@ public abstract class RBVDR041Abstract extends AbstractLibrary implements RBVDR0
 
 	protected RBVDR048 rbvdR048;
 
-	protected PISDR012 pisdR012;
+    protected PISDR012 pisdR012;
 
 
 	/**
@@ -27,6 +26,7 @@ public abstract class RBVDR041Abstract extends AbstractLibrary implements RBVDR0
 	public void setApplicationConfigurationService(ApplicationConfigurationService applicationConfigurationService) {
 		this.applicationConfigurationService = applicationConfigurationService;
 	}
+
 
 	/**
 	* @param pisdR601 the this.pisdR601 to set
@@ -42,11 +42,12 @@ public abstract class RBVDR041Abstract extends AbstractLibrary implements RBVDR0
 		this.rbvdR048 = rbvdR048;
 	}
 
-	/**
-	* @param pisdR012 the this.pisdR012 to set
-	*/
-	public void setPisdR012(PISDR012 pisdR012) {
-		this.pisdR012 = pisdR012;
-	}
+    /**
+     * @param pisdR012 the this.pisdR012 to set
+     */
+    public void setPisdR012(PISDR012 pisdR012) {
+        this.pisdR012 = pisdR012;
+    }
 
+    public abstract AgregarTerceroBO executeValidateAddParticipant(InputParticipantsDTO input);
 }

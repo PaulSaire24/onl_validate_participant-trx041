@@ -2,13 +2,13 @@ package com.bbva.rbvd.lib.r041.transform.bean;
 
 import com.bbva.apx.exception.business.BusinessException;
 import com.bbva.pbtq.dto.validatedocument.response.host.pewu.PEWUResponse;
-import com.bbva.pisd.dto.insurancedao.join.QuotationJoinCustomerInformationDTO;
+import com.bbva.pisd.dto.insurancedao.join.QuotationCustomerDTO;
 import com.bbva.rbvd.dto.insrncsale.bo.emision.PersonaBO;
-import com.bbva.rbvd.dto.insurance.commons.AddressComponentsDTO;
-import com.bbva.rbvd.dto.insurance.commons.ContactDetailsDTO;
-import com.bbva.rbvd.dto.insurance.commons.ParticipantsDTO;
-import com.bbva.rbvd.dto.validateparticipant.utils.TypeErrorControllerEnum;
-import com.bbva.rbvd.dto.validateparticipant.utils.ValidateParticipantErrors;
+import com.bbva.rbvd.dto.participant.request.AddressComponentsDTO;
+import com.bbva.rbvd.dto.participant.request.ContactDetailsDTO;
+import com.bbva.rbvd.dto.participant.request.ParticipantsDTO;
+import com.bbva.rbvd.dto.participant.utils.TypeErrorControllerEnum;
+import com.bbva.rbvd.dto.participant.utils.ValidateParticipantErrors;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,7 +39,7 @@ public class ValidateRimacNaturalPerson {
     private static final String INTERIOR_NUMBER_ID = "DPTO.";
     ValidateRimacNaturalPerson() {}
 
-    public static PersonaBO mapInRequestRimacNonLife(PEWUResponse personInput, ParticipantsDTO participants, QuotationJoinCustomerInformationDTO customerInformationDb, Integer roleId){
+    public static PersonaBO mapInRequestRimacNonLife(PEWUResponse personInput, ParticipantsDTO participants, QuotationCustomerDTO customerInformationDb, Integer roleId){
         validatePewuResponsePersonData(personInput);
 
         PersonaBO persona = constructPerson(participants,personInput,customerInformationDb, roleId);
@@ -53,7 +53,7 @@ public class ValidateRimacNaturalPerson {
         return persona;
     }
 
-    private static PersonaBO constructPerson(ParticipantsDTO participant, PEWUResponse customer, QuotationJoinCustomerInformationDTO customerInformationDb, Integer roleId){
+    private static PersonaBO constructPerson(ParticipantsDTO participant, PEWUResponse customer, QuotationCustomerDTO customerInformationDb, Integer roleId){
         PersonaBO persona = new PersonaBO();
         ContactDetailsDTO correoSelect = new ContactDetailsDTO();
         ContactDetailsDTO celularSelect = new ContactDetailsDTO();

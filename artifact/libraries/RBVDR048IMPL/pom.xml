@@ -87,7 +87,7 @@
 		<dependency>
 			<groupId>com.bbva.pisd</groupId>
 			<artifactId>PISDR403</artifactId>
-			<version>0.1.1</version>
+			<version>0.1.0-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>com.bbva.elara</groupId>
@@ -98,6 +98,11 @@
 			<groupId>com.bbva.pbtq</groupId>
 			<artifactId>PBTQR002</artifactId>
 			<version>0.1.4</version>
+		</dependency>
+		<dependency>
+			<groupId>com.bbva.pisd</groupId>
+			<artifactId>PISDR350</artifactId>
+			<version>0.4.0-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>com.bbva.ksmk</groupId>

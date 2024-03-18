@@ -20,7 +20,7 @@ public class ErrorUtil {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ErrorUtil.class);
 
-    public static ErrorRequestDTO getErrorCode(RestClientException exception) {
+    public static ErrorRequestDTO prepareRequestToHandlerError(RestClientException exception) {
         ErrorRequestDTO error = new ErrorRequestDTO();
         if(exception instanceof HttpClientErrorException) {
             HttpClientErrorException httpClientErrorException = (HttpClientErrorException) exception;

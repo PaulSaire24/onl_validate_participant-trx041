@@ -7,13 +7,16 @@
 	<bean id="pisdR403" class="org.mockito.Mockito" factory-method="mock">
 		<constructor-arg value="com.bbva.pisd.lib.r403.PISDR403"/>
 	</bean>
-	<bean id="pbtqR002" class="org.mockito.Mockito" factory-method="mock">
-		<constructor-arg value="com.bbva.pbtq.lib.r002.PBTQR002"/>
-	</bean>
-	<bean id="ksmkR002" class="org.mockito.Mockito" factory-method="mock">
-		<constructor-arg value="com.bbva.ksmk.lib.r002.KSMKR002"/>
-	</bean>
-	<bean id="rbvdR066" class="org.mockito.Mockito" factory-method="mock">
-		<constructor-arg value="com.bbva.rbvd.lib.r066.RBVDR066"/>
-	</bean>
+    <bean id="pbtqR002" class="org.mockito.Mockito" factory-method="mock">
+        <constructor-arg value="com.bbva.pbtq.lib.r002.PBTQR002"/>
+    </bean>
+    <bean id="pisdR350" class="org.mockito.Mockito" factory-method="mock">
+        <constructor-arg value="com.bbva.pisd.lib.r350.PISDR350"/>
+    </bean>
+    <bean id="ksmkR002" class="org.mockito.Mockito" factory-method="mock">
+        <constructor-arg value="com.bbva.ksmk.lib.r002.KSMKR002"/>
+    </bean>
+    <bean id="rbvdR066" class="org.mockito.Mockito" factory-method="mock">
+        <constructor-arg value="com.bbva.rbvd.lib.r066.RBVDR066"/>
+    </bean>
 </beans>

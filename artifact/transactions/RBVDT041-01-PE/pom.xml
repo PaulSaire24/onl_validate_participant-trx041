@@ -4,11 +4,11 @@
 	<parent>
 		<groupId>com.bbva.rbvd</groupId>
 		<artifactId>TRANSACTIONS-onl_validate_participant-trx041</artifactId>
-		<version>0.2.0-SNAPSHOT</version>
+		<version>0.3.0-SNAPSHOT</version>
 	</parent>
 	<groupId>com.bbva.rbvd</groupId>
 	<artifactId>RBVDT041-01-PE</artifactId>
-	<version>0.2.0-SNAPSHOT</version>
+	<version>0.3.0-SNAPSHOT</version>
 	<packaging>bundle</packaging>
 	<description>Trx to validate participants information</description>
 	<properties>
@@ -47,7 +47,7 @@
 		<dependency>
 			<groupId>com.bbva.rbvd</groupId>
 			<artifactId>RBVDR041</artifactId>
-			<version>0.2.0-SNAPSHOT</version>
+			<version>0.3.0-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>com.bbva.rbvd.dto.participant</groupId>

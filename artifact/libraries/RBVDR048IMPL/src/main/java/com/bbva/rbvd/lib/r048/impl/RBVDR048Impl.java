@@ -99,7 +99,7 @@ public class RBVDR048Impl extends RBVDR048Abstract {
     public PEWUResponse executeGetCustomerByDocType(String documentNumber, String documentType) {
         LOGGER.info("***** RBVDR048Impl - executeGetCustomerService Start *****");
         LOGGER.info("***** RBVDR048Impl - executeGetCustomerService documentNumber {} - documentType {} *****", documentNumber, documentType);
-        PEWUResponse result = pbtqR002.executeSearchInHostByDocument(documentNumber,documentType);
+        PEWUResponse result = pbtqR002.executeSearchInHostByDocument(documentType,documentNumber);
         LOGGER.info("***** RBVDR048Impl - executeGetCustomerService  ***** Response Host: {}", result);
         if( Objects.isNull(result.getHostAdviceCode()) || result.getHostAdviceCode().isEmpty()){
             return result;

@@ -13,8 +13,7 @@ public class ConstantsUtil {
     }
     public enum Product {
 
-        DYNAMIC_LIFE("VIDADINAMICO","841"),
-        EASY_YES("EASYYES","840");
+        DYNAMIC_LIFE("VIDADINAMICO","841");
         private final String name;
         private final String code;
 
@@ -32,33 +31,12 @@ public class ConstantsUtil {
         }
     }
 
-    public static final class Crypto {
-        public static final String APP_NAME = "apx-pe";
-        public static final String OAUTH_TOKEN = "";
-        public static final String CRE_EXTRA_PARAMS = "user=KSMK;country=PE";
-        public static final String INPUT_TEXT_SECURITY = "operation=DO;type=customerId;origin=ASO;endpoint=ASO;securityLevel=5";
-        public static final String B64URL = "B64URL";
-
-        private Crypto() {
-        }
-    }
-
-    public static final class ContactDetails{
-        private ContactDetails() {}
-        public static final String MOBILE_NUMBER="MOBILE_NUMBER";
-        public static final String EMAIL="EMAIL";
-        public static final String PHONE_NUMBER="PHONE_NUMBER";
-    }
 
     public static final class RegularExpression{
         private RegularExpression() {   }
         public static final String CONTAIN_ONLY_LETTERS=".*[a-zA-Z].*";
         public static final String CONTAIN_ONLY_NUMBERS=".*[0-9].*";
         public static final String UNSPECIFIED = "N/A";
-    }
-    public static final class Numero{
-        private Numero() {   }
-        public static final int CLIENT_BANK_LENGHT =8;
     }
 
     public static final class Delimeter{
@@ -69,6 +47,8 @@ public class ConstantsUtil {
         public static final int UNO = 1;
         public static final int CERO = 0;
         public static final int DIEZ = 10;
+
+        public static final int CLIENT_BANK_LENGHT =8;
     }
 
     public enum Rol{

@@ -3,12 +3,16 @@ package com.bbva.rbvd.lib.r041.transfer;
 import com.bbva.pbtq.dto.validatedocument.response.host.pewu.PEWUResponse;
 import com.bbva.rbvd.dto.insrncsale.aso.listbusinesses.ListBusinessesASO;
 
-public class PayloadCustomer {
+import java.util.Map;
+
+public class Participant {
 
     private String customerId;
     private String documentType;
     private String documentNumber;
+    private String rolCode;
     private PEWUResponse customer;
+    private Map<String,Object> nonCustomer;
     private ListBusinessesASO legalCustomer;
 
     public String getCustomerId() {
@@ -17,6 +21,22 @@ public class PayloadCustomer {
 
     public void setCustomerId(String customerId) {
         this.customerId = customerId;
+    }
+
+    public Map<String, Object> getNonCustomer() {
+        return nonCustomer;
+    }
+
+    public void setNonCustomer(Map<String, Object> nonCustomer) {
+        this.nonCustomer = nonCustomer;
+    }
+
+    public String getRolCode() {
+        return rolCode;
+    }
+
+    public void setRolCode(String rolCode) {
+        this.rolCode = rolCode;
     }
 
     public String getDocumentType() {
@@ -53,11 +73,13 @@ public class PayloadCustomer {
 
     @Override
     public String toString() {
-        return "PayloadProperties{" +
+        return "Participant{" +
                 "customerId='" + customerId + '\'' +
-                ", documetType='" + documentType + '\'' +
-                ", documetNumber='" + documentNumber + '\'' +
+                ", documentType='" + documentType + '\'' +
+                ", documentNumber='" + documentNumber + '\'' +
+                ", rolId='" + rolCode + '\'' +
                 ", customer=" + customer +
+                ", nonCustomer=" + nonCustomer +
                 ", legalCustomer=" + legalCustomer +
                 '}';
     }

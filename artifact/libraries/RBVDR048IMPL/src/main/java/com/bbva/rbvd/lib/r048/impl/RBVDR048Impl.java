@@ -34,7 +34,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
-import static com.bbva.rbvd.lib.r048.impl.util.ErrorUtil.getErrorCode;
+import static com.bbva.rbvd.lib.r048.impl.util.ErrorUtil.prepareRequestToHandlerError;
 import static java.util.Collections.singletonMap;
 
 public class RBVDR048Impl extends RBVDR048Abstract {
@@ -78,7 +78,7 @@ public class RBVDR048Impl extends RBVDR048Abstract {
 			LOGGER.info("***** RBVDR048Impl - executeAddParticipantsService END *****");
 			return output;
 		} catch (RestClientException ex) {
-			ErrorRequestDTO err =  getErrorCode(ex);
+			ErrorRequestDTO err =  prepareRequestToHandlerError(ex);
             LOGGER.info("** RBVDR048Impl - executeAddParticipantsService catch {} **",err);
 			if(Objects.nonNull(err.getHttpCode()) && !CollectionUtils.isEmpty(err.getDetails())){
 				err.setTypeErrorScope("RIMAC");

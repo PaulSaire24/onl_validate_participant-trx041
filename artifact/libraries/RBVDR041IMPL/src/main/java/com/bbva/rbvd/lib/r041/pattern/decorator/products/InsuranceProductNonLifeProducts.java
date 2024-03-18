@@ -5,11 +5,11 @@ import com.bbva.pisd.dto.insurancedao.join.QuotationJoinCustomerInformationDTO;
 import com.bbva.rbvd.dto.insrncsale.bo.emision.AgregarTerceroBO;
 import com.bbva.rbvd.dto.participant.request.InputParticipantsDTO;
 import com.bbva.rbvd.lib.r041.business.impl.NonLifeProductBusinessImpl;
-import com.bbva.rbvd.lib.r041.pattern.decorator.PostParticipantValidations;
 import com.bbva.rbvd.lib.r041.pattern.decorator.PreParticipantValidations;
 import com.bbva.rbvd.lib.r041.pattern.decorator.impl.ValidateDecorator;
 import com.bbva.rbvd.lib.r041.transfer.PayloadConfig;
 import com.bbva.rbvd.lib.r041.transfer.PayloadStore;
+import com.bbva.rbvd.lib.r048.RBVDR048;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,18 +17,19 @@ public class InsuranceProductNonLifeProducts extends ValidateDecorator {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(InsuranceProductNonLifeProducts.class);
 
-    public InsuranceProductNonLifeProducts(PreParticipantValidations preValidate, PostParticipantValidations postValidate) {
-        super(preValidate, postValidate);
+    public InsuranceProductNonLifeProducts(PreParticipantValidations preValidate) {
+        super(preValidate);
     }
 
     @Override
-    public PayloadStore start(InputParticipantsDTO input, QuotationJoinCustomerInformationDTO quotationInformation, ApplicationConfigurationService applicationConfigurationService) {
+    public PayloadStore start(InputParticipantsDTO input, QuotationJoinCustomerInformationDTO quotationInformation, RBVDR048 rbvdr048, ApplicationConfigurationService applicationConfigurationService) {
         PayloadConfig payloadConfig = this.getPreValidate().getConfig(input,applicationConfigurationService, quotationInformation, input.getParticipants().get(0).getPerson().getPersonType());
         LOGGER.info(" :: PayloadConfig :: {} :: ",payloadConfig);
-        NonLifeProductBusinessImpl nonLifeProductBusiness = new NonLifeProductBusinessImpl();
-        AgregarTerceroBO requestCompany = nonLifeProductBusiness.createRequestByCompany(payloadConfig);
-        LOGGER.info(" :: Request Company :: {} :: ",requestCompany);
-        AgregarTerceroBO responseCompany = this.getPostValidate().end(requestCompany,payloadConfig.getQuotationInformation().getQuotation().getInsuranceCompanyQuotaId(), payloadConfig.getQuotationInformation().getInsuranceProduct().getInsuranceProductType(),payloadConfig.getInput().getTraceId());
+        NonLifeProductBusinessImpl nonLifeProductBusiness = new NonLifeProductBusinessImpl(rbvdr048);
+        AgregarTerceroBO responseCompany = nonLifeProductBusiness.createRequestByCompany(payloadConfig);
+        LOGGER.info(" :: Response Company :: {} :: ",responseCompany);
+
+
         return PayloadStore.Builder.an()
                 .responseRimac(responseCompany)
                 .build();
@@ -36,7 +37,6 @@ public class InsuranceProductNonLifeProducts extends ValidateDecorator {
 
     public static final class Builder {
         private PreParticipantValidations preValidate;
-        private PostParticipantValidations postValidate;
 
         private Builder() {
         }
@@ -50,14 +50,8 @@ public class InsuranceProductNonLifeProducts extends ValidateDecorator {
             return this;
         }
 
-        public InsuranceProductNonLifeProducts.Builder postValidate(PostParticipantValidations postValidate) {
-            this.postValidate = postValidate;
-            return this;
-        }
-
-
         public InsuranceProductNonLifeProducts build() {
-            return new InsuranceProductNonLifeProducts(preValidate, postValidate);
+            return new InsuranceProductNonLifeProducts(preValidate);
         }
     }
 }

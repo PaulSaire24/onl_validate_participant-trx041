@@ -10,6 +10,6 @@ public interface PreParticipantValidations {
 
     PayloadConfig getConfig(InputParticipantsDTO input, ApplicationConfigurationService applicationConfigurationService);
     PayloadConfig getConfig(InputParticipantsDTO input,ApplicationConfigurationService applicationConfigurationService, QuotationJoinCustomerInformationDTO quotationInformation, String personType);
-    QuotationJoinCustomerInformationDTO getCustomerBasicInformation(String quotationId);
+    QuotationJoinCustomerInformationDTO getCustomerFromQuotation(String quotationId);
 
 }

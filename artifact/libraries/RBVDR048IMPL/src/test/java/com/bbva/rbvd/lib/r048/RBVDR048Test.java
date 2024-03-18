@@ -27,7 +27,7 @@ import com.bbva.rbvd.dto.insrncsale.bo.emision.AgregarTerceroBO;
 import com.bbva.rbvd.dto.insrncsale.bo.emision.PayloadAgregarTerceroBO;
 import com.bbva.rbvd.dto.insrncsale.mock.MockData;
 import com.bbva.rbvd.mock.MockBundleContext;
-import com.bbva.rbvd.dto.insuranceroyal.error.ErrorResponseDTO;;
+import com.bbva.rbvd.dto.insuranceroyal.error.ErrorResponseDTO;
 import com.bbva.rbvd.lib.r066.RBVDR066;
 import org.junit.Before;
 import org.junit.Test;
@@ -40,6 +40,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.aop.framework.Advised;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.web.client.HttpClientErrorException;
@@ -72,6 +73,7 @@ import static org.mockito.Mockito.mock;
 		"classpath:/META-INF/spring/RBVDR048-app-test.xml",
 		"classpath:/META-INF/spring/RBVDR048-arc.xml",
 		"classpath:/META-INF/spring/RBVDR048-arc-test.xml" })
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 public class RBVDR048Test {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(RBVDR048Test.class);
@@ -322,6 +324,7 @@ public class RBVDR048Test {
 		when(this.applicationConfigurationService.getProperty(anyString())).thenReturn("https://apitest.rimac.com/api-vida/V1/cotizaciones/{cotizacion}/persona-agregar");
 		when(this.externalApiConnector.exchange(anyString(), anyObject(),anyObject(), (Class<AgregarTerceroBO>) any(), anyMap()))
 				.thenThrow(new HttpClientErrorException(HttpStatus.BAD_REQUEST, "", responseBody.getBytes(), StandardCharsets.UTF_8));
+
 		when(pisdr403.executeFindError(anyObject())).thenReturn(res);
 		AgregarTerceroBO validation = this.rbvdR048.executeAddParticipants(new AgregarTerceroBO(),"quotationId","productId","traceId");
 

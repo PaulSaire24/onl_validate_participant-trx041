@@ -15,7 +15,7 @@ import com.bbva.rbvd.lib.r041.pattern.decorator.PreParticipantValidations;
 import com.bbva.rbvd.lib.r041.properties.ParticipantProperties;
 import com.bbva.rbvd.lib.r041.service.api.ConsumerInternalService;
 import com.bbva.rbvd.lib.r041.transfer.PayloadConfig;
-import com.bbva.rbvd.lib.r041.transfer.PayloadCustomer;
+import com.bbva.rbvd.lib.r041.transfer.Participant;
 import com.bbva.rbvd.dto.participant.request.InputParticipantsDTO;
 import com.bbva.rbvd.dto.participant.request.ParticipantsDTO;
 import com.bbva.rbvd.dto.participant.group.ParticipantGroupDTO;
@@ -58,32 +58,39 @@ public class ValidationParameter implements PreParticipantValidations {
 
     @Override
     public PayloadConfig getConfig(InputParticipantsDTO input,ApplicationConfigurationService applicationConfigurationService) {
-        LOGGER.info("** getConfig :: start");
-        PayloadConfig payloadConfig = new PayloadConfig();
-        List<PayloadCustomer> payloadCustomerList = new ArrayList<>();
-        input.getParticipants().forEach(part -> {
-            PayloadCustomer payloadProperties = new PayloadCustomer();
-            String documentTypeHost = applicationConfigurationService.getProperty(part.getIdentityDocuments().get(0).getDocumentType().getId());
-            part.getIdentityDocuments().get(0).getDocumentType().setId(documentTypeHost);
-            if(ValidationUtil.isBBVAClient(part.getPerson().getCustomerId())){
-                payloadProperties.setDocumentType(documentTypeHost);
-                payloadProperties.setCustomerId(part.getPerson().getCustomerId());
-                payloadProperties.setDocumentNumber(part.getIdentityDocuments().get(0).getValue());
-                PEWUResponse customer = executeGetCustomer(part.getIdentityDocuments().get(0).getValue(),documentTypeHost);
-                payloadProperties.setCustomer(customer);
-                LOGGER.info("** getConfig payloadProperties -> {}",payloadProperties);
-                payloadCustomerList.add(payloadProperties);
-            }
+        LOGGER.info("** getConfig dinamic life :: start");
 
-        });
+        PayloadConfig payloadConfig = new PayloadConfig();
 
         Map<String,Object> result = getProducAndPlanByQuotation(input.getQuotationId());
         String productId = result.get(ConstantsUtil.INSURANCE_PRODUCT_ID).toString();
         String planId = (String) result.get(ConstantsUtil.INSURANCE_MODALITY_TYPE);
-        Map<String,Object> insuredInformation = getInformationInsuredBD(input.getQuotationId(),productId,planId);
-        LOGGER.info("** getConfig dataInsured -> {}",insuredInformation);
-        payloadConfig.setDataInsuredBD(insuredInformation);
-        payloadConfig.setProperties(payloadCustomerList);
+
+        List<Participant> participants = new ArrayList<>();
+        input.getParticipants().forEach(part -> {
+            Participant participant = new Participant();
+            String documentType = applicationConfigurationService.getProperty(part.getIdentityDocuments().get(0).getDocumentType().getId());
+            part.getIdentityDocuments().get(0).getDocumentType().setId(documentType);
+            participant.setDocumentType(documentType);
+            participant.setCustomerId(part.getPerson().getCustomerId());
+            participant.setDocumentNumber(part.getIdentityDocuments().get(0).getValue());
+            participant.setRolCode(part.getParticipantType().getId());
+            if(ValidationUtil.isBBVAClient(part.getPerson().getCustomerId())){
+                PEWUResponse customer = executeGetCustomer(part.getIdentityDocuments().get(0).getValue(),documentType);
+                participant.setCustomer(customer);
+                LOGGER.info("** getConfig participant -> {}",participant);
+            }else{
+                // en el scrip ir por doc indentidad
+                Map<String,Object> insuredInformation = getInsuredFromQuotation(input.getQuotationId(),productId,planId);
+                LOGGER.info("** getConfig dataInsured -> {}",insuredInformation);
+                participant.setNonCustomer(insuredInformation);
+
+                payloadConfig.setDataInsuredBD(insuredInformation);
+            }
+            participants.add(participant);
+        });
+
+        payloadConfig.setParticipants(participants);
         payloadConfig.setInput(input);
         return payloadConfig;
     }
@@ -95,7 +102,7 @@ public class ValidationParameter implements PreParticipantValidations {
         String modalityTypeProduct = quotationInformation.getQuotationMod().getInsuranceModalityType();
         List<RolDTO> roles = this.getRolesByCompany(ParticipantMap.productAndModalityTransforMap(insuranceProductId, modalityTypeProduct));
         PayloadConfig payloadConfig = new PayloadConfig();
-        List<PayloadCustomer> payloadPropertiesList = new ArrayList<>();
+        List<Participant> payloadPropertiesList = new ArrayList<>();
         List<ParticipantGroupDTO> groupParticipant = groupByDocumentNumberAndDocumentType(input);
         LOGGER.info(" ** GetConfig :: groupParticipant -> {}",groupParticipant);
 
@@ -103,7 +110,7 @@ public class ValidationParameter implements PreParticipantValidations {
             String documentTypeHost = applicationConfigurationService.getProperty(part.getDocumentType());
             part.getParticipantList().forEach(p -> p.getIdentityDocuments().get(0).getDocumentType().setId(documentTypeHost));
             if(ValidationUtil.isBBVAClient(part.getParticipantList().get(0).getPerson().getCustomerId())){
-                PayloadCustomer payloadProperties = new PayloadCustomer();
+                Participant payloadProperties = new Participant();
                 payloadProperties.setDocumentType(documentTypeHost);
                 payloadProperties.setCustomerId(part.getParticipantList().get(0).getPerson().getCustomerId());
                 payloadProperties.setDocumentNumber(part.getDocumentNumber());
@@ -116,7 +123,7 @@ public class ValidationParameter implements PreParticipantValidations {
 
                 payloadPropertiesList.add(payloadProperties);
             }else{
-                PayloadCustomer payloadPropertiesNonCustomer = new PayloadCustomer();
+                Participant payloadPropertiesNonCustomer = new Participant();
                 payloadPropertiesNonCustomer.setDocumentType(documentTypeHost);
                 payloadPropertiesNonCustomer.setDocumentNumber(part.getDocumentNumber());
                 payloadPropertiesList.add(payloadPropertiesNonCustomer);
@@ -124,7 +131,7 @@ public class ValidationParameter implements PreParticipantValidations {
 
         });
 
-        payloadConfig.setProperties(payloadPropertiesList);
+        payloadConfig.setParticipants(payloadPropertiesList);
         payloadConfig.setInput(input);
         payloadConfig.setRegisteredRolesDB(roles);
         payloadConfig.setPersonType(personType);
@@ -135,7 +142,7 @@ public class ValidationParameter implements PreParticipantValidations {
 
 
     @Override
-    public QuotationJoinCustomerInformationDTO getCustomerBasicInformation(String quotationId) {
+    public QuotationJoinCustomerInformationDTO getCustomerFromQuotation(String quotationId) {
         try{
             LOGGER.info("***** CustomerInformationDAOImpl - getCustomerBasicInformation START *****");
             QuotationJoinCustomerInformationDTO responseQueryCustomerProductInformation = pisdr601.executeFindQuotationJoinByPolicyQuotaInternalId(quotationId);
@@ -156,7 +163,7 @@ public class ValidationParameter implements PreParticipantValidations {
         return consumerInternalService.getProducAndPlanByQuotation(quotationId);
     }
 
-    private Map<String,Object> getInformationInsuredBD(String quotationId, String productId, String planId){
+    private Map<String,Object> getInsuredFromQuotation(String quotationId, String productId, String planId){
         ConsumerInternalService consumerInternalService = new ConsumerInternalService(rbvdr048);
         return consumerInternalService.getDataInsuredBD(quotationId,productId,planId);
     }
@@ -224,8 +231,6 @@ public class ValidationParameter implements PreParticipantValidations {
             this.rbvdr048 = rbvdr048;
             return this;
         }
-
-
         public ValidationParameter build() {
             return new ValidationParameter(pisdr601, rbvdr048);
         }

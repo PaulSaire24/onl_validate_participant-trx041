@@ -8,10 +8,25 @@ import com.bbva.pisd.dto.insurancedao.entities.InsuranceProductEntity;
 import com.bbva.pisd.dto.insurancedao.entities.QuotationEntity;
 import com.bbva.pisd.dto.insurancedao.entities.QuotationModEntity;
 import com.bbva.pisd.dto.insurancedao.join.QuotationJoinCustomerInformationDTO;
-import com.bbva.rbvd.dto.participant.request.*;
+import com.bbva.rbvd.dto.participant.request.ParticipantsDTO;
+import com.bbva.rbvd.dto.participant.request.ContactDetailsDTO;
+import com.bbva.rbvd.dto.participant.request.ParticipantTypeDTO;
+import com.bbva.rbvd.dto.participant.request.PersonDTO;
+import com.bbva.rbvd.dto.participant.request.GenderDTO;
+import com.bbva.rbvd.dto.participant.request.IdentityDocumentDTO;
+import com.bbva.rbvd.dto.participant.request.DocumentTypeDTO;
+import com.bbva.rbvd.dto.participant.request.AddressComponentsDTO;
+import com.bbva.rbvd.dto.participant.request.AddressesDTO;
+import com.bbva.rbvd.dto.participant.request.InputParticipantsDTO;
+import com.bbva.rbvd.dto.participant.request.LocationDTO;
 
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.Map;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Collections;
+import java.util.HashMap;
 
 public class ParticipantsUtil {
 

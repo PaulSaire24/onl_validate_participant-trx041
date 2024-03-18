@@ -6,7 +6,6 @@ import com.bbva.rbvd.dto.insrncsale.bo.emision.PayloadAgregarTerceroBO;
 import com.bbva.rbvd.dto.insrncsale.bo.emision.PersonaBO;
 import com.bbva.rbvd.dto.participant.constants.RBVDInternalConstants;
 import com.bbva.rbvd.lib.r041.pattern.decorator.ParticipantValidations;
-import com.bbva.rbvd.lib.r041.pattern.decorator.impl.ValidateStore;
 import com.bbva.rbvd.lib.r041.pattern.decorator.impl.ValidationParameter;
 import com.bbva.rbvd.lib.r041.pattern.decorator.products.InsuranceProductNonLifeProducts;
 import com.bbva.rbvd.lib.r041.pattern.decorator.products.ValidateDynamicLife;
@@ -21,18 +20,16 @@ import java.util.stream.Collectors;
 
 public class FactoryProductValidate {
     private static final Logger LOGGER = LoggerFactory.getLogger(FactoryProductValidate.class);
-    public static ParticipantValidations getProductType(String productId, RBVDR048 rbvdr048,ValidationParameter validationParameter){
+    public static ParticipantValidations getProductToValidateParticipants(String productId, RBVDR048 rbvdr048, ValidationParameter validationParameter){
         if(ConstantsUtil.Product.DYNAMIC_LIFE.getCode().equalsIgnoreCase(productId)){
             LOGGER.info("**FactoryProductValidate: Dynamic Life product **");
             return  ValidateDynamicLife.Builder.an()
                     .preValidate(ValidationParameter.Builder.an().rbvdr048(rbvdr048).buildOne())
-                    .postValidate(new ValidateStore(rbvdr048))
                     .build();
         } else {
             LOGGER.info("** FactoryProductValidate: NON LIFE product **");
             return InsuranceProductNonLifeProducts.Builder.an()
                     .preValidate(validationParameter)
-                    .postValidate(new ValidateStore(rbvdr048))
                     .build();
         }
     }

@@ -27,11 +27,11 @@ public class RBVDR041Impl extends RBVDR041Abstract {
             LOGGER.info("** validateAllParticipantsByIndicatedType :: Person type {} ", personType);
             ValidationUtil.validateAllParticipantsByIndicatedType(input.getParticipants(), personType);
             ValidationParameter validationParameter = new ValidationParameter(pisdR601, pisdR012, rbvdR048, participantProperties);
-            QuotationJoinCustomerInformationDTO quotationInformation = validationParameter.getCustomerBasicInformation(input.getQuotationId());
+            QuotationJoinCustomerInformationDTO quotationInformation = validationParameter.getCustomerFromQuotation(input.getQuotationId());
             LOGGER.info(" :: executeValidateAddParticipant :: productId -> {}",quotationInformation.getInsuranceProduct().getInsuranceProductType());
-            ParticipantValidations validate = FactoryProductValidate.getProductType(quotationInformation.getInsuranceProduct().getInsuranceProductType(),rbvdR048,validationParameter);
+            ParticipantValidations participantsOfProduct = FactoryProductValidate.getProductToValidateParticipants(quotationInformation.getInsuranceProduct().getInsuranceProductType(),rbvdR048,validationParameter);
             LOGGER.info(" :: executeValidateAddParticipant :: quotationId -> {}",quotationInformation.getQuotation().getInsuranceCompanyQuotaId());
-            PayloadStore payloadStore = validate.start(input,quotationInformation,this.applicationConfigurationService);
+            PayloadStore payloadStore = participantsOfProduct.start(input,quotationInformation, this.rbvdR048,this.applicationConfigurationService);
             LOGGER.info(" :: executeValidateAddParticipant :: PayloadStore -> {}",payloadStore);
             return payloadStore.getResponseRimac();
         }catch (BusinessException businessException){

@@ -11,7 +11,7 @@ import java.util.Map;
 public class PayloadConfig {
 
     private InputParticipantsDTO input;
-    private List<PayloadCustomer> properties;
+    private List<Participant> participants;
     private String quotationId;
     private Map<String,Object> dataInsuredBD;
     private String personType;
@@ -27,12 +27,12 @@ public class PayloadConfig {
         this.input = input;
     }
 
-    public List<PayloadCustomer> getProperties() {
-        return properties;
+    public List<Participant> getParticipants() {
+        return participants;
     }
 
-    public void setProperties(List<PayloadCustomer> properties) {
-        this.properties = properties;
+    public void setParticipants(List<Participant> participants) {
+        this.participants = participants;
     }
 
     public String getQuotationId() {
@@ -87,7 +87,7 @@ public class PayloadConfig {
     public String toString() {
         return "PayloadConfig{" +
                 "input=" + input +
-                ", properties=" + properties +
+                ", properties=" + participants +
                 ", quotationId='" + quotationId + '\'' +
                 ", dataInsuredBD=" + dataInsuredBD +
                 ", personType='" + personType + '\'' +

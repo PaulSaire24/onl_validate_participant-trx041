@@ -4,7 +4,8 @@ import com.bbva.elara.configuration.manager.application.ApplicationConfiguration
 import com.bbva.pisd.dto.insurancedao.join.QuotationJoinCustomerInformationDTO;
 import com.bbva.rbvd.dto.participant.request.InputParticipantsDTO;
 import com.bbva.rbvd.lib.r041.transfer.PayloadStore;
+import com.bbva.rbvd.lib.r048.RBVDR048;
 
 public interface ParticipantValidations {
-    PayloadStore start(InputParticipantsDTO input, QuotationJoinCustomerInformationDTO quotationInformation, ApplicationConfigurationService applicationConfigurationService);
+    PayloadStore start(InputParticipantsDTO input, QuotationJoinCustomerInformationDTO quotationInformation, RBVDR048 rbvdr048, ApplicationConfigurationService applicationConfigurationService);
 }

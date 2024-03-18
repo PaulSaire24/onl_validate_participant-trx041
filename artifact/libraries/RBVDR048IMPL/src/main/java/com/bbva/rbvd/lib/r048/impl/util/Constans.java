@@ -14,5 +14,41 @@ public class Constans {
     public static final String INSURANCE_PRODUCT_ID = "INSURANCE_PRODUCT_ID";
     public static final String INSURANCE_MODALITY_TYPE = "INSURANCE_MODALITY_TYPE";
 
+    public enum Product {
+
+        DYNAMIC_LIFE("VIDADINAMICO","841","841007");
+        private final String name;
+        private final String code;
+        private final String codeFromDateBase;
+
+        Product(String name, String code,String codeFromDateBase) {
+            this.name = name;
+            this.code = code;
+            this.codeFromDateBase = codeFromDateBase;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public String getCode() {
+            return code;
+        }
+
+        public String getCodeFromDateBase() {
+            return codeFromDateBase;
+        }
+    }
+
+    public static String getCodeFromDBByCode(String code){
+        Product[] val = Product.values();
+        for (Product er: val) {
+            if(er.getCode().equalsIgnoreCase(code)){
+                return er.getCodeFromDateBase();
+            }
+        }
+        return null;
+    }
+
 
 }

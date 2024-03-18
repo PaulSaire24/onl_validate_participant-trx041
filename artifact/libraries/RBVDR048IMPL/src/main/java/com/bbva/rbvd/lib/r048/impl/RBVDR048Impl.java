@@ -82,6 +82,7 @@ public class RBVDR048Impl extends RBVDR048Abstract {
             LOGGER.info("** RBVDR048Impl - executeAddParticipantsService catch {} **",err);
 			if(Objects.nonNull(err.getHttpCode()) && !CollectionUtils.isEmpty(err.getDetails())){
 				err.setTypeErrorScope("RIMAC");
+                err.setReference(Constans.getCodeFromDBByCode(productId));
 				ErrorResponseDTO responseErr = this.pisdR403.executeFindError(err);
 				throw new BusinessException(responseErr.getCode(), false, responseErr.getMessage());
 			}

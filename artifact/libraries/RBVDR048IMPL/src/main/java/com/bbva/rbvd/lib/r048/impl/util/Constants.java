@@ -1,6 +1,6 @@
 package com.bbva.rbvd.lib.r048.impl.util;
 
-public class Constans {
+public class Constants {
 
     public static final class Headers {
         public static final String AUTHORIZATION_HEADER = "Authorization";

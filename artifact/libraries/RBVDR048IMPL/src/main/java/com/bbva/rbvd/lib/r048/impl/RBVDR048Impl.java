@@ -66,7 +66,7 @@ public class RBVDR048Impl extends RBVDR048Abstract {
 		LOGGER.info("***** RBVDR048Impl - executeAddParticipantsService ***** entity: {}", entity);
 
 		try {
-			ResponseEntity<AgregarTerceroBO> response = this.externalApiConnector.exchange(rimacUrlForker.generateKeyAddParticipants(productId),HttpMethod.PATCH, entity,
+			ResponseEntity<AgregarTerceroBO> response = this.externalApiConnector.exchange(rimacUrlForker.generateKeyAddParticipants(productId),HttpMethod.valueOf(httpMethodValue), entity,
 					AgregarTerceroBO.class, singletonMap("cotizacion",quotationId));
 			output = response.getBody();
 			output.setErrorRimacBO(null);

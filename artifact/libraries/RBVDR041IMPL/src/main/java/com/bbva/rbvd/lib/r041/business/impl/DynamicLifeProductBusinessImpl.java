@@ -10,6 +10,7 @@ import com.bbva.rbvd.lib.r041.transfer.Participant;
 import com.bbva.rbvd.lib.r041.transform.bean.CustomerBean;
 import com.bbva.rbvd.lib.r041.transform.bean.NonCustomerBean;
 import com.bbva.rbvd.lib.r041.util.ConstantsUtil;
+import com.bbva.rbvd.lib.r041.validation.ValidationUtil;
 import com.bbva.rbvd.lib.r048.RBVDR048;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,14 +18,15 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
-import static com.bbva.rbvd.lib.r041.transform.bean.CustomerBean.enrichPerson;
 
-public class ThirdDynamicLifeBusinessImpl implements IThirdDynamicLifeBusiness {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ThirdDynamicLifeBusinessImpl.class);
+public class DynamicLifeProductBusinessImpl implements IThirdDynamicLifeBusiness {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(DynamicLifeProductBusinessImpl.class);
     private RBVDR048 rbvdr048;
-    public ThirdDynamicLifeBusinessImpl(RBVDR048 rbvdr048) {
+    public DynamicLifeProductBusinessImpl(RBVDR048 rbvdr048) {
         this.rbvdr048 = rbvdr048;
     }
 
@@ -69,6 +71,25 @@ public class ThirdDynamicLifeBusinessImpl implements IThirdDynamicLifeBusiness {
         String productId = ConstantsUtil.Product.DYNAMIC_LIFE.getCode();
         String traceId = payloadConfig.getInput().getTraceId();
         return consumerService.executeValidateParticipantRimacService(requestRimac,quotationId,productId,traceId);
-
     }
+
+    public static void enrichPerson(List<PersonaBO> personList){
+
+        Optional<PersonaBO> personManager = personList.stream().filter(person -> person.getRol() == ConstantsUtil.Rol.PAYMENT_MANAGER.getValue())
+                .findFirst();
+        if(personManager.isPresent()){
+            PersonaBO personContractor = CustomerBean.getPerson(personManager.get(), ConstantsUtil.Rol.CONTRACTOR);
+
+            if(ValidationUtil.isOnlyOneWithResponsibleRole(personList)){
+                PersonaBO personInsured = CustomerBean.getPerson(personManager.get(), ConstantsUtil.Rol.INSURED);
+                personList.add(personContractor);
+                personList.add(personInsured);
+
+            } else if (ValidationUtil.hasOneWithRole23AndOneWithRole9(personList)) {
+                personList.add(personContractor);
+            }
+
+        }
+    }
+
 }

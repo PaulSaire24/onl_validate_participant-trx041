@@ -108,11 +108,13 @@ public class RBVDR048Impl extends RBVDR048Abstract {
     }
 
     @Override
-    public Map<String, Object> executeGetDataInsuredBD(String quotationId, String productId, String planId) {
+    public Map<String, Object> executeGetDataInsuredBD(String quotationId, String productId, String planId, String ducumentNumber,String documentType) {
         Map<String, Object> arguments = new HashMap<>();
         arguments.put(Constants.POLICY_QUOTA_INTERNAL_ID,quotationId);
         arguments.put(Constants.INSURANCE_PRODUCT_ID,productId);
         arguments.put(Constants.INSURANCE_MODALITY_TYPE,planId);
+        arguments.put(Constants.PERSONAL_ID,ducumentNumber);
+        arguments.put(Constants.CUSTOMER_DOCUMENT_TYPE,documentType);
         LOGGER.info("***** RBVDR048Impl - getDataInsuredBD ***** arguments: {}", arguments);
         Map<String, Object> dataInsured = this.pisdR350.executeGetASingleRow(Constants.QUERY_GET_DATA_INSURED_BY_QUOTATION,arguments);
         LOGGER.info("***** RBVDR048Impl - getDataInsuredBD ***** result: {}", dataInsured);

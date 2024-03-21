@@ -36,10 +36,8 @@ public class ErrorUtil {
             JsonObject jsonErrorObject = jsonResponseObject.getAsJsonObject("error");
             if (Objects.nonNull(jsonErrorObject)){
                 JsonObject jsonDetailsObject = jsonErrorObject.getAsJsonObject("details");
-                JsonElement httpCode = jsonErrorObject.get("httpStatus");
-                if (Objects.nonNull(jsonDetailsObject) && Objects.nonNull(httpCode)){
+                if (Objects.nonNull(jsonDetailsObject)){
                     LOGGER.info("HttpClientErrorException - Details arrays: {}", jsonDetailsObject);
-                    LOGGER.info("HttpClientErrorException - httpCode: {}", httpCode.getAsInt());
                     List<DetailsErrorDTO> detailsListr = new ArrayList<>();
                     for (Map.Entry<String, JsonElement> entry : jsonDetailsObject.entrySet()) {
                         DetailsErrorDTO errorDetail = new DetailsErrorDTO();
@@ -50,7 +48,6 @@ public class ErrorUtil {
                         detailsListr.add(errorDetail);
                     }
                     error.setDetails(detailsListr);
-                    error.setHttpCode((long) httpCode.getAsInt());
                 }
             }
 

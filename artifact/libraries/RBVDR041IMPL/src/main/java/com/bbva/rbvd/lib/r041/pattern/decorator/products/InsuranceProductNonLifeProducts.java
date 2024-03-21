@@ -5,25 +5,25 @@ import com.bbva.pisd.dto.insurancedao.join.QuotationCustomerDTO;
 import com.bbva.rbvd.dto.insrncsale.bo.emision.AgregarTerceroBO;
 import com.bbva.rbvd.dto.participant.request.InputParticipantsDTO;
 import com.bbva.rbvd.lib.r041.business.impl.NonLifeProductBusinessImpl;
-import com.bbva.rbvd.lib.r041.pattern.decorator.PreParticipantValidations;
-import com.bbva.rbvd.lib.r041.pattern.decorator.impl.ValidateDecorator;
+import com.bbva.rbvd.lib.r041.pattern.decorator.BeforeParticipantDataValidator;
+import com.bbva.rbvd.lib.r041.pattern.decorator.impl.ParticipantDataValidatorDecorator;
 import com.bbva.rbvd.lib.r041.transfer.PayloadConfig;
 import com.bbva.rbvd.lib.r041.transfer.PayloadStore;
 import com.bbva.rbvd.lib.r048.RBVDR048;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class InsuranceProductNonLifeProducts extends ValidateDecorator {
+public class InsuranceProductNonLifeProducts extends ParticipantDataValidatorDecorator {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(InsuranceProductNonLifeProducts.class);
 
-    public InsuranceProductNonLifeProducts(PreParticipantValidations preValidate) {
+    public InsuranceProductNonLifeProducts(BeforeParticipantDataValidator preValidate) {
         super(preValidate);
     }
 
     @Override
     public PayloadStore start(InputParticipantsDTO input, QuotationCustomerDTO quotationInformation, RBVDR048 rbvdr048, ApplicationConfigurationService applicationConfigurationService) {
-        PayloadConfig payloadConfig = this.getPreValidate().getConfig(input,applicationConfigurationService, quotationInformation, input.getParticipants().get(0).getPerson().getPersonType());
+        PayloadConfig payloadConfig = this.getPreValidate().before(input,applicationConfigurationService, quotationInformation, input.getParticipants().get(0).getPerson().getPersonType());
         LOGGER.info(" :: PayloadConfig :: {} :: ",payloadConfig);
         NonLifeProductBusinessImpl nonLifeProductBusiness = new NonLifeProductBusinessImpl(rbvdr048);
         AgregarTerceroBO responseCompany = nonLifeProductBusiness.createRequestByCompany(payloadConfig);
@@ -36,7 +36,7 @@ public class InsuranceProductNonLifeProducts extends ValidateDecorator {
     }
 
     public static final class Builder {
-        private PreParticipantValidations preValidate;
+        private BeforeParticipantDataValidator preValidate;
 
         private Builder() {
         }
@@ -45,7 +45,7 @@ public class InsuranceProductNonLifeProducts extends ValidateDecorator {
             return new InsuranceProductNonLifeProducts.Builder();
         }
 
-        public InsuranceProductNonLifeProducts.Builder preValidate(PreParticipantValidations preValidate) {
+        public InsuranceProductNonLifeProducts.Builder preValidate(BeforeParticipantDataValidator preValidate) {
             this.preValidate = preValidate;
             return this;
         }

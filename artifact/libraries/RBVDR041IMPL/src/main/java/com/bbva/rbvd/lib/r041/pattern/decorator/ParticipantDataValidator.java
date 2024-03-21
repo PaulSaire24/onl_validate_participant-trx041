@@ -6,6 +6,6 @@ import com.bbva.rbvd.dto.participant.request.InputParticipantsDTO;
 import com.bbva.rbvd.lib.r041.transfer.PayloadStore;
 import com.bbva.rbvd.lib.r048.RBVDR048;
 
-public interface ParticipantValidations {
+public interface ParticipantDataValidator {
     PayloadStore start(InputParticipantsDTO input, QuotationCustomerDTO quotationInformation, RBVDR048 rbvdr048, ApplicationConfigurationService applicationConfigurationService);
 }

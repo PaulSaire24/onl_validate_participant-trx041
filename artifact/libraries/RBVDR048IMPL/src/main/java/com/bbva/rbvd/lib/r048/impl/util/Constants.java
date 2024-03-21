@@ -16,15 +16,18 @@ public class Constants {
         public static final String INPUT_TEXT_SECURITY = "operation=DO;type=fpextff1;origin=ASO;endpoint=ASO;securityLevel=5";
         public static final String B64URL = "B64URL";
     }
-    public static final String QUERY_GET_DATA_INSURED_BY_QUOTATION = "PISD.GET_INSURED_DATA_LIFE";
+    public static final String QUERY_GET_DATA_INSURED_BY_QUOTATION = "PISD.GET_INSURED_DATA_FROM_QUOTATION";
     public static final String QUERY_GET_PRODUCT_AND_MODALITY_TYPE_BY_QUOTATION = "PISD.GET_PRODUCT_AND_MODALITY_TYPE";
     public static final String POLICY_QUOTA_INTERNAL_ID = "POLICY_QUOTA_INTERNAL_ID";
     public static final String INSURANCE_PRODUCT_ID = "INSURANCE_PRODUCT_ID";
     public static final String INSURANCE_MODALITY_TYPE = "INSURANCE_MODALITY_TYPE";
+    public static final String CUSTOMER_DOCUMENT_TYPE = "CUSTOMER_DOCUMENT_TYPE";
+    public static final String PERSONAL_ID = "PERSONAL_ID";
 
     public enum Product {
 
-        DYNAMIC_LIFE("VIDADINAMICO","841","841007");
+        DYNAMIC_LIFE("VIDADINAMICO","841","841007"),
+        VEHICULAR("VEHICULAR","830","830017");
         private final String name;
         private final String code;
         private final String codeFromDateBase;

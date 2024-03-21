@@ -4,8 +4,8 @@ import com.bbva.apx.exception.business.BusinessException;
 import com.bbva.pisd.dto.insurancedao.join.QuotationCustomerDTO;
 import com.bbva.rbvd.dto.insrncsale.bo.emision.AgregarTerceroBO;
 import com.bbva.rbvd.dto.participant.request.InputParticipantsDTO;
-import com.bbva.rbvd.lib.r041.pattern.decorator.ParticipantValidations;
-import com.bbva.rbvd.lib.r041.pattern.decorator.impl.ValidationParameter;
+import com.bbva.rbvd.lib.r041.pattern.decorator.ParticipantDataValidator;
+import com.bbva.rbvd.lib.r041.pattern.decorator.impl.ParticipantDataValidatorParameter;
 import com.bbva.rbvd.lib.r041.pattern.factory.FactoryProductValidate;
 import com.bbva.rbvd.lib.r041.properties.ParticipantProperties;
 import com.bbva.rbvd.lib.r041.transfer.PayloadStore;
@@ -25,11 +25,11 @@ public class RBVDR041Impl extends RBVDR041Abstract {
         try{
             String personType = input.getParticipants().get(0).getPerson().getPersonType();
             LOGGER.info("** validateAllParticipantsByIndicatedType :: Person type {} ", personType);
-            ValidationUtil.validateAllParticipantsByIndicatedType(input.getParticipants(), personType);
-            ValidationParameter validationParameter = new ValidationParameter(pisdR601, pisdR012, rbvdR048, participantProperties);
-            QuotationCustomerDTO quotationInformation = validationParameter.getCustomerFromQuotation(input.getQuotationId());
+            ValidationUtil.validateAllParticipantsOfSameType(input.getParticipants(), personType);
+            ParticipantDataValidatorParameter participantDataValidatorParameter = new ParticipantDataValidatorParameter(pisdR601, pisdR012, rbvdR048, participantProperties);
+            QuotationCustomerDTO quotationInformation = participantDataValidatorParameter.getCustomerFromQuotation(input.getQuotationId());
             LOGGER.info(" :: executeValidateAddParticipant :: productId -> {}",quotationInformation.getInsuranceProduct().getInsuranceProductType());
-            ParticipantValidations participantsOfProduct = FactoryProductValidate.getProductToValidateParticipants(quotationInformation.getInsuranceProduct().getInsuranceProductType(),rbvdR048,validationParameter);
+            ParticipantDataValidator participantsOfProduct = FactoryProductValidate.getProductToValidateParticipants(quotationInformation.getInsuranceProduct().getInsuranceProductType(),rbvdR048,participantDataValidatorParameter);
             LOGGER.info(" :: executeValidateAddParticipant :: quotationId -> {}",quotationInformation.getQuotation().getInsuranceCompanyQuotaId());
             PayloadStore payloadStore = participantsOfProduct.start(input,quotationInformation, this.rbvdR048,this.applicationConfigurationService);
             LOGGER.info(" :: executeValidateAddParticipant :: PayloadStore -> {}",payloadStore);

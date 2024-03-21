@@ -34,8 +34,8 @@ public class CustomerBean {
         return personCustomer;
     }
 
-    public static void enrichPerson(List<PersonaBO> personList){
-        PersonaBO personManager = personList.get(0);
+
+    public static PersonaBO getPerson(PersonaBO personManager, ConstantsUtil.Rol contractor) {
         PersonaBO personContractor = new PersonaBO();
         personContractor.setNombres(personManager.getNombres());
         personContractor.setApePaterno(personManager.getApePaterno());
@@ -45,7 +45,7 @@ public class CustomerBean {
         personContractor.setFechaNacimiento(personManager.getFechaNacimiento());
         personContractor.setSexo(personManager.getSexo());
         personContractor.setCorreoElectronico(personManager.getCorreoElectronico());
-        personContractor.setRol(ConstantsUtil.Rol.CONTRACTOR.getValue());
+        personContractor.setRol(contractor.getValue());
         personContractor.setCelular(personManager.getCelular());
 
         personContractor.setTipoVia(personManager.getTipoVia());
@@ -55,33 +55,7 @@ public class CustomerBean {
         personContractor.setProvincia(personManager.getProvincia());
         personContractor.setDepartamento(personManager.getDepartamento());
         personContractor.setDireccion(personManager.getDireccion());
-        if(personList.size()==1){
-            PersonaBO personInsured = new PersonaBO();
-            personInsured.setNombres(personManager.getNombres());
-            personInsured.setApePaterno(personManager.getApePaterno());
-            personInsured.setApeMaterno(personManager.getApeMaterno());
-            personInsured.setTipoDocumento(personManager.getTipoDocumento());
-            personInsured.setNroDocumento(personManager.getNroDocumento());
-            personInsured.setFechaNacimiento(personManager.getFechaNacimiento());
-            personInsured.setSexo(personManager.getSexo());
-            personInsured.setCorreoElectronico(personManager.getCorreoElectronico());
-            personInsured.setRol(ConstantsUtil.Rol.INSURED.getValue());
-            personInsured.setCelular(personManager.getCelular());
-
-            personInsured.setTipoVia(personManager.getTipoVia());
-            personInsured.setNombreVia(personManager.getNombreVia());
-            personInsured.setNumeroVia(personManager.getNumeroVia());
-            personInsured.setDistrito(personManager.getDistrito());
-            personInsured.setProvincia(personManager.getProvincia());
-            personInsured.setDepartamento(personManager.getDepartamento());
-            personInsured.setDireccion(personManager.getDireccion());
-
-            personList.add(personContractor);
-            personList.add(personInsured);
-
-        } else if (personList.size()==2) {
-            personList.add(personContractor);
-        }
-
+        return personContractor;
     }
+
 }

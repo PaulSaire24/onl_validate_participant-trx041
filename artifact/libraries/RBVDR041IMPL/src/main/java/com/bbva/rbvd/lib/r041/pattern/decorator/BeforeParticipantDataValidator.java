@@ -6,10 +6,10 @@ import com.bbva.rbvd.dto.participant.request.InputParticipantsDTO;
 import com.bbva.rbvd.lib.r041.transfer.PayloadConfig;
 
 
-public interface PreParticipantValidations {
+public interface BeforeParticipantDataValidator {
 
-    PayloadConfig getConfig(InputParticipantsDTO input, ApplicationConfigurationService applicationConfigurationService);
-    PayloadConfig getConfig(InputParticipantsDTO input,ApplicationConfigurationService applicationConfigurationService, QuotationCustomerDTO quotationInformation, String personType);
+    PayloadConfig before(InputParticipantsDTO input, ApplicationConfigurationService applicationConfigurationService);
+    PayloadConfig before(InputParticipantsDTO input, ApplicationConfigurationService applicationConfigurationService, QuotationCustomerDTO quotationInformation, String personType);
     QuotationCustomerDTO getCustomerFromQuotation(String quotationId);
 
 }

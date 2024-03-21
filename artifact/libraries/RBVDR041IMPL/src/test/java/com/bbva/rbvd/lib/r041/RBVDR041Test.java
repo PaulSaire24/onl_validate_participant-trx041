@@ -141,7 +141,7 @@ public class RBVDR041Test {
         when(pisdr601.executeFindQuotationJoinByPolicyQuotaInternalId(anyString())).thenReturn(quotationJoinCustomerInformation);
         when(rbvdr048.executeAddParticipants(anyObject(),anyString(),anyString(),anyString())).thenReturn(new AgregarTerceroBO());
         when(rbvdr048.executeGetCustomerByDocType(anyString(),anyString())).thenReturn(ParticipantsUtil.buildPersonHostDataResponseCase3());
-        when(rbvdr048.executeGetDataInsuredBD(anyString(),anyString(),anyString())).thenReturn(responseInsuredBD);
+        when(rbvdr048.executeGetDataInsuredBD(anyString(),anyString(),anyString(),anyString(),anyString())).thenReturn(responseInsuredBD);
         when(rbvdr048.executeGetProducAndPlanByQuotation(anyString())).thenReturn(responseData);
         AgregarTerceroBO response = rbvdR041.executeValidateAddParticipant(request);
         Assert.assertNotNull(response);
@@ -171,7 +171,7 @@ public class RBVDR041Test {
 		when(rbvdr048.executeAddParticipants(anyObject(),anyString(),anyString(),anyString())).thenReturn(agregarTerceroBO);
 		when(rbvdr048.executeGetCustomerByDocType(anyString(),anyString())).thenReturn(ParticipantsUtil.buildPersonHostDataResponseCase3());
 		when(rbvdr048.executeGetProducAndPlanByQuotation(anyString())).thenReturn(responseData);
-		when(rbvdr048.executeGetDataInsuredBD(anyString(),anyString(),anyString())).thenReturn(responseInsuredBD);
+		when(rbvdr048.executeGetDataInsuredBD(anyString(),anyString(),anyString(),anyString(),anyString())).thenReturn(responseInsuredBD);
 		AgregarTerceroBO response = rbvdR041.executeValidateAddParticipant(ParticipantsUtil.getMockRequestBodyValidateNaturalParticipantsLifeCase1());
 		Assert.assertNotNull(response);
 		Assert.assertEquals(0,this.context.getAdviceList().size());
@@ -332,7 +332,7 @@ public class RBVDR041Test {
         when(this.applicationConfigurationService.getProperty(anyString())).thenReturn("L");
         when(pisdr601.executeFindQuotationJoinByPolicyQuotaInternalId(anyString())).thenReturn(quotationJoinCustomerInformation);
         when(rbvdr048.executeAddParticipants(anyObject(),anyString(),anyString(),anyString())).thenReturn(new AgregarTerceroBO());
-        when(rbvdr048.executeGetDataInsuredBD(anyString(),anyString(),anyString())).thenReturn(responseInsuredBD);
+        when(rbvdr048.executeGetDataInsuredBD(anyString(),anyString(),anyString(),anyString(),anyString())).thenReturn(responseInsuredBD);
         when(rbvdr048.executeGetCustomerByDocType(anyString(),anyString())).thenReturn(ParticipantsUtil.buildPersonHostDataResponseCase3());
         when(rbvdr048.executeGetProducAndPlanByQuotation(anyString())).thenReturn(responseData);
         AgregarTerceroBO response = rbvdR041.executeValidateAddParticipant(request);
@@ -366,7 +366,7 @@ public class RBVDR041Test {
         when(pisdr601.executeFindQuotationJoinByPolicyQuotaInternalId(anyString())).thenReturn(quotationJoinCustomerInformation);
         when(rbvdr048.executeAddParticipants(anyObject(),anyString(),anyString(),anyString())).thenReturn(new AgregarTerceroBO());
         when(rbvdr048.executeGetCustomerByDocType(anyString(),anyString())).thenReturn(ParticipantsUtil.buildPersonHostDataResponseCase3());
-        when(rbvdr048.executeGetDataInsuredBD(anyString(),anyString(),anyString())).thenReturn(responseInsuredBD);
+        when(rbvdr048.executeGetDataInsuredBD(anyString(),anyString(),anyString(),anyString(),anyString())).thenReturn(responseInsuredBD);
         when(rbvdr048.executeGetProducAndPlanByQuotation(anyString())).thenReturn(responseData);
         AgregarTerceroBO response = rbvdR041.executeValidateAddParticipant(request);
         Assert.assertNotNull(response);
@@ -397,7 +397,7 @@ public class RBVDR041Test {
         when(this.applicationConfigurationService.getProperty(anyString())).thenReturn("L");
         when(pisdr601.executeFindQuotationJoinByPolicyQuotaInternalId(anyString())).thenReturn(quotationJoinCustomerInformation);
         when(this.rbvdr048.executeAddParticipants(anyObject(),anyString(),anyString(),anyString())).thenThrow(new BusinessException("BBVA14554",false,"businessError"));
-        when(rbvdr048.executeGetDataInsuredBD(anyString(),anyString(),anyString())).thenReturn(responseInsuredBD);
+        when(rbvdr048.executeGetDataInsuredBD(anyString(),anyString(),anyString(),anyString(),anyString())).thenReturn(responseInsuredBD);
         when(rbvdr048.executeGetCustomerByDocType(anyString(),anyString())).thenReturn(ParticipantsUtil.buildPersonHostDataResponseCase3());
         when(rbvdr048.executeGetProducAndPlanByQuotation(anyString())).thenReturn(responseData);
         AgregarTerceroBO response = rbvdR041.executeValidateAddParticipant(request);

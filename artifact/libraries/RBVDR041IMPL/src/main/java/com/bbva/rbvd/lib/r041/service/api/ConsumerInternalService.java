@@ -29,9 +29,9 @@ public class ConsumerInternalService {
         return rbvdr048.executeGetCustomerByDocType(documentNumber, documentType);
     }
 
-   public Map<String,Object> getDataInsuredBD(String quotationId,String productId,String planId){
+   public Map<String,Object> getDataInsuredBD(String quotationId,String productId,String planId,String ducumentNumber,String documentType){
         LOGGER.info("***** ConsumerInternalService - getDataInsuredBD quotationId {}",quotationId);
-        return rbvdr048.executeGetDataInsuredBD(quotationId,productId,planId);
+        return rbvdr048.executeGetDataInsuredBD(quotationId,productId,planId,ducumentNumber,documentType);
    }
 
     public Map<String,Object> getProducAndPlanByQuotation(String quotationId){

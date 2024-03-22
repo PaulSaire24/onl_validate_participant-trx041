@@ -81,11 +81,13 @@ public class DynamicLifeProductBusinessImpl implements IThirdDynamicLifeBusiness
             PersonaBO personContractor = CustomerBean.getPerson(personManager.get(), ConstantsUtil.Rol.CONTRACTOR);
 
             if(ValidationUtil.isOnlyOneWithResponsibleRole(personList)){
+                LOGGER.info("** enrichPerson - personList con solo rol 23");
                 PersonaBO personInsured = CustomerBean.getPerson(personManager.get(), ConstantsUtil.Rol.INSURED);
                 personList.add(personContractor);
                 personList.add(personInsured);
 
             } else if (ValidationUtil.hasOneWithRole23AndOneWithRole9(personList)) {
+                LOGGER.info("** enrichPerson - personList con solo rol 23 y 9");
                 personList.add(personContractor);
             }
 

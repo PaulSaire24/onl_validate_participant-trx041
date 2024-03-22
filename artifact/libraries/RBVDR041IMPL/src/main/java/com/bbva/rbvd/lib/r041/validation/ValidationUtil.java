@@ -40,12 +40,12 @@ public class ValidationUtil {
     public static boolean isOnlyOneWithResponsibleRole(List<PersonaBO> personList) {
         return personList.stream()
                 .filter(person -> person.getRol() == ConstantsUtil.Rol.PAYMENT_MANAGER.getValue())
-                .count() == 1;
+                .count() == 1 && personList.size() == 1;
     }
 
     public static boolean hasOneWithRole23AndOneWithRole9(List<PersonaBO> personList) {
         return personList.stream().anyMatch(person -> person.getRol() == ConstantsUtil.Rol.PAYMENT_MANAGER.getValue())
-                && personList.stream().anyMatch(person -> person.getRol() == ConstantsUtil.Rol.INSURED.getValue());
+                && personList.stream().anyMatch(person -> person.getRol() == ConstantsUtil.Rol.INSURED.getValue()) && personList.size() == 2;
     }
 
 }

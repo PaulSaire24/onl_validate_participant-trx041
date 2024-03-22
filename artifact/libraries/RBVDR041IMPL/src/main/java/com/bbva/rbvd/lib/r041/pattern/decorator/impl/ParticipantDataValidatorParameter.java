@@ -60,7 +60,7 @@ public class ParticipantDataValidatorParameter implements BeforeParticipantDataV
 
     @Override
     public PayloadConfig before(InputParticipantsDTO input, ApplicationConfigurationService applicationConfigurationService) {
-        LOGGER.info("** getConfig dinamic life :: start");
+        LOGGER.info("** before dinamic life :: start");
 
         PayloadConfig payloadConfig = new PayloadConfig();
 
@@ -70,6 +70,7 @@ public class ParticipantDataValidatorParameter implements BeforeParticipantDataV
 
         ParticipantsBusiness participantsBusiness = new ParticipantsBusiness(applicationConfigurationService,this.rbvdr048);
         List<Participant> participants = participantsBusiness.getParticipants(input,productId, planId);
+        LOGGER.info("** before :: participants.size()  {}",participants.size());
 
         payloadConfig.setParticipants(participants);
         payloadConfig.setInput(input);

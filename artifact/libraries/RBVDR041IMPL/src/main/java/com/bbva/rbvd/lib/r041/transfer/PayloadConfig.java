@@ -13,7 +13,6 @@ public class PayloadConfig {
     private InputParticipantsDTO input;
     private List<Participant> participants;
     private String quotationId;
-    private Map<String,Object> dataInsuredBD;
     private String personType;
     private List<RolDTO> registeredRolesDB;
     private QuotationCustomerDTO quotationInformation;
@@ -43,13 +42,6 @@ public class PayloadConfig {
         this.quotationId = quotationId;
     }
 
-    public Map<String,Object> getDataInsuredBD() {
-        return dataInsuredBD;
-    }
-
-    public void setDataInsuredBD(Map<String,Object> dataInsuredBD) {
-        this.dataInsuredBD = dataInsuredBD;
-    }
 
     public List<RolDTO> getRegisteredRolesDB() {
         return registeredRolesDB;
@@ -89,7 +81,6 @@ public class PayloadConfig {
                 "input=" + input +
                 ", properties=" + participants +
                 ", quotationId='" + quotationId + '\'' +
-                ", dataInsuredBD=" + dataInsuredBD +
                 ", personType='" + personType + '\'' +
                 ", registeredRolesDB=" + registeredRolesDB +
                 ", quotationInformation=" + quotationInformation +

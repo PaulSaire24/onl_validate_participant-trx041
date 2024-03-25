@@ -14,7 +14,6 @@ import com.bbva.pisd.lib.r601.PISDR601;
 import com.bbva.rbvd.dto.insrncsale.bo.emision.AgregarTerceroBO;
 import com.bbva.rbvd.dto.insrncsale.bo.emision.PayloadAgregarTerceroBO;
 import com.bbva.rbvd.dto.participant.request.InputParticipantsDTO;
-import com.bbva.rbvd.lib.r041.impl.RBVDR041Impl;
 import com.bbva.rbvd.lib.r041.properties.ParticipantProperties;
 import com.bbva.rbvd.lib.r048.RBVDR048;
 import com.bbva.rbvd.util.MockDTO;
@@ -23,8 +22,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
+
 import org.mockito.MockitoAnnotations;
 import org.mockito.Mockito;
 import org.mockito.Spy;
@@ -32,7 +30,9 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.aop.framework.Advised;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import javax.annotation.Resource;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.HashMap;
@@ -44,7 +44,7 @@ import static org.mockito.Matchers.anyObject;
 import static org.mockito.Matchers.anyMap;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {
 		"classpath:/META-INF/spring/RBVDR041-app.xml",
 		"classpath:/META-INF/spring/RBVDR041-app-test.xml",
@@ -57,22 +57,27 @@ public class RBVDR041Test {
 	@Spy
 	private Context context;
 
-	@InjectMocks
-	private RBVDR041Impl rbvdR041;
+	//@InjectMocks
+	@Resource(name = "rbvdR041")
+	private RBVDR041 rbvdR041;
 
-	@Mock
+	//@Mock
+	@Resource(name = "rbvdR048")
 	private RBVDR048 rbvdr048;
 
-	@Mock
+	//@Mock
+	@Resource(name = "pisdR601")
 	private PISDR601 pisdr601;
 
-	@Mock
+	//@Mock
+	@Resource(name = "pisdR012")
     private PISDR012 pisdr012;
 
-	@Mock
+	//@Mock
+	@Resource(name = "applicationConfigurationService")
 	private ApplicationConfigurationService applicationConfigurationService;
 
-	@Mock
+	@Resource(name = "participantProperties")
 	private ParticipantProperties participantProperties;
 
 	@Before
@@ -284,23 +289,6 @@ public class RBVDR041Test {
 	}
 
 	@Test
-	public void executeValidationWithNaturalPersonDataWrongPewuResponse(){
-		AgregarTerceroBO agregarTerceroBO = new AgregarTerceroBO();
-		PayloadAgregarTerceroBO payloadAgregarTerceroBO = new PayloadAgregarTerceroBO();
-		payloadAgregarTerceroBO.setCotizacion("cotizacion");
-		agregarTerceroBO.setPayload(payloadAgregarTerceroBO);
-		when(rbvdr048.executeAddParticipants(anyObject(),anyString(),anyString(),anyString())).thenReturn(agregarTerceroBO);
-		Mockito.when(pisdr601.executeFindQuotationJoinByPolicyQuotaInternalId(Mockito.eq("0123489304"))).thenReturn(ParticipantsUtil.buildFindQuotationJoinByPolicyQuotaInternalId("71998384"));
-		Mockito.when(pisdr012.executeGetParticipantRolesByCompany(anyMap())).thenReturn(ParticipantsUtil.buildRolByParticipantTypeResponse());
-		Mockito.when(rbvdr048.executeGetCustomerByDocType(Mockito.anyString(),Mockito.anyString())).thenReturn(new PEWUResponse());
-
-		AgregarTerceroBO response =  rbvdR041.executeValidateAddParticipant(ParticipantsUtil.getMockRequestBodyValidateNaturalParticipants());
-		Assert.assertNull(response);
-		Assert.assertEquals(1,this.context.getAdviceList().size());
-
-	}
-
-	@Test
 	public void executeLegalPersonTestOk() throws IOException {
 		InputParticipantsDTO request = ParticipantsUtil.getMockRequestBodyValidateLegalParticipants();
 		when(pisdr601.executeFindQuotationJoinByPolicyQuotaInternalId(anyString())).thenReturn(ParticipantsUtil.buildFindQuotationJoinByPolicyQuotaInternalId("20123453922"));
@@ -316,6 +304,23 @@ public class RBVDR041Test {
 		AgregarTerceroBO response = rbvdR041.executeValidateAddParticipant(request);
 		Assert.assertNotNull(response);
 		Assert.assertEquals(0,this.context.getAdviceList().size());
+
+	}
+
+	@Test
+	public void executeValidationWithNaturalPersonDataWrongPewuResponse(){
+		AgregarTerceroBO agregarTerceroBO = new AgregarTerceroBO();
+		PayloadAgregarTerceroBO payloadAgregarTerceroBO = new PayloadAgregarTerceroBO();
+		payloadAgregarTerceroBO.setCotizacion("cotizacion");
+		agregarTerceroBO.setPayload(payloadAgregarTerceroBO);
+		when(rbvdr048.executeAddParticipants(anyObject(),anyString(),anyString(),anyString())).thenReturn(agregarTerceroBO);
+		Mockito.when(pisdr601.executeFindQuotationJoinByPolicyQuotaInternalId(Mockito.eq("0123489304"))).thenReturn(ParticipantsUtil.buildFindQuotationJoinByPolicyQuotaInternalId("71998384"));
+		Mockito.when(pisdr012.executeGetParticipantRolesByCompany(anyMap())).thenReturn(ParticipantsUtil.buildRolByParticipantTypeResponse());
+		Mockito.when(rbvdr048.executeGetCustomerByDocType(Mockito.anyString(),Mockito.anyString())).thenReturn(new PEWUResponse());
+
+		AgregarTerceroBO response =  rbvdR041.executeValidateAddParticipant(ParticipantsUtil.getMockRequestBodyValidateNaturalParticipants());
+		Assert.assertNull(response);
+		Assert.assertEquals(1,this.context.getAdviceList().size());
 
 	}
 

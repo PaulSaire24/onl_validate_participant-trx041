@@ -4,6 +4,7 @@ import com.bbva.apx.exception.business.BusinessException;
 import com.bbva.elara.configuration.manager.application.ApplicationConfigurationService;
 import com.bbva.elara.domain.transaction.Context;
 import com.bbva.elara.domain.transaction.ThreadContext;
+import com.bbva.pbtq.dto.validatedocument.response.host.pewu.PEWUResponse;
 import com.bbva.pisd.dto.insurancedao.constants.PISDInsuranceErrors;
 import com.bbva.pisd.dto.insurancedao.entities.InsuranceProductEntity;
 import com.bbva.pisd.dto.insurancedao.entities.QuotationEntity;
@@ -14,6 +15,7 @@ import com.bbva.rbvd.dto.insrncsale.bo.emision.AgregarTerceroBO;
 import com.bbva.rbvd.dto.insrncsale.bo.emision.PayloadAgregarTerceroBO;
 import com.bbva.rbvd.dto.participant.request.InputParticipantsDTO;
 import com.bbva.rbvd.lib.r041.impl.RBVDR041Impl;
+import com.bbva.rbvd.lib.r041.properties.ParticipantProperties;
 import com.bbva.rbvd.lib.r048.RBVDR048;
 import com.bbva.rbvd.util.MockDTO;
 import com.bbva.rbvd.util.ParticipantsUtil;
@@ -55,7 +57,7 @@ public class RBVDR041Test {
 	@Spy
 	private Context context;
 
-		@InjectMocks
+	@InjectMocks
 	private RBVDR041Impl rbvdR041;
 
 	@Mock
@@ -69,6 +71,9 @@ public class RBVDR041Test {
 
 	@Mock
 	private ApplicationConfigurationService applicationConfigurationService;
+
+	@Mock
+	private ParticipantProperties participantProperties;
 
 	@Before
 	public void setUp() throws Exception {
@@ -87,6 +92,10 @@ public class RBVDR041Test {
 				.thenReturn("L");
 		when(this.applicationConfigurationService.getProperty("RUC"))
 				.thenReturn("R");
+
+		when(this.participantProperties.obtainRoleCodeByEnum("PAYMENT_MANAGER")).thenReturn("7");
+		when(this.participantProperties.obtainRoleCodeByEnum("INSURED")).thenReturn("2");
+		when(this.participantProperties.obtainRoleCodeByEnum("CONTRACTOR")).thenReturn("1");
 
 	}
 	
@@ -271,6 +280,23 @@ public class RBVDR041Test {
 		AgregarTerceroBO response =  rbvdR041.executeValidateAddParticipant(ParticipantsUtil.getMockRequestBodyValidateNaturalParticipants());
 		Assert.assertNotNull(response);
 		Assert.assertEquals(0, context.getAdviceList().size());
+
+	}
+
+	@Test
+	public void executeValidationWithNaturalPersonDataWrongPewuResponse(){
+		AgregarTerceroBO agregarTerceroBO = new AgregarTerceroBO();
+		PayloadAgregarTerceroBO payloadAgregarTerceroBO = new PayloadAgregarTerceroBO();
+		payloadAgregarTerceroBO.setCotizacion("cotizacion");
+		agregarTerceroBO.setPayload(payloadAgregarTerceroBO);
+		when(rbvdr048.executeAddParticipants(anyObject(),anyString(),anyString(),anyString())).thenReturn(agregarTerceroBO);
+		Mockito.when(pisdr601.executeFindQuotationJoinByPolicyQuotaInternalId(Mockito.eq("0123489304"))).thenReturn(ParticipantsUtil.buildFindQuotationJoinByPolicyQuotaInternalId("71998384"));
+		Mockito.when(pisdr012.executeGetParticipantRolesByCompany(anyMap())).thenReturn(ParticipantsUtil.buildRolByParticipantTypeResponse());
+		Mockito.when(rbvdr048.executeGetCustomerByDocType(Mockito.anyString(),Mockito.anyString())).thenReturn(new PEWUResponse());
+
+		AgregarTerceroBO response =  rbvdR041.executeValidateAddParticipant(ParticipantsUtil.getMockRequestBodyValidateNaturalParticipants());
+		Assert.assertNull(response);
+		Assert.assertEquals(1,this.context.getAdviceList().size());
 
 	}
 

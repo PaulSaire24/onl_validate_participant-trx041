@@ -21,16 +21,16 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
+
 import org.mockito.MockitoAnnotations;
 import org.mockito.Mockito;
 import org.mockito.Spy;
-import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.aop.framework.Advised;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import javax.annotation.Resource;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.HashMap;
@@ -42,7 +42,7 @@ import static org.mockito.Matchers.anyObject;
 import static org.mockito.Matchers.anyMap;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {
 		"classpath:/META-INF/spring/RBVDR041-app.xml",
 		"classpath:/META-INF/spring/RBVDR041-app-test.xml",
@@ -55,19 +55,24 @@ public class RBVDR041Test {
 	@Spy
 	private Context context;
 
-		@InjectMocks
-	private RBVDR041Impl rbvdR041;
+	//@InjectMocks
+	@Resource(name = "rbvdR041")
+	private RBVDR041 rbvdR041;
 
-	@Mock
+	//@Mock
+	@Resource(name = "rbvdR048")
 	private RBVDR048 rbvdr048;
 
-	@Mock
+	//@Mock
+	@Resource(name = "pisdR601")
 	private PISDR601 pisdr601;
 
-	@Mock
+	//@Mock
+	@Resource(name = "pisdR012")
     private PISDR012 pisdr012;
 
-	@Mock
+	//@Mock
+	@Resource(name = "applicationConfigurationService")
 	private ApplicationConfigurationService applicationConfigurationService;
 
 	@Before

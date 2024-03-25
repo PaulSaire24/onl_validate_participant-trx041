@@ -24,6 +24,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.MediaType;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestClientException;
 
 import java.nio.charset.StandardCharsets;
@@ -33,8 +34,8 @@ import java.util.Base64;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import com.bbva.rbvd.lib.r048.impl.util.ErrorUtil;
 
-import static com.bbva.rbvd.lib.r048.impl.util.ErrorUtil.prepareRequestToHandlerError;
 import static java.util.Collections.singletonMap;
 
 public class RBVDR048Impl extends RBVDR048Abstract {
@@ -74,13 +75,19 @@ public class RBVDR048Impl extends RBVDR048Abstract {
 			LOGGER.info("***** RBVDR048Impl - executeAddParticipantsService END *****");
 			return output;
 		} catch (RestClientException ex) {
-			ErrorRequestDTO err =  prepareRequestToHandlerError(ex);
+			ErrorRequestDTO err =  ErrorUtil.prepareRequestToHandlerError(ex);
             LOGGER.info("** RBVDR048Impl - executeAddParticipantsService catch {} **",err);
-			if(Objects.nonNull(err.getHttpCode()) && !CollectionUtils.isEmpty(err.getDetails())){
+			if(Objects.nonNull(err) && !CollectionUtils.isEmpty(err.getDetails())){
 				err.setTypeErrorScope("RIMAC");
                 err.setReference(Constants.getCodeFromDBByCode(productId));
+                LOGGER.info("** RBVDR048Impl - with reference (product) {} **",err);
 				ErrorResponseDTO responseErr = this.pisdR403.executeFindError(err);
-				throw new BusinessException(responseErr.getCode(), false, responseErr.getMessage());
+
+                if(Objects.nonNull(responseErr) && !StringUtils.isEmpty(responseErr.getCode()) && !StringUtils.isEmpty(responseErr.getMessage())){
+                    LOGGER.info("** RBVDR048Impl - Error encontrado en base de datos");
+                    throw new BusinessException(responseErr.getCode(), false, responseErr.getMessage());
+                }
+                throw new BusinessException(Constants.ERROR_NOT_FOUND_IN_DATA_BASE_CODE, false, Constants.ERROR_NOT_FOUND_IN_DATA_BASE_MESSAGE);
 			}
             throw new BusinessException(ValidateParticipantErrors.ERROR_NOT_FOUND.getAdviceCode(), false, ValidateParticipantErrors.ERROR_NOT_FOUND.getMessage());
 		}catch (TimeoutException toex) {

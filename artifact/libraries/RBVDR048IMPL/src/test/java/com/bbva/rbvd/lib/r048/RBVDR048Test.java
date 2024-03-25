@@ -358,6 +358,33 @@ public class RBVDR048Test {
 	}
 
 	@Test(expected = BusinessException.class)
+	public void testExecuteAddParticipantsServiceWithOutResponseOdDataBase() {
+
+
+		String responseBody = "{\n" +
+				"    \"error\": {\n" +
+				"        \"code\": \"VIDACOT005\",\n" +
+				"        \"message\": \"Validacion de Datos\",\n" +
+				"        \"details\": {\n" +
+				"            \"PE008002\": \"El campo apePaterno de persona en su elemento 3 es requerido\",\n" +
+				"            \"PE009002\": \"El campo apeMaterno de persona en su elemento 3 es requerido\",\n" +
+				"            \"PE011002\": \"El campo fechaNacimiento de persona en su elemento 3 es requerido\"\n" +
+				"        },\n" +
+				"        \"httpStatusWrongFormat\": 403\n" +
+				"    }\n" +
+				"}";
+
+		ErrorResponseDTO res = new ErrorResponseDTO();
+		when(this.applicationConfigurationService.getProperty(anyString())).thenReturn("https://apitest.rimac.com/api-vida/V1/cotizaciones/{cotizacion}/persona-agregar");
+		when(this.externalApiConnector.exchange(anyString(), anyObject(),anyObject(), (Class<AgregarTerceroBO>) any(), anyMap()))
+				.thenThrow(new HttpClientErrorException(HttpStatus.BAD_REQUEST, "", responseBody.getBytes(), StandardCharsets.UTF_8));
+		when(pisdr403.executeFindError(anyObject())).thenReturn(res);
+		AgregarTerceroBO validation = this.rbvdR048.executeAddParticipants(new AgregarTerceroBO(),"quotationId","productId","traceId");
+
+		assertNotNull(validation);
+	}
+
+	@Test(expected = BusinessException.class)
 	public void testExecuteAddParticipantsServiceWithTimeoutException() {
 		LOGGER.info("RBVDR048 - Executing testExecuteAddParticipantsServiceWithTimeoutException...");
 

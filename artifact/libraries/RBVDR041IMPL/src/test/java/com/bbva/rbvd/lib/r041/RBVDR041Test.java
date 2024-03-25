@@ -13,6 +13,7 @@ import com.bbva.pisd.lib.r601.PISDR601;
 import com.bbva.rbvd.dto.insrncsale.bo.emision.AgregarTerceroBO;
 import com.bbva.rbvd.dto.insrncsale.bo.emision.PayloadAgregarTerceroBO;
 import com.bbva.rbvd.dto.participant.request.InputParticipantsDTO;
+import com.bbva.rbvd.lib.r041.impl.RBVDR041Impl;
 import com.bbva.rbvd.lib.r048.RBVDR048;
 import com.bbva.rbvd.util.MockDTO;
 import com.bbva.rbvd.util.ParticipantsUtil;
@@ -20,15 +21,16 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mockito;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.mockito.Mockito;
 import org.mockito.Spy;
+import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.aop.framework.Advised;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import javax.annotation.Resource;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.HashMap;
@@ -40,7 +42,7 @@ import static org.mockito.Matchers.anyObject;
 import static org.mockito.Matchers.anyMap;
 import static org.mockito.Mockito.when;
 
-@RunWith(SpringJUnit4ClassRunner.class)
+@RunWith(MockitoJUnitRunner.class)
 @ContextConfiguration(locations = {
 		"classpath:/META-INF/spring/RBVDR041-app.xml",
 		"classpath:/META-INF/spring/RBVDR041-app-test.xml",
@@ -53,19 +55,19 @@ public class RBVDR041Test {
 	@Spy
 	private Context context;
 
-	@Resource(name = "rbvdR041")
-	private RBVDR041 rbvdR041;
+		@InjectMocks
+	private RBVDR041Impl rbvdR041;
 
-	@Resource(name = "rbvdR048")
+	@Mock
 	private RBVDR048 rbvdr048;
 
-	@Resource(name = "pisdR601")
+	@Mock
 	private PISDR601 pisdr601;
 
-    @Resource(name = "pisdR012")
+	@Mock
     private PISDR012 pisdr012;
-    
-	@Resource(name = "applicationConfigurationService")
+
+	@Mock
 	private ApplicationConfigurationService applicationConfigurationService;
 
 	@Before
@@ -146,6 +148,7 @@ public class RBVDR041Test {
         AgregarTerceroBO response = rbvdR041.executeValidateAddParticipant(request);
         Assert.assertNotNull(response);
         Assert.assertEquals(0,this.context.getAdviceList().size());
+		Assert.assertTrue(rbvdR041.executeValidateAddParticipant(request) instanceof  AgregarTerceroBO);
     }
 
 	@Test
@@ -338,6 +341,7 @@ public class RBVDR041Test {
         AgregarTerceroBO response = rbvdR041.executeValidateAddParticipant(request);
         Assert.assertNotNull(response);
         Assert.assertEquals(0,this.context.getAdviceList().size());
+		Assert.assertTrue(rbvdR041.executeValidateAddParticipant(request) instanceof  AgregarTerceroBO);
     }
 
     @Test
@@ -369,11 +373,14 @@ public class RBVDR041Test {
         when(rbvdr048.executeGetDataInsuredBD(anyString(),anyString(),anyString(),anyString(),anyString())).thenReturn(responseInsuredBD);
         when(rbvdr048.executeGetProducAndPlanByQuotation(anyString())).thenReturn(responseData);
         AgregarTerceroBO response = rbvdR041.executeValidateAddParticipant(request);
-        Assert.assertNotNull(response);
+
+		Assert.assertNotNull(response);
         Assert.assertEquals(0,this.context.getAdviceList().size());
+		Assert.assertTrue(response instanceof  AgregarTerceroBO);
+		//Mockito.verify(rbvdR041,Mockito.atLeastOnce()).executeValidateAddParticipant(request);
     }
 
-    @Test
+	@Test
     public void testExecuteDynamicLifeBusinessException() {
         QuotationCustomerDTO quotationJoinCustomerInformation = new QuotationCustomerDTO();
         quotationJoinCustomerInformation.setInsuranceProduct(new InsuranceProductEntity());
@@ -400,8 +407,11 @@ public class RBVDR041Test {
         when(rbvdr048.executeGetDataInsuredBD(anyString(),anyString(),anyString(),anyString(),anyString())).thenReturn(responseInsuredBD);
         when(rbvdr048.executeGetCustomerByDocType(anyString(),anyString())).thenReturn(ParticipantsUtil.buildPersonHostDataResponseCase3());
         when(rbvdr048.executeGetProducAndPlanByQuotation(anyString())).thenReturn(responseData);
-        AgregarTerceroBO response = rbvdR041.executeValidateAddParticipant(request);
-        assertNull(response.getPayload());
+
+		AgregarTerceroBO response = rbvdR041.executeValidateAddParticipant(request);
+
+		assertNull(response.getPayload());
+		Assert.assertEquals(1,this.context.getAdviceList().size());
     }
 
 	@Test

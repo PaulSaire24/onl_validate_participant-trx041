@@ -5,7 +5,6 @@ import com.bbva.apx.exception.io.network.TimeoutException;
 import com.bbva.elara.configuration.manager.application.ApplicationConfigurationService;
 import com.bbva.elara.domain.transaction.Context;
 import com.bbva.elara.domain.transaction.ThreadContext;
-import javax.annotation.Resource;
 
 import com.bbva.elara.utility.api.connector.APIConnector;
 import com.bbva.pisd.dto.insurance.amazon.SignatureAWS;
@@ -26,15 +25,19 @@ import com.bbva.rbvd.dto.insrncsale.aso.listbusinesses.ListBusinessesASO;
 import com.bbva.rbvd.dto.insrncsale.bo.emision.AgregarTerceroBO;
 import com.bbva.rbvd.dto.insrncsale.bo.emision.PayloadAgregarTerceroBO;
 import com.bbva.rbvd.dto.insrncsale.mock.MockData;
+import com.bbva.rbvd.lib.r048.impl.RBVDR048Impl;
 import com.bbva.rbvd.mock.MockBundleContext;
 import com.bbva.rbvd.dto.insuranceroyal.error.ErrorResponseDTO;
 import com.bbva.rbvd.lib.r066.RBVDR066;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.InjectMocks;
 import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
+import org.mockito.runners.MockitoJUnitRunner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.aop.framework.Advised;
@@ -42,7 +45,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClientException;
 
@@ -67,7 +69,7 @@ import static org.mockito.Matchers.anyList;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.mock;
 
-@RunWith(SpringJUnit4ClassRunner.class)
+@RunWith(MockitoJUnitRunner.class)
 @ContextConfiguration(locations = {
 		"classpath:/META-INF/spring/RBVDR048-app.xml",
 		"classpath:/META-INF/spring/RBVDR048-app-test.xml",
@@ -81,29 +83,35 @@ public class RBVDR048Test {
 	@Spy
 	private Context context;
 
-	@Resource(name = "rbvdR048")
-	private RBVDR048 rbvdR048;
-	@Resource(name = "pisdR014")
+	@InjectMocks
+	private RBVDR048Impl rbvdR048;
+
+	@Mock
 	private PISDR014 pisdr014;
-	@Resource(name = "pisdR403")
+
+	@Mock
 	private PISDR403 pisdr403;
 
-	@Resource(name = "pisdR350")
+
+	@Mock
 	private PISDR350 pisdr350;
 
-	@Resource(name = "pbtqR002")
+
+	@Mock
 	private PBTQR002 pbtqr002;
-    @Resource(name = "ksmkR002")
+
+	@Mock
     private KSMKR002 ksmkr002;
-    @Resource(name = "rbvdR066")
+
+	@Mock
     private RBVDR066 rbvdr066;
 
 	private MockData mockData;
 
-	@Resource(name = "applicationConfigurationService")
+	@Mock
 	private ApplicationConfigurationService applicationConfigurationService;
 
-	@Resource(name = "externalApiConnector")
+	@Mock
 	private APIConnector externalApiConnector;
 
 	@Before
@@ -468,6 +476,7 @@ public class RBVDR048Test {
 		LOGGER.info("RBVDR048 - Executing executeGetCustomerService ...");
 		when(this.pbtqr002.executeSearchInHostByDocument(anyString(),anyString())).thenReturn(buildPersonHostDataResponseCase3());
 		PEWUResponse response = this.rbvdR048.executeGetCustomerByDocType(anyString(),anyString());
+
 		assertNotNull(response);
 
 	}
@@ -479,6 +488,7 @@ public class RBVDR048Test {
 		pemsalwu.setHostAdviceCode("124567");
 		when(this.pbtqr002.executeSearchInHostByDocument(anyString(),anyString())).thenReturn(pemsalwu);
 		PEWUResponse response = this.rbvdR048.executeGetCustomerByDocType(anyString(),anyString());
+
 		assertNotNull(response);
 	}
 

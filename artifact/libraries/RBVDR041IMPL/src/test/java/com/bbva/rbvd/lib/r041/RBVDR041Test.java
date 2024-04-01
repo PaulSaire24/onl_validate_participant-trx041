@@ -4,6 +4,7 @@ import com.bbva.apx.exception.business.BusinessException;
 import com.bbva.elara.configuration.manager.application.ApplicationConfigurationService;
 import com.bbva.elara.domain.transaction.Context;
 import com.bbva.elara.domain.transaction.ThreadContext;
+import com.bbva.pbtq.dto.validatedocument.response.host.pewu.PEWUResponse;
 import com.bbva.pisd.dto.insurancedao.constants.PISDInsuranceErrors;
 import com.bbva.pisd.dto.insurancedao.entities.InsuranceProductEntity;
 import com.bbva.pisd.dto.insurancedao.entities.QuotationEntity;
@@ -13,7 +14,7 @@ import com.bbva.pisd.lib.r601.PISDR601;
 import com.bbva.rbvd.dto.insrncsale.bo.emision.AgregarTerceroBO;
 import com.bbva.rbvd.dto.insrncsale.bo.emision.PayloadAgregarTerceroBO;
 import com.bbva.rbvd.dto.participant.request.InputParticipantsDTO;
-import com.bbva.rbvd.lib.r041.impl.RBVDR041Impl;
+import com.bbva.rbvd.lib.r041.properties.ParticipantProperties;
 import com.bbva.rbvd.lib.r048.RBVDR048;
 import com.bbva.rbvd.util.MockDTO;
 import com.bbva.rbvd.util.ParticipantsUtil;
@@ -25,6 +26,7 @@ import org.junit.runner.RunWith;
 import org.mockito.MockitoAnnotations;
 import org.mockito.Mockito;
 import org.mockito.Spy;
+import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.aop.framework.Advised;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
@@ -75,6 +77,9 @@ public class RBVDR041Test {
 	@Resource(name = "applicationConfigurationService")
 	private ApplicationConfigurationService applicationConfigurationService;
 
+	@Resource(name = "participantProperties")
+	private ParticipantProperties participantProperties;
+
 	@Before
 	public void setUp() throws Exception {
 		MockitoAnnotations.initMocks(this);
@@ -92,6 +97,10 @@ public class RBVDR041Test {
 				.thenReturn("L");
 		when(this.applicationConfigurationService.getProperty("RUC"))
 				.thenReturn("R");
+
+		when(this.participantProperties.obtainRoleCodeByEnum("PAYMENT_MANAGER")).thenReturn("7");
+		when(this.participantProperties.obtainRoleCodeByEnum("INSURED")).thenReturn("2");
+		when(this.participantProperties.obtainRoleCodeByEnum("CONTRACTOR")).thenReturn("1");
 
 	}
 	
@@ -295,6 +304,23 @@ public class RBVDR041Test {
 		AgregarTerceroBO response = rbvdR041.executeValidateAddParticipant(request);
 		Assert.assertNotNull(response);
 		Assert.assertEquals(0,this.context.getAdviceList().size());
+
+	}
+
+	@Test
+	public void executeValidationWithNaturalPersonDataWrongPewuResponse(){
+		AgregarTerceroBO agregarTerceroBO = new AgregarTerceroBO();
+		PayloadAgregarTerceroBO payloadAgregarTerceroBO = new PayloadAgregarTerceroBO();
+		payloadAgregarTerceroBO.setCotizacion("cotizacion");
+		agregarTerceroBO.setPayload(payloadAgregarTerceroBO);
+		when(rbvdr048.executeAddParticipants(anyObject(),anyString(),anyString(),anyString())).thenReturn(agregarTerceroBO);
+		Mockito.when(pisdr601.executeFindQuotationJoinByPolicyQuotaInternalId(Mockito.eq("0123489304"))).thenReturn(ParticipantsUtil.buildFindQuotationJoinByPolicyQuotaInternalId("71998384"));
+		Mockito.when(pisdr012.executeGetParticipantRolesByCompany(anyMap())).thenReturn(ParticipantsUtil.buildRolByParticipantTypeResponse());
+		Mockito.when(rbvdr048.executeGetCustomerByDocType(Mockito.anyString(),Mockito.anyString())).thenReturn(new PEWUResponse());
+
+		AgregarTerceroBO response =  rbvdR041.executeValidateAddParticipant(ParticipantsUtil.getMockRequestBodyValidateNaturalParticipants());
+		Assert.assertNull(response);
+		Assert.assertEquals(1,this.context.getAdviceList().size());
 
 	}
 

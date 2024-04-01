@@ -5,14 +5,14 @@ import com.bbva.rbvd.lib.r041.pattern.decorator.ParticipantDataValidator;
 
 public abstract class ParticipantDataValidatorDecorator implements ParticipantDataValidator {
 
-    private BeforeParticipantDataValidator preValidate;
+    private BeforeParticipantDataValidator beforeValidator;
 
     protected ParticipantDataValidatorDecorator(BeforeParticipantDataValidator preValidate) {
-        this.preValidate = preValidate;
+        this.beforeValidator = preValidate;
     }
 
-    public BeforeParticipantDataValidator getPreValidate() {
-        return preValidate;
+    public BeforeParticipantDataValidator getBeforeValidator() {
+        return beforeValidator;
     }
 
 }

@@ -10,6 +10,6 @@ public interface BeforeParticipantDataValidator {
 
     PayloadConfig before(InputParticipantsDTO input, ApplicationConfigurationService applicationConfigurationService);
     PayloadConfig before(InputParticipantsDTO input, ApplicationConfigurationService applicationConfigurationService, QuotationCustomerDTO quotationInformation, String personType);
-    QuotationCustomerDTO getCustomerFromQuotation(String quotationId);
+    QuotationCustomerDTO getQuotationProductByQuoteId(String quotationId);
 
 }

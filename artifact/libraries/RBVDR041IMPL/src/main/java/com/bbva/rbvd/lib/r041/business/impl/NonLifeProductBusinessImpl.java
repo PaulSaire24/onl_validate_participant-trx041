@@ -11,7 +11,7 @@ import com.bbva.rbvd.dto.participant.constants.RBVDInternalConstants;
 import com.bbva.rbvd.dto.participant.mapper.RolDTO;
 import com.bbva.rbvd.lib.r041.business.INonLifeProductBusiness;
 import com.bbva.rbvd.lib.r041.pattern.factory.ParticipantFactory;
-import com.bbva.rbvd.lib.r041.pattern.factory.FactoryProductValidate;
+import com.bbva.rbvd.lib.r041.pattern.factory.FactoryProduct;
 import com.bbva.rbvd.lib.r041.service.api.ConsumerExternalService;
 import com.bbva.rbvd.lib.r041.transfer.PayloadConfig;
 import com.bbva.rbvd.lib.r041.transfer.Participant;
@@ -58,7 +58,7 @@ public class NonLifeProductBusinessImpl implements INonLifeProductBusiness {
                 }));
             addTerceroByCompany.setPersona(personaList);
             requestCompany.setPayload(addTerceroByCompany);
-            FactoryProductValidate.enrichPayloadByProduct(addTerceroByCompany,payloadConfig.getQuotationInformation());
+            FactoryProduct.enrichPayloadByProduct(addTerceroByCompany,payloadConfig.getQuotationInformation());
         }else{
 
             List<OrganizacionBO> organizacionList = new ArrayList<>();
@@ -73,7 +73,7 @@ public class NonLifeProductBusinessImpl implements INonLifeProductBusiness {
                 }));
             addTerceroByCompany.setOrganizacion(organizacionList);
             requestCompany.setPayload(addTerceroByCompany);
-            FactoryProductValidate.enrichPayloadByProduct(addTerceroByCompany,payloadConfig.getQuotationInformation());
+            FactoryProduct.enrichPayloadByProduct(addTerceroByCompany,payloadConfig.getQuotationInformation());
         }
 
         LOGGER.info("** createRequestByCompany - request Company -> {}",requestCompany);

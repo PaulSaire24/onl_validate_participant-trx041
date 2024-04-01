@@ -50,9 +50,7 @@ public class ErrorUtil {
                     error.setDetails(detailsListr);
                 }
             }
-
             LOGGER.info("HttpClientErrorException - error -> {}", error);
-
             return error;
         }
         LOGGER.info("*** Non null or empty error responseBody with wrong structure ***");

@@ -23,7 +23,7 @@ public class InsuranceProductNonLifeProducts extends ParticipantDataValidatorDec
 
     @Override
     public PayloadStore start(InputParticipantsDTO input, QuotationCustomerDTO quotationInformation, RBVDR048 rbvdr048, ApplicationConfigurationService applicationConfigurationService) {
-        PayloadConfig payloadConfig = this.getPreValidate().before(input,applicationConfigurationService, quotationInformation, input.getParticipants().get(0).getPerson().getPersonType());
+        PayloadConfig payloadConfig = this.getBeforeValidator().before(input,applicationConfigurationService, quotationInformation, input.getParticipants().get(0).getPerson().getPersonType());
         LOGGER.info(" :: PayloadConfig :: {} :: ",payloadConfig);
         NonLifeProductBusinessImpl nonLifeProductBusiness = new NonLifeProductBusinessImpl(rbvdr048);
         AgregarTerceroBO responseCompany = nonLifeProductBusiness.createRequestByCompany(payloadConfig);

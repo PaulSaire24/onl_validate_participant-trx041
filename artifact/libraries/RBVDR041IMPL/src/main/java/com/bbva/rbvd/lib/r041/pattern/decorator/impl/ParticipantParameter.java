@@ -24,7 +24,6 @@ import com.bbva.rbvd.lib.r041.transform.bean.RolBean;
 import com.bbva.rbvd.lib.r041.transform.map.ParticipantMap;
 import com.bbva.rbvd.lib.r041.util.ConstantsUtil;
 import com.bbva.rbvd.lib.r041.validation.ValidationUtil;
-import com.bbva.rbvd.lib.r041.business.ParticipantsBusiness;
 import com.bbva.rbvd.lib.r048.RBVDR048;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -35,23 +34,23 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.IntStream;
 
-public class ParticipantDataValidatorParameter implements BeforeParticipantDataValidator {
-    private static final Logger LOGGER = LoggerFactory.getLogger(ParticipantDataValidatorParameter.class);
+public class ParticipantParameter implements BeforeParticipantDataValidator {
+    private static final Logger LOGGER = LoggerFactory.getLogger(ParticipantParameter.class);
     private ParticipantProperties participantProperties;
     private PISDR601 pisdr601;
     private RBVDR048 rbvdr048;
     private PISDR012 pisdr012;
 
-    public ParticipantDataValidatorParameter(PISDR601 pisdr601, RBVDR048 rbvdr048) {
+    public ParticipantParameter(PISDR601 pisdr601, RBVDR048 rbvdr048) {
         this.pisdr601 = pisdr601;
         this.rbvdr048 = rbvdr048;
     }
 
-    public ParticipantDataValidatorParameter(RBVDR048 rbvdr048) {
+    public ParticipantParameter(RBVDR048 rbvdr048) {
         this.rbvdr048 = rbvdr048;
     }
 
-    public ParticipantDataValidatorParameter(PISDR601 pisdr601, PISDR012 pisdr012, RBVDR048 rbvdr048, ParticipantProperties participantProperties) {
+    public ParticipantParameter(PISDR601 pisdr601, PISDR012 pisdr012, RBVDR048 rbvdr048, ParticipantProperties participantProperties) {
         this.pisdr601 = pisdr601;
         this.pisdr012 = pisdr012;
         this.rbvdr048 = rbvdr048;
@@ -64,9 +63,9 @@ public class ParticipantDataValidatorParameter implements BeforeParticipantDataV
 
         PayloadConfig payloadConfig = new PayloadConfig();
 
-        Map<String,Object> result = getProducAndPlanByQuotation(input.getQuotationId());
-        String productId = result.get(ConstantsUtil.INSURANCE_PRODUCT_ID).toString();
-        String planId = (String) result.get(ConstantsUtil.INSURANCE_MODALITY_TYPE);
+        Map<String,Object> productPlan = getProducAndPlanByQuotation(input.getQuotationId());
+        String productId = productPlan.get(ConstantsUtil.INSURANCE_PRODUCT_ID).toString();
+        String planId = (String) productPlan.get(ConstantsUtil.INSURANCE_MODALITY_TYPE);
 
         ParticipantsBusiness participantsBusiness = new ParticipantsBusiness(applicationConfigurationService,this.rbvdr048);
         List<Participant> participants = participantsBusiness.getParticipants(input,productId, planId);
@@ -125,7 +124,7 @@ public class ParticipantDataValidatorParameter implements BeforeParticipantDataV
 
 
     @Override
-    public QuotationCustomerDTO getCustomerFromQuotation(String quotationId) {
+    public QuotationCustomerDTO getQuotationProductByQuoteId(String quotationId) {
         try{
             LOGGER.info("***** CustomerInformationDAOImpl - getCustomerBasicInformation START *****");
             QuotationCustomerDTO responseQueryCustomerProductInformation = pisdr601.executeFindQuotationJoinByPolicyQuotaInternalId(quotationId);
@@ -210,12 +209,12 @@ public class ParticipantDataValidatorParameter implements BeforeParticipantDataV
             this.rbvdr048 = rbvdr048;
             return this;
         }
-        public ParticipantDataValidatorParameter build() {
-            return new ParticipantDataValidatorParameter(pisdr601, rbvdr048);
+        public ParticipantParameter build() {
+            return new ParticipantParameter(pisdr601, rbvdr048);
         }
 
-        public ParticipantDataValidatorParameter buildOne() {
-            return new ParticipantDataValidatorParameter(rbvdr048);
+        public ParticipantParameter buildOne() {
+            return new ParticipantParameter(rbvdr048);
         }
     }
 }

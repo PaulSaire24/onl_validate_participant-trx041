@@ -23,7 +23,7 @@ public class DynamicLifeProduct extends ParticipantDataValidatorDecorator {
     @Override
     public PayloadStore start(InputParticipantsDTO input, QuotationCustomerDTO quotationInformation, RBVDR048 rbvdr048, ApplicationConfigurationService applicationConfigurationService) {
         LOGGER.info("** start - dinamic Life product");
-        PayloadConfig payloadConfig = this.getPreValidate().before(input,applicationConfigurationService);
+        PayloadConfig payloadConfig = this.getBeforeValidator().before(input,applicationConfigurationService);
         payloadConfig.setQuotationId(quotationInformation.getQuotation().getInsuranceCompanyQuotaId());
         LOGGER.info("** start - PayloadConfig {} **",payloadConfig);
         DynamicLifeProductBusinessImpl dynamicLifeParticipantBusiness = new DynamicLifeProductBusinessImpl(rbvdr048);

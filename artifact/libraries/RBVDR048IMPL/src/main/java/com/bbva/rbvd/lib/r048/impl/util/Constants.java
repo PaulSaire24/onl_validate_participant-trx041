@@ -9,6 +9,12 @@ public class Constants {
         public static final String TRACE_ID_HEADER = "traceId";
     }
 
+    public static final class OriginError {
+        public static final String RIMAC = "RIMAC";
+        public static final String APX = "APX";
+        public static final String HOST = "HOST";
+    }
+
     public static final class ConfigurationValues {
         public static final String APP_NAME = "apx-pe";
         public static final String OAUTH_TOKEN = "";

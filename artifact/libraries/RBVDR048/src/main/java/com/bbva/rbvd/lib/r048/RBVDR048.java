@@ -11,6 +11,6 @@ public interface RBVDR048 {
     PEWUResponse executeGetCustomerByDocType(String documentNumber, String documentType);
     String executeKsmkCryptography(String customerId);
     ListBusinessesASO executeListBusiness(String encryptedCustomerId);
-    Map<String,Object> executeGetDataInsuredBD(String quotationId, String productId, String planId);
+    Map<String,Object> executeGetDataInsuredBD(String quotationId, String productId, String planId,String ducumentNumber,String documentType);
     Map<String,Object> executeGetProducAndPlanByQuotation(String quotationId);
 }

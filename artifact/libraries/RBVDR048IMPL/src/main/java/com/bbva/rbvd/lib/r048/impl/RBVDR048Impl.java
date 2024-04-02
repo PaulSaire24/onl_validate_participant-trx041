@@ -9,32 +9,30 @@ import com.bbva.pbtq.dto.validatedocument.response.host.pewu.PEWUResponse;
 import com.bbva.pisd.dto.insurance.amazon.SignatureAWS;
 import com.bbva.rbvd.dto.insrncsale.aso.listbusinesses.ListBusinessesASO;
 import com.bbva.rbvd.dto.insrncsale.bo.emision.AgregarTerceroBO;
-import com.bbva.rbvd.dto.insuranceroyal.error.ErrorRequestDTO;
-import com.bbva.rbvd.dto.insuranceroyal.error.ErrorResponseDTO;
 import com.bbva.rbvd.dto.participant.utils.TypeErrorControllerEnum;
 import com.bbva.rbvd.dto.participant.utils.ValidateParticipantErrors;
+import com.bbva.rbvd.lib.r048.impl.business.HandlerErrorBusiness;
 import com.bbva.rbvd.lib.r048.impl.util.Constants;
 import com.bbva.rbvd.lib.r048.impl.util.JsonHelper;
 import com.bbva.rbvd.lib.r048.impl.util.RimacUrlForker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.http.HttpMethod;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.client.RestClientException;
 
 import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
 import java.util.Map;
-import java.util.Base64;
-import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
+import java.util.Collections;
+import java.util.Base64;
 
-import static com.bbva.rbvd.lib.r048.impl.util.ErrorUtil.prepareRequestToHandlerError;
 import static java.util.Collections.singletonMap;
 
 public class RBVDR048Impl extends RBVDR048Abstract {
@@ -52,7 +50,7 @@ public class RBVDR048Impl extends RBVDR048Abstract {
 		String jsonString = getRequestJson(requestBody);
 		LOGGER.info("***** RBVDR048Impl - jsonString: {}", jsonString);
 
-		AgregarTerceroBO output = new AgregarTerceroBO();
+		AgregarTerceroBO output = null;
 
 		RimacUrlForker rimacUrlForker = new RimacUrlForker(this.applicationConfigurationService);
 
@@ -72,23 +70,18 @@ public class RBVDR048Impl extends RBVDR048Abstract {
 			output.setErrorRimacBO(null);
 			LOGGER.info("***** RBVDR048Impl - executeAddParticipantsService ***** Response: {}", output.getPayload().getMensaje());
 			LOGGER.info("***** RBVDR048Impl - executeAddParticipantsService END *****");
-			return output;
 		} catch (RestClientException ex) {
-			ErrorRequestDTO err =  prepareRequestToHandlerError(ex);
-            LOGGER.info("** RBVDR048Impl - executeAddParticipantsService catch {} **",err);
-			if(Objects.nonNull(err.getHttpCode()) && !CollectionUtils.isEmpty(err.getDetails())){
-				err.setTypeErrorScope("RIMAC");
-                err.setReference(Constants.getCodeFromDBByCode(productId));
-				ErrorResponseDTO responseErr = this.pisdR403.executeFindError(err);
-				throw new BusinessException(responseErr.getCode(), false, responseErr.getMessage());
-			}
-            throw new BusinessException(ValidateParticipantErrors.ERROR_NOT_FOUND.getAdviceCode(), false, ValidateParticipantErrors.ERROR_NOT_FOUND.getMessage());
-		}catch (TimeoutException toex) {
+            LOGGER.info("***** RBVDR048Impl - executeAddParticipantsService catch {} *****", ex.getStackTrace());
+            HandlerErrorBusiness handlerErrorBusiness = new HandlerErrorBusiness(this.pisdR403);
+            handlerErrorBusiness.startHandlerError(productId, ex);
+        }catch (TimeoutException toex) {
             throw new BusinessException(ValidateParticipantErrors.TIMEOUT_ADD_PARTICIPANTS_RIMAC_ERROR.getAdviceCode(), false, ValidateParticipantErrors.TIMEOUT_ADD_PARTICIPANTS_RIMAC_ERROR.getMessage());
         }
-	}
+        return output;
+    }
 
-	private String getRequestJson(Object o) {
+    
+    private String getRequestJson(Object o) {
 		return JsonHelper.getInstance().serialization(o);
 	}
 
@@ -108,11 +101,13 @@ public class RBVDR048Impl extends RBVDR048Abstract {
     }
 
     @Override
-    public Map<String, Object> executeGetDataInsuredBD(String quotationId, String productId, String planId) {
+    public Map<String, Object> executeGetDataInsuredBD(String quotationId, String productId, String planId, String ducumentNumber,String documentType) {
         Map<String, Object> arguments = new HashMap<>();
         arguments.put(Constants.POLICY_QUOTA_INTERNAL_ID,quotationId);
         arguments.put(Constants.INSURANCE_PRODUCT_ID,productId);
         arguments.put(Constants.INSURANCE_MODALITY_TYPE,planId);
+        arguments.put(Constants.PERSONAL_ID,ducumentNumber);
+        arguments.put(Constants.CUSTOMER_DOCUMENT_TYPE,documentType);
         LOGGER.info("***** RBVDR048Impl - getDataInsuredBD ***** arguments: {}", arguments);
         Map<String, Object> dataInsured = this.pisdR350.executeGetASingleRow(Constants.QUERY_GET_DATA_INSURED_BY_QUOTATION,arguments);
         LOGGER.info("***** RBVDR048Impl - getDataInsuredBD ***** result: {}", dataInsured);

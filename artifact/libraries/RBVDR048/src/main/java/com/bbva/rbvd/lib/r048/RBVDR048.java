@@ -7,7 +7,7 @@ import com.bbva.rbvd.dto.insrncsale.bo.emision.AgregarTerceroBO;
 import java.util.Map;
 
 public interface RBVDR048 {
-	AgregarTerceroBO executeAddParticipants(AgregarTerceroBO requestBody, String quotationId, String productId, String traceId);
+	AgregarTerceroBO executeAddParticipants(AgregarTerceroBO requestBody, String quotationId, String productId, String traceId,String channelId);
     PEWUResponse executeGetCustomerByDocType(String documentNumber, String documentType);
     String executeKsmkCryptography(String customerId);
     ListBusinessesASO executeListBusiness(String encryptedCustomerId);

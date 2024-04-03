@@ -40,7 +40,7 @@ public class RBVDR048Impl extends RBVDR048Abstract {
 	private static final Logger LOGGER = LoggerFactory.getLogger(RBVDR048Impl.class);
 
 	@Override
-	public AgregarTerceroBO executeAddParticipants(AgregarTerceroBO requestBody, String quotationId, String productId, String traceId) {
+	public AgregarTerceroBO executeAddParticipants(AgregarTerceroBO requestBody, String quotationId, String productId, String traceId,String channelId) {
 
 		LOGGER.info("***** RBVDR048Impl - executeAddParticipantsService START *****");
 
@@ -73,7 +73,7 @@ public class RBVDR048Impl extends RBVDR048Abstract {
 		} catch (RestClientException ex) {
             LOGGER.info("***** RBVDR048Impl - executeAddParticipantsService catch {} *****", ex.getStackTrace());
             HandlerErrorBusiness handlerErrorBusiness = new HandlerErrorBusiness(this.pisdR403);
-            handlerErrorBusiness.startHandlerError(productId, ex);
+            handlerErrorBusiness.startHandlerError(productId,channelId,ex);
         }catch (TimeoutException toex) {
             throw new BusinessException(ValidateParticipantErrors.TIMEOUT_ADD_PARTICIPANTS_RIMAC_ERROR.getAdviceCode(), false, ValidateParticipantErrors.TIMEOUT_ADD_PARTICIPANTS_RIMAC_ERROR.getMessage());
         }

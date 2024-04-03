@@ -152,14 +152,14 @@ public class RBVDR048Test {
 
 		when(this.externalApiConnector.exchange(anyString(), anyObject(),anyObject(), (Class<AgregarTerceroBO>) any(), anyMap())).thenReturn(new ResponseEntity<>(response, HttpStatus.OK));
 		when(this.applicationConfigurationService.getProperty(anyString())).thenReturn("https://apitest.rimac.com/api-vida/V1/cotizaciones/{cotizacion}/persona-agregar");
-		AgregarTerceroBO validation = this.rbvdR048.executeAddParticipants(agregarTerceroBO,"quotationId","840","traceId");
+		AgregarTerceroBO validation = this.rbvdR048.executeAddParticipants(agregarTerceroBO,"quotationId","840","traceId", "PC");
 
 		assertNotNull(validation);
 		assertNotNull(validation.getPayload());
 		assertNotNull(validation.getPayload().getStatus());
 		assertNotNull(validation.getPayload().getMensaje());
 
-        AgregarTerceroBO validation1 = this.rbvdR048.executeAddParticipants(agregarTerceroBO,"quotationId","830","traceId");
+        AgregarTerceroBO validation1 = this.rbvdR048.executeAddParticipants(agregarTerceroBO,"quotationId","830","traceId", "PC");
         assertNotNull(validation1);
         assertNotNull(validation1.getPayload());
         assertNotNull(validation1.getPayload().getStatus());
@@ -228,7 +228,7 @@ public class RBVDR048Test {
 		when(this.externalApiConnector.exchange(anyString(), anyObject(),anyObject(), (Class<AgregarTerceroBO>) any(), anyMap()))
 				.thenThrow(new HttpClientErrorException(HttpStatus.BAD_REQUEST, "", responseBody.getBytes(), StandardCharsets.UTF_8));
 		when(pisdr403.executeFindError(anyObject())).thenReturn(res);
-		AgregarTerceroBO validation = this.rbvdR048.executeAddParticipants(new AgregarTerceroBO(),"quotationId","productId","traceId");
+		AgregarTerceroBO validation = this.rbvdR048.executeAddParticipants(new AgregarTerceroBO(),"quotationId","productId","traceId", "PC");
 
 		assertNotNull(validation);
 	}
@@ -257,7 +257,7 @@ public class RBVDR048Test {
 		when(this.externalApiConnector.exchange(anyString(), anyObject(),anyObject(), (Class<AgregarTerceroBO>) any(), anyMap()))
 				.thenThrow(new HttpClientErrorException(HttpStatus.BAD_REQUEST, "", responseBody.getBytes(), StandardCharsets.UTF_8));
 		when(pisdr403.executeFindError(anyObject())).thenReturn(res);
-		AgregarTerceroBO validation = this.rbvdR048.executeAddParticipants(new AgregarTerceroBO(),"quotationId","productId","traceId");
+		AgregarTerceroBO validation = this.rbvdR048.executeAddParticipants(new AgregarTerceroBO(),"quotationId","productId","traceId", "PC");
 
 		assertNotNull(validation);
 	}
@@ -286,7 +286,7 @@ public class RBVDR048Test {
 		when(this.externalApiConnector.exchange(anyString(), anyObject(),anyObject(), (Class<AgregarTerceroBO>) any(), anyMap()))
 				.thenThrow(new HttpClientErrorException(HttpStatus.BAD_REQUEST, "", responseBody.getBytes(), StandardCharsets.UTF_8));
 		when(pisdr403.executeFindError(anyObject())).thenReturn(res);
-		AgregarTerceroBO validation = this.rbvdR048.executeAddParticipants(new AgregarTerceroBO(),"quotationId","productId","traceId");
+		AgregarTerceroBO validation = this.rbvdR048.executeAddParticipants(new AgregarTerceroBO(),"quotationId","productId","traceId", "PC");
 
 		assertNotNull(validation);
 	}
@@ -315,7 +315,7 @@ public class RBVDR048Test {
 		when(this.externalApiConnector.exchange(anyString(), anyObject(),anyObject(), (Class<AgregarTerceroBO>) any(), anyMap()))
 				.thenThrow(new HttpClientErrorException(HttpStatus.BAD_REQUEST, "", responseBody.getBytes(), StandardCharsets.UTF_8));
 		when(pisdr403.executeFindError(anyObject())).thenReturn(res);
-		AgregarTerceroBO validation = this.rbvdR048.executeAddParticipants(new AgregarTerceroBO(),"quotationId","productId","traceId");
+		AgregarTerceroBO validation = this.rbvdR048.executeAddParticipants(new AgregarTerceroBO(),"quotationId","productId","traceId", "PC");
 
 		assertNotNull(validation);
 	}
@@ -334,7 +334,7 @@ public class RBVDR048Test {
 				.thenThrow(new HttpClientErrorException(HttpStatus.BAD_REQUEST, "", responseBody.getBytes(), StandardCharsets.UTF_8));
 
 		when(pisdr403.executeFindError(anyObject())).thenReturn(res);
-		AgregarTerceroBO validation = this.rbvdR048.executeAddParticipants(new AgregarTerceroBO(),"quotationId","productId","traceId");
+		AgregarTerceroBO validation = this.rbvdR048.executeAddParticipants(new AgregarTerceroBO(),"quotationId","productId","traceId", "PC");
 
 		assertNotNull(validation);
 	}
@@ -352,7 +352,7 @@ public class RBVDR048Test {
 		when(this.externalApiConnector.exchange(anyString(), anyObject(),anyObject(), (Class<AgregarTerceroBO>) any(), anyMap()))
 				.thenThrow(new RestClientException(responseBody));
 		when(pisdr403.executeFindError(anyObject())).thenReturn(res);
-		AgregarTerceroBO validation = this.rbvdR048.executeAddParticipants(new AgregarTerceroBO(),"quotationId","productId","traceId");
+		AgregarTerceroBO validation = this.rbvdR048.executeAddParticipants(new AgregarTerceroBO(),"quotationId","productId","traceId", "PC");
 
 		assertNotNull(validation);
 	}
@@ -379,7 +379,7 @@ public class RBVDR048Test {
 		when(this.externalApiConnector.exchange(anyString(), anyObject(),anyObject(), (Class<AgregarTerceroBO>) any(), anyMap()))
 				.thenThrow(new HttpClientErrorException(HttpStatus.BAD_REQUEST, "", responseBody.getBytes(), StandardCharsets.UTF_8));
 		when(pisdr403.executeFindError(anyObject())).thenReturn(res);
-		AgregarTerceroBO validation = this.rbvdR048.executeAddParticipants(new AgregarTerceroBO(),"quotationId","productId","traceId");
+		AgregarTerceroBO validation = this.rbvdR048.executeAddParticipants(new AgregarTerceroBO(),"quotationId","productId","traceId", "PC");
 
 		assertNotNull(validation);
 	}
@@ -395,7 +395,7 @@ public class RBVDR048Test {
 		when(this.externalApiConnector.exchange(anyString(), anyObject(),anyObject(), (Class<AgregarTerceroBO>) any(), anyMap()))
 				.thenThrow(new TimeoutException("RBVD01020044"));
 		when(pisdr403.executeFindError(anyObject())).thenReturn(res);
-		AgregarTerceroBO validation = this.rbvdR048.executeAddParticipants(new AgregarTerceroBO(),"quotationId","productId","traceId");
+		AgregarTerceroBO validation = this.rbvdR048.executeAddParticipants(new AgregarTerceroBO(),"quotationId","productId","traceId", "PC");
 
 		assertNotNull(validation);
 	}

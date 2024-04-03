@@ -8,7 +8,6 @@ import com.bbva.rbvd.dto.insuranceroyal.error.ErrorResponseDTO;
 import com.bbva.rbvd.dto.participant.utils.ValidateParticipantErrors;
 import com.bbva.rbvd.lib.r048.impl.util.Constants;
 import com.google.gson.Gson;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import org.slf4j.Logger;
@@ -18,7 +17,11 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClientException;
 
-import java.util.*;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Objects;
 
 public class HandlerErrorBusiness {
 

@@ -29,7 +29,7 @@ public class Constants {
     public static final String INSURANCE_MODALITY_TYPE = "INSURANCE_MODALITY_TYPE";
     public static final String CUSTOMER_DOCUMENT_TYPE = "CUSTOMER_DOCUMENT_TYPE";
     public static final String PERSONAL_ID = "PERSONAL_ID";
-    public static final String ERROR_NOT_FOUND_IN_DATA_BASE_CODE = "RBVD00000137";
+    public static final String ERROR_NOT_FOUND_IN_DATA_BASE_CODE = "BBVAER2000137";
     public static final String ERROR_NOT_FOUND_IN_DATA_BASE_MESSAGE = "Error no encontrado en base de datos";
 
 

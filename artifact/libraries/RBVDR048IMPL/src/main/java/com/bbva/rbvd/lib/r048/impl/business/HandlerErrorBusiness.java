@@ -32,9 +32,9 @@ public class HandlerErrorBusiness {
         this.pisdR403 = pisdR403;
     }
 
-    public void startHandlerError(String productId,String channelId,RestClientException ex) throws BusinessException{
+    public void startHandlerError(String channelId,RestClientException ex) throws BusinessException{
 
-        ErrorRequestDTO err =  getErrorRequestFromException(ex,Constants.OriginError.RIMAC,Constants.getCodeFromDBByCode(productId),channelId);
+        ErrorRequestDTO err =  getErrorRequestFromException(ex,Constants.OriginError.RIMAC,channelId);
         LOGGER.info("** RBVDR048Impl - executeAddParticipantsService catch {} **",err);
         if(!CollectionUtils.isEmpty(err.getDetails())){
             LOGGER.info("** RBVDR048Impl - with reference (product) {} **",err);
@@ -48,7 +48,7 @@ public class HandlerErrorBusiness {
         throw new BusinessException(ValidateParticipantErrors.ERROR_NOT_FOUND.getAdviceCode(), false, ValidateParticipantErrors.ERROR_NOT_FOUND.getMessage());
     }
 
-    public ErrorRequestDTO getErrorRequestFromException(RestClientException exception, String scope, String productCode, String channelId) {
+    public ErrorRequestDTO getErrorRequestFromException(RestClientException exception, String scope, String channelId) {
         ErrorRequestDTO error = new ErrorRequestDTO();
         if(exception instanceof HttpClientErrorException) {
             HttpClientErrorException httpClientErrorException = (HttpClientErrorException) exception;
@@ -67,7 +67,7 @@ public class HandlerErrorBusiness {
                 String errorCode = jsonErrorObject.get("code").getAsString();
                 if (Objects.nonNull(jsonDetailsObject) && !StringUtils.isEmpty(errorCode)){
                     Map<String, String> mapDetails = new Gson().fromJson(jsonDetailsObject, HashMap.class);
-                    error = buildErrorRequest(scope, productCode, mapDetails, errorCode,channelId);
+                    error = buildErrorRequest(scope,mapDetails, errorCode,channelId);
                 }
             }
             LOGGER.info("HttpClientErrorException - error -> {}", error);
@@ -77,7 +77,7 @@ public class HandlerErrorBusiness {
         return error;
     }
 
-    private ErrorRequestDTO buildErrorRequest(String scope, String productCode, Map<String,String> mapDetails, String errorCode, String channelId) {
+    private ErrorRequestDTO buildErrorRequest(String scope, Map<String,String> mapDetails, String errorCode, String channelId) {
         ErrorRequestDTO errorRequest = new ErrorRequestDTO();
         LOGGER.info("HttpClientErrorException - Details arrays: {}", mapDetails);
         List<DetailsErrorDTO> detailsListr = new ArrayList<>();
@@ -93,7 +93,6 @@ public class HandlerErrorBusiness {
         errorRequest.setCode(errorCode);
         errorRequest.setDetails(detailsListr);
         errorRequest.setTypeErrorScope(scope);
-        errorRequest.setReference(productCode);
         return errorRequest;
     }
 }

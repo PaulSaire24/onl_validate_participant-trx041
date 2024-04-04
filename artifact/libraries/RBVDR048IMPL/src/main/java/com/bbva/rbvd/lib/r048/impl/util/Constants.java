@@ -60,13 +60,4 @@ public class Constants {
         }
     }
 
-    public static String getCodeFromDBByCode(String code){
-        Product[] val = Product.values();
-        for (Product er: val) {
-            if(er.getCode().equalsIgnoreCase(code)){
-                return er.getCodeFromDateBase();
-            }
-        }
-        return null;
-    }
 }

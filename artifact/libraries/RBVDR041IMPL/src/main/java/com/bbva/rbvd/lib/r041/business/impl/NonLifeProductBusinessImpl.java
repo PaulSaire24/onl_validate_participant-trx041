@@ -84,8 +84,8 @@ public class NonLifeProductBusinessImpl implements INonLifeProductBusiness {
         String quotationId = payloadConfig.getQuotationInformation().getQuotation().getInsuranceCompanyQuotaId();
         String productId = payloadConfig.getQuotationInformation().getInsuranceProduct().getInsuranceProductType();
         String traceId = payloadConfig.getInput().getTraceId();
-
-        return consumerService.executeValidateParticipantRimacService(requestCompany,quotationId,productId,traceId);
+        String channel = payloadConfig.getInput().getChannelId();
+        return consumerService.executeValidateParticipantRimacService(requestCompany,quotationId,productId,traceId,channel);
     }
 
     private boolean validateDocumentEqualsCondition(ParticipantsDTO participant, Participant payloadProperties){

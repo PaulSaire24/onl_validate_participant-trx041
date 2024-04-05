@@ -8,7 +8,6 @@ import com.bbva.rbvd.dto.insuranceroyal.error.ErrorResponseDTO;
 import com.bbva.rbvd.dto.participant.utils.ValidateParticipantErrors;
 import com.bbva.rbvd.lib.r048.impl.util.Constants;
 import com.google.gson.Gson;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import org.slf4j.Logger;
@@ -18,7 +17,11 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClientException;
 
-import java.util.*;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Objects;
 
 public class HandlerErrorBusiness {
 
@@ -29,12 +32,12 @@ public class HandlerErrorBusiness {
         this.pisdR403 = pisdR403;
     }
 
-    public void startHandlerError(String productId, RestClientException ex) throws BusinessException{
+    public void startHandlerError(String channelId,RestClientException ex) throws BusinessException{
 
-        ErrorRequestDTO err =  getErrorRequestFromException(ex,Constants.OriginError.RIMAC,Constants.getCodeFromDBByCode(productId));
+        ErrorRequestDTO err =  getErrorRequestFromException(ex,Constants.OriginError.RIMAC,channelId);
         LOGGER.info("** RBVDR048Impl - executeAddParticipantsService catch {} **",err);
         if(!CollectionUtils.isEmpty(err.getDetails())){
-            LOGGER.info("** RBVDR048Impl - with reference (product) {} **",err);
+            LOGGER.info("** RBVDR048Impl - with reference {} **",err);
             ErrorResponseDTO responseErr = this.pisdR403.executeFindError(err);
             if(Objects.nonNull(responseErr) && !StringUtils.isEmpty(responseErr.getCode()) && !StringUtils.isEmpty(responseErr.getMessage())){
                 LOGGER.info("** RBVDR048Impl - Error encontrado en base de datos");
@@ -45,7 +48,7 @@ public class HandlerErrorBusiness {
         throw new BusinessException(ValidateParticipantErrors.ERROR_NOT_FOUND.getAdviceCode(), false, ValidateParticipantErrors.ERROR_NOT_FOUND.getMessage());
     }
 
-    public ErrorRequestDTO getErrorRequestFromException(RestClientException exception, String scope, String productCode) {
+    public ErrorRequestDTO getErrorRequestFromException(RestClientException exception, String scope, String channelId) {
         ErrorRequestDTO error = new ErrorRequestDTO();
         if(exception instanceof HttpClientErrorException) {
             HttpClientErrorException httpClientErrorException = (HttpClientErrorException) exception;
@@ -61,9 +64,10 @@ public class HandlerErrorBusiness {
             JsonObject jsonErrorObject = jsonResponseObject.getAsJsonObject("error");
             if (Objects.nonNull(jsonErrorObject)){
                 JsonObject jsonDetailsObject = jsonErrorObject.getAsJsonObject("details");
-                if (Objects.nonNull(jsonDetailsObject)){
+                String errorCode = jsonErrorObject.get("code").getAsString();
+                if (Objects.nonNull(jsonDetailsObject) && !StringUtils.isEmpty(errorCode)){
                     Map<String, String> mapDetails = new Gson().fromJson(jsonDetailsObject, HashMap.class);
-                    error = buildErrorRequest(scope, productCode, mapDetails);
+                    error = buildErrorRequest(scope,mapDetails, errorCode,channelId);
                 }
             }
             LOGGER.info("HttpClientErrorException - error -> {}", error);
@@ -73,21 +77,22 @@ public class HandlerErrorBusiness {
         return error;
     }
 
-    private ErrorRequestDTO buildErrorRequest(String scope, String productCode, Map<String,String> mapDetails) {
+    private ErrorRequestDTO buildErrorRequest(String scope, Map<String,String> mapDetails, String errorCode, String channelId) {
         ErrorRequestDTO errorRequest = new ErrorRequestDTO();
         LOGGER.info("HttpClientErrorException - Details arrays: {}", mapDetails);
         List<DetailsErrorDTO> detailsListr = new ArrayList<>();
         for (Map.Entry<String, String> entry : mapDetails.entrySet()) {
             DetailsErrorDTO errorDetail = new DetailsErrorDTO();
-            String code = entry.getKey();
+            String codeDetails = entry.getKey();
             String message = entry.getValue();
-            errorDetail.setCode(code);
+            errorDetail.setCode(codeDetails);
             errorDetail.setValue(message);
             detailsListr.add(errorDetail);
         }
+        errorRequest.setChannel(channelId);
+        errorRequest.setCode(errorCode);
         errorRequest.setDetails(detailsListr);
         errorRequest.setTypeErrorScope(scope);
-        errorRequest.setReference(productCode);
         return errorRequest;
     }
 }

@@ -85,7 +85,8 @@ public class DynamicLifeProductBusinessImpl implements IThirdDynamicLifeBusiness
         String quotationId = payloadConfig.getQuotationId();
         String productId = ConstantsUtil.Product.DYNAMIC_LIFE.getCode();
         String traceId = payloadConfig.getInput().getTraceId();
-        return consumerService.executeValidateParticipantRimacService(requestRimac,quotationId,productId,traceId);
+        String channelCode = payloadConfig.getInput().getChannelId();
+        return consumerService.executeValidateParticipantRimacService(requestRimac,quotationId,productId,traceId,channelCode);
     }
 
     private static void enrichPerson(boolean isRolPresent, PersonaBO personManager, List<PersonaBO> personList,ConstantsUtil.Rol rol) {

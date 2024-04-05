@@ -16,11 +16,11 @@ public class ConsumerExternalService extends AbstractLibrary {
         this.rbvdr048 = rbvdr048;
     }
 
-    public AgregarTerceroBO executeValidateParticipantRimacService(AgregarTerceroBO payload, String quotationId, String productId, String traceId){
+    public AgregarTerceroBO executeValidateParticipantRimacService(AgregarTerceroBO payload,String quotationId,String productId,String traceId, String channelId) {
         LOGGER.info("***** RBVDR041Impl - executeValidateParticipantRimacService Start *****");
         AgregarTerceroBO output = new AgregarTerceroBO();
         try {
-           output = rbvdr048.executeAddParticipants(payload, quotationId, productId, traceId);
+           output = rbvdr048.executeAddParticipants(payload,quotationId,productId,traceId,channelId);
             LOGGER.info("**** executeValidateParticipantRimacService successful execution");
         }catch(BusinessException ex){
             LOGGER.info("**** executeValidateParticipantRimacService failed execution");

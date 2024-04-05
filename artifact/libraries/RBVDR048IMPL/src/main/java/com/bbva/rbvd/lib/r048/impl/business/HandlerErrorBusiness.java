@@ -37,7 +37,7 @@ public class HandlerErrorBusiness {
         ErrorRequestDTO err =  getErrorRequestFromException(ex,Constants.OriginError.RIMAC,channelId);
         LOGGER.info("** RBVDR048Impl - executeAddParticipantsService catch {} **",err);
         if(!CollectionUtils.isEmpty(err.getDetails())){
-            LOGGER.info("** RBVDR048Impl - with reference (product) {} **",err);
+            LOGGER.info("** RBVDR048Impl - with reference {} **",err);
             ErrorResponseDTO responseErr = this.pisdR403.executeFindError(err);
             if(Objects.nonNull(responseErr) && !StringUtils.isEmpty(responseErr.getCode()) && !StringUtils.isEmpty(responseErr.getMessage())){
                 LOGGER.info("** RBVDR048Impl - Error encontrado en base de datos");

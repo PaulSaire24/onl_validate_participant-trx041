@@ -29,35 +29,8 @@ public class Constants {
     public static final String INSURANCE_MODALITY_TYPE = "INSURANCE_MODALITY_TYPE";
     public static final String CUSTOMER_DOCUMENT_TYPE = "CUSTOMER_DOCUMENT_TYPE";
     public static final String PERSONAL_ID = "PERSONAL_ID";
-    public static final String ERROR_NOT_FOUND_IN_DATA_BASE_CODE = "BBVAER2000137";
+    public static final String ERROR_NOT_FOUND_IN_DATA_BASE_CODE = "BBVAER200137";
     public static final String ERROR_NOT_FOUND_IN_DATA_BASE_MESSAGE = "Error no encontrado en base de datos";
 
-
-    public enum Product {
-
-        DYNAMIC_LIFE("VIDADINAMICO","841","841007"),
-        VEHICULAR("VEHICULAR","830","830017");
-        private final String name;
-        private final String code;
-        private final String codeFromDateBase;
-
-        Product(String name, String code,String codeFromDateBase) {
-            this.name = name;
-            this.code = code;
-            this.codeFromDateBase = codeFromDateBase;
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        public String getCode() {
-            return code;
-        }
-
-        public String getCodeFromDateBase() {
-            return codeFromDateBase;
-        }
-    }
 
 }

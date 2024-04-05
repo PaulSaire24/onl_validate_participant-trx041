@@ -87,7 +87,7 @@
 		<dependency>
 			<groupId>com.bbva.pisd</groupId>
 			<artifactId>PISDR403</artifactId>
-			<version>0.2.3</version>
+			<version>0.2.6</version>
 		</dependency>
 		<dependency>
 			<groupId>com.bbva.elara</groupId>

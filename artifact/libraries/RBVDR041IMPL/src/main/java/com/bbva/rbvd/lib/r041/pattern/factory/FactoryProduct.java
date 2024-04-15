@@ -1,10 +1,10 @@
 package com.bbva.rbvd.lib.r041.pattern.factory;
 
-import com.bbva.pisd.dto.insurancedao.join.QuotationCustomerDTO;
 import com.bbva.rbvd.dto.insrncsale.bo.emision.OrganizacionBO;
 import com.bbva.rbvd.dto.insrncsale.bo.emision.PayloadAgregarTerceroBO;
 import com.bbva.rbvd.dto.insrncsale.bo.emision.PersonaBO;
 import com.bbva.rbvd.dto.participant.constants.RBVDInternalConstants;
+import com.bbva.rbvd.dto.participant.dao.QuotationCustomerDAO;
 import com.bbva.rbvd.lib.r041.pattern.decorator.ParticipantDataValidator;
 import com.bbva.rbvd.lib.r041.pattern.decorator.impl.ParticipantParameter;
 import com.bbva.rbvd.lib.r041.pattern.decorator.products.InsuranceProductNonLifeProducts;
@@ -34,7 +34,7 @@ public class FactoryProduct {
         }
     }
 
-    public static void enrichPayloadByProduct(PayloadAgregarTerceroBO payloadAgregarTerceroBO, QuotationCustomerDTO quotationInformation) {
+    public static void enrichPayloadByProduct(PayloadAgregarTerceroBO payloadAgregarTerceroBO, QuotationCustomerDAO quotationInformation) {
         String insuranceProductType = quotationInformation.getInsuranceProduct().getInsuranceProductType();
         switch (insuranceProductType) {
             case "830":

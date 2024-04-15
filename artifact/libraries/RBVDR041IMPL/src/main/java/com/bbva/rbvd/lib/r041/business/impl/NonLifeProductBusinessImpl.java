@@ -4,11 +4,11 @@ import com.bbva.rbvd.dto.insrncsale.bo.emision.AgregarTerceroBO;
 import com.bbva.rbvd.dto.insrncsale.bo.emision.OrganizacionBO;
 import com.bbva.rbvd.dto.insrncsale.bo.emision.PayloadAgregarTerceroBO;
 import com.bbva.rbvd.dto.insrncsale.bo.emision.PersonaBO;
+import com.bbva.rbvd.dto.participant.dao.RolDAO;
 import com.bbva.rbvd.dto.participant.request.ParticipantsDTO;
 import com.bbva.rbvd.dto.participant.constants.RBVDInternalConstants.ParticipantType;
 
 import com.bbva.rbvd.dto.participant.constants.RBVDInternalConstants;
-import com.bbva.rbvd.dto.participant.mapper.RolDTO;
 import com.bbva.rbvd.lib.r041.business.INonLifeProductBusiness;
 import com.bbva.rbvd.lib.r041.pattern.factory.ParticipantFactory;
 import com.bbva.rbvd.lib.r041.pattern.factory.FactoryProduct;
@@ -39,9 +39,9 @@ public class NonLifeProductBusinessImpl implements INonLifeProductBusiness {
     public AgregarTerceroBO createRequestByCompany(PayloadConfig payloadConfig) {
         AgregarTerceroBO requestCompany = new AgregarTerceroBO();
         PayloadAgregarTerceroBO addTerceroByCompany = new PayloadAgregarTerceroBO();
-        List<ParticipantsDTO> participantsInputList = payloadConfig.getInput().getParticipants();//input de la trx
-        List<Participant> participantsPropertiesList = payloadConfig.getParticipants();//properties agrupadas
-        List<RolDTO> selectedRoles = payloadConfig.getRegisteredRolesDB();//roles
+        List<ParticipantsDTO> participantsInputList = payloadConfig.getInput().getParticipants();
+        List<Participant> participantsPropertiesList = payloadConfig.getParticipants();
+        List<RolDAO> selectedRoles = payloadConfig.getRegisteredRolesDB();
 
         if(RBVDInternalConstants.TypeParticipant.NATURAL.toString().equalsIgnoreCase(payloadConfig.getPersonType())){
 
@@ -67,8 +67,8 @@ public class NonLifeProductBusinessImpl implements INonLifeProductBusiness {
             participantsInputList.forEach(partInput->
                 participantsPropertiesList.forEach(partProp->{
                     if(validateDocumentEqualsCondition(partInput, partProp)){
-                        OrganizacionBO personaB2 = ValidateRimacLegalPerson.getDataOrganization(partProp.getLegalCustomer().getData().get(0), personaBO, payloadConfig.getQuotationInformation(), ValidationUtil.obtainExistingCompanyRole(partInput,payloadConfig.getParticipantProperties(),selectedRoles),partInput);
-                        organizacionList.add(personaB2);
+                        OrganizacionBO personaBO2 = ValidateRimacLegalPerson.getDataOrganization(partProp.getLegalCustomer().getData().get(0), personaBO, payloadConfig.getQuotationInformation(), ValidationUtil.obtainExistingCompanyRole(partInput,payloadConfig.getParticipantProperties(),selectedRoles),partInput);
+                        organizacionList.add(personaBO2);
                     }
                 }));
             addTerceroByCompany.setOrganizacion(organizacionList);

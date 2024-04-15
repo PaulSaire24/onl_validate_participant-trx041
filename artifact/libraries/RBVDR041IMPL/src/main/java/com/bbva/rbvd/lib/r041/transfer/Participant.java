@@ -2,6 +2,7 @@ package com.bbva.rbvd.lib.r041.transfer;
 
 import com.bbva.pbtq.dto.validatedocument.response.host.pewu.PEWUResponse;
 import com.bbva.rbvd.dto.insrncsale.aso.listbusinesses.ListBusinessesASO;
+import com.bbva.rbvd.dto.participant.dao.QuotationLifeDAO;
 
 import java.util.Map;
 
@@ -12,7 +13,7 @@ public class Participant {
     private String documentNumber;
     private String rolCode;
     private PEWUResponse customer;
-    private Map<String,Object> nonCustomer;
+    private QuotationLifeDAO nonCustomerLife;
     private ListBusinessesASO legalCustomer;
 
     public String getCustomerId() {
@@ -23,12 +24,12 @@ public class Participant {
         this.customerId = customerId;
     }
 
-    public Map<String, Object> getNonCustomer() {
-        return nonCustomer;
+    public QuotationLifeDAO getNonCustomerLife() {
+        return nonCustomerLife;
     }
 
-    public void setNonCustomer(Map<String, Object> nonCustomer) {
-        this.nonCustomer = nonCustomer;
+    public void setNonCustomerLife(QuotationLifeDAO nonCustomerLife) {
+        this.nonCustomerLife = nonCustomerLife;
     }
 
     public String getRolCode() {
@@ -79,7 +80,7 @@ public class Participant {
                 ", documentNumber='" + documentNumber + '\'' +
                 ", rolId='" + rolCode + '\'' +
                 ", customer=" + customer +
-                ", nonCustomer=" + nonCustomer +
+                ", nonCustomer=" + nonCustomerLife +
                 ", legalCustomer=" + legalCustomer +
                 '}';
     }

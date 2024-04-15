@@ -3,9 +3,6 @@ package com.bbva.rbvd.lib.r041.util;
 import java.time.ZoneId;
 
 public class ConstantsUtil {
-    public static final String INSURANCE_PRODUCT_ID = "INSURANCE_PRODUCT_ID";
-    public static final String INSURANCE_MODALITY_TYPE = "INSURANCE_MODALITY_TYPE";
-
     public static final class Zone {
         public static final ZoneId ZONE_ID_GTM = ZoneId.of("GMT");
         private Zone() {

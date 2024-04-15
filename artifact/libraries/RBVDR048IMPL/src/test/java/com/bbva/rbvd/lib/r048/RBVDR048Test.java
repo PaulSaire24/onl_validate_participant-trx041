@@ -11,7 +11,7 @@ import com.bbva.pisd.dto.insurance.amazon.SignatureAWS;
 import com.bbva.pisd.dto.insurance.aso.GetContactDetailsASO;
 import com.bbva.pisd.dto.insurance.bo.ContactDetailsBO;
 import com.bbva.pisd.lib.r014.PISDR014;
-import com.bbva.pisd.lib.r350.PISDR350;
+import com.bbva.pisd.lib.r040.PISDR040;
 import com.bbva.pisd.lib.r403.PISDR403;
 import com.bbva.ksmk.dto.caas.OutputDTO;
 import com.bbva.ksmk.lib.r002.KSMKR002;
@@ -25,10 +25,14 @@ import com.bbva.rbvd.dto.insrncsale.aso.listbusinesses.ListBusinessesASO;
 import com.bbva.rbvd.dto.insrncsale.bo.emision.AgregarTerceroBO;
 import com.bbva.rbvd.dto.insrncsale.bo.emision.PayloadAgregarTerceroBO;
 import com.bbva.rbvd.dto.insrncsale.mock.MockData;
+import com.bbva.rbvd.dto.participant.dao.*;
+import com.bbva.rbvd.dto.participant.utils.TypeErrorControllerEnum;
+import com.bbva.rbvd.dto.participant.utils.ValidateParticipantErrors;
 import com.bbva.rbvd.lib.r048.impl.RBVDR048Impl;
 import com.bbva.rbvd.mock.MockBundleContext;
 import com.bbva.rbvd.dto.insuranceroyal.error.ErrorResponseDTO;
 import com.bbva.rbvd.lib.r066.RBVDR066;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -52,9 +56,7 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
@@ -94,7 +96,7 @@ public class RBVDR048Test {
 
 
 	@Mock
-	private PISDR350 pisdr350;
+	private PISDR040 pisdr040;
 
 
 	@Mock
@@ -176,33 +178,173 @@ public class RBVDR048Test {
 	@Test
 	public void testExecuteGetDataInsured() {
 
-		Map<String,Object> responseInsuredBD = new HashMap<>();
-		responseInsuredBD.put("CLIENT_LAST_NAME","Romero|Aguilar");
-		responseInsuredBD.put("INSURED_CUSTOMER_NAME","Paul");
-		responseInsuredBD.put("GENDER_ID","F");
-		responseInsuredBD.put("USER_EMAIL_PERSONAL_DESC","huhuh@gmail.com");
-		responseInsuredBD.put("PHONE_ID","960675837");
-		responseInsuredBD.put("CUSTOMER_BIRTH_DATE","2023-05-15");
+		QuotationLifeDAO quotationLifeDAO = new QuotationLifeDAO();
+		quotationLifeDAO.setClientLastName("clientLastName");
+		quotationLifeDAO.setCustomerBirthDate("customerBirthDate");
+		quotationLifeDAO.setPersonalId("personalId");
+		quotationLifeDAO.setInsuredCustomerName("insuredCustomerName");
+		quotationLifeDAO.setGenderId("genderId");
+		quotationLifeDAO.setPhoneId("phoneId");
+		quotationLifeDAO.setCustomerDocumentType("customerDocumentType");
+		quotationLifeDAO.setUserEmailPersonalDesc("userEmailPersonalDesc");
 
-		when(this.pisdr350.executeGetASingleRow(anyString(),anyMap())).thenReturn(responseInsuredBD);
-		Map<String,Object> response = this.rbvdR048.executeGetDataInsuredBD("0814000039658","148","01","70221978","L");
+		when(this.pisdr040.executeGetInsuredQuotationLife(anyString(),anyString(),anyString(),anyString(),anyString())).thenReturn(quotationLifeDAO);
+		QuotationLifeDAO response = this.rbvdR048.executeGetDataInsuredBD("0814000039658","148","01","70221978","L");
 
 		assertNotNull(response);
+	}
+
+	@Test(expected = BusinessException.class)
+	public void testExecuteGetDataInsuredWithException() {
+
+		QuotationLifeDAO quotationLifeDAO = new QuotationLifeDAO();
+		quotationLifeDAO.setClientLastName("clientLastName");
+		quotationLifeDAO.setCustomerBirthDate("customerBirthDate");
+		quotationLifeDAO.setPersonalId("personalId");
+		quotationLifeDAO.setInsuredCustomerName("insuredCustomerName");
+		quotationLifeDAO.setGenderId("genderId");
+		quotationLifeDAO.setPhoneId("phoneId");
+		quotationLifeDAO.setCustomerDocumentType("customerDocumentType");
+		quotationLifeDAO.setUserEmailPersonalDesc("userEmailPersonalDesc");
+
+		when(this.pisdr040.executeGetInsuredQuotationLife(anyString(),anyString(),anyString(),anyString(),anyString())).thenThrow(new BusinessException(ValidateParticipantErrors.SELECT_DB_ORACLE_ERROR.getAdviceCode(), false, ValidateParticipantErrors.SELECT_DB_ORACLE_ERROR.getMessage()));
+		QuotationLifeDAO response = this.rbvdR048.executeGetDataInsuredBD("0814000039658","148","01","70221978","L");
+
+		assertNull(response);
 	}
 
 	@Test
-	public void testExecuteGetProductIdAndModalityType() {
+	public void testExecuteGetCustomerInformationFromQuotation() {
 
-		Map<String,Object> responseData = new HashMap<>();
-		responseData.put("INSURANCE_PRODUCT_ID",new BigDecimal(21));
-		responseData.put("INSURANCE_MODALITY_TYPE","02");
+		QuotationCustomerDAO quotationJoinInformation = new QuotationCustomerDAO();
 
-		when(this.pisdr350.executeGetASingleRow(anyString(),anyMap())).thenReturn(responseData);
-		Map<String,Object> response = this.rbvdR048.executeGetProducAndPlanByQuotation("0814000039658");
+		QuotationDAO quotationEntity = new QuotationDAO();
+		QuotationModDAO quotationModEntity = new QuotationModDAO();
+		InsuranceProductDAO insuranceProductEntity = new InsuranceProductDAO();
+		InsuranceBusinessDAO insuranceBusinessEntity = new InsuranceBusinessDAO();
 
-		assertNotNull(response);
+		quotationEntity.setInsuredCustomerName("customer name");
+		quotationEntity.setClientLasName("client last name");
+		quotationEntity.setInsuranceCompanyQuotaId("b5add021-a825-4ba1-a455-95e11015cff7");
+		quotationEntity.setParticipantPersonalId("participantPersonalId");
+		quotationModEntity.setContactEmailDesc("example@bbva");
+		quotationModEntity.setCustomerPhoneDesc("923453849");
+		quotationModEntity.setInsuranceProductId(new BigDecimal(1));
+		quotationModEntity.setInsuranceModalityType("02");
+
+		insuranceProductEntity.setInsuranceProductType("830");
+		insuranceProductEntity.setInsuranceProductId(new BigDecimal(1));
+		insuranceBusinessEntity.setInsuranceBusinessName("VEHICULAR");
+
+		quotationJoinInformation.setQuotation(quotationEntity);
+		quotationJoinInformation.setQuotationMod(quotationModEntity);
+		quotationJoinInformation.setInsuranceProduct(insuranceProductEntity);
+		quotationJoinInformation.setInsuranceBusiness(insuranceBusinessEntity);
+
+		when(this.pisdr040.executeFindQuotationJoinByPolicyQuotaInternalId(anyString())).thenReturn(quotationJoinInformation);
+		QuotationCustomerDAO result = this.rbvdR048.executeGetCustomerInformationFromQuotation("0814000039658");
+		Assert.assertNotNull(result);
+		Assert.assertNotNull(result.getQuotation());
+		Assert.assertEquals("customer name",result.getQuotation().getInsuredCustomerName());
+		Assert.assertEquals("client last name",result.getQuotation().getClientLasName());
+		Assert.assertNotNull(result.getQuotationMod());
+		Assert.assertEquals("example@bbva",result.getQuotationMod().getContactEmailDesc());
+		Assert.assertEquals("923453849",result.getQuotationMod().getCustomerPhoneDesc());
+		Assert.assertNotNull(result.getInsuranceProduct());
+		Assert.assertEquals("830",result.getInsuranceProduct().getInsuranceProductType());
+		Assert.assertNotNull(result.getInsuranceBusiness());
+		Assert.assertEquals("VEHICULAR",result.getInsuranceBusiness().getInsuranceBusinessName());
+
 	}
 
+	@Test(expected = BusinessException.class)
+	public void testExecuteGetCustomerInformationFromQuotationWithExepction() {
+
+		QuotationCustomerDAO quotationJoinInformation = new QuotationCustomerDAO();
+
+		QuotationDAO quotationEntity = new QuotationDAO();
+		QuotationModDAO quotationModEntity = new QuotationModDAO();
+		InsuranceProductDAO insuranceProductEntity = new InsuranceProductDAO();
+		InsuranceBusinessDAO insuranceBusinessEntity = new InsuranceBusinessDAO();
+
+		quotationEntity.setInsuredCustomerName("customer name");
+		quotationEntity.setClientLasName("client last name");
+		quotationEntity.setInsuranceCompanyQuotaId("b5add021-a825-4ba1-a455-95e11015cff7");
+		quotationEntity.setParticipantPersonalId("participantPersonalId");
+		quotationModEntity.setContactEmailDesc("example@bbva");
+		quotationModEntity.setCustomerPhoneDesc("923453849");
+		quotationModEntity.setInsuranceProductId(new BigDecimal(1));
+		quotationModEntity.setInsuranceModalityType("02");
+
+		insuranceProductEntity.setInsuranceProductType("830");
+		insuranceProductEntity.setInsuranceProductId(new BigDecimal(1));
+		insuranceBusinessEntity.setInsuranceBusinessName("VEHICULAR");
+
+		quotationJoinInformation.setQuotation(quotationEntity);
+		quotationJoinInformation.setQuotationMod(quotationModEntity);
+		quotationJoinInformation.setInsuranceProduct(insuranceProductEntity);
+		quotationJoinInformation.setInsuranceBusiness(insuranceBusinessEntity);
+
+		when(this.pisdr040.executeFindQuotationJoinByPolicyQuotaInternalId(anyString())).thenThrow(new BusinessException(ValidateParticipantErrors.SELECT_DB_ORACLE_ERROR.getAdviceCode(), false, ValidateParticipantErrors.SELECT_DB_ORACLE_ERROR.getMessage()));
+		QuotationCustomerDAO result = this.rbvdR048.executeGetCustomerInformationFromQuotation("0814000039658");
+		Assert.assertNull(result);
+
+	}
+
+	@Test
+	public void testExecuteGetRolesByCompany() {
+
+		List<RolDAO> listResponseDb = new ArrayList<>();
+
+		RolDAO line1 = new RolDAO();
+		line1.setParticipantRoleId(new Integer(7));
+		line1.setInsuranceCompanyRoleId("8");
+		listResponseDb.add(line1);
+		RolDAO line2 = new RolDAO();
+		line2.setParticipantRoleId(new Integer(2));
+		line2.setInsuranceCompanyRoleId("9");
+		listResponseDb.add(line2);
+		RolDAO line3 = new RolDAO();
+		line3.setParticipantRoleId(new Integer(1));
+		line3.setInsuranceCompanyRoleId("23");
+		listResponseDb.add(line3);
+
+		when(this.pisdr040.executeListParticipantRolesByCompanyId(anyObject())).thenReturn(listResponseDb);
+		List<RolDAO> result = this.rbvdR048.executeGetRolesByCompany(new BigDecimal(1));
+		Assert.assertNotNull(result);
+		Assert.assertNotNull(result.get(0));
+		Assert.assertNotNull(result.get(1));
+		Assert.assertNotNull(result.get(2));
+		Assert.assertEquals("8",result.get(0).getInsuranceCompanyRoleId());
+		Assert.assertEquals("9",result.get(1).getInsuranceCompanyRoleId());
+		Assert.assertEquals("23",result.get(2).getInsuranceCompanyRoleId());
+		Assert.assertEquals(new Integer(7),result.get(0).getParticipantRoleId());
+		Assert.assertEquals(new Integer(2),result.get(1).getParticipantRoleId());
+		Assert.assertEquals(new Integer(1),result.get(2).getParticipantRoleId());
+	}
+
+	@Test(expected = BusinessException.class)
+	public void testExecuteGetRolesByCompanyWithException() {
+
+		List<RolDAO> listResponseDb = new ArrayList<>();
+
+		RolDAO line1 = new RolDAO();
+		line1.setParticipantRoleId(new Integer(7));
+		line1.setInsuranceCompanyRoleId("8");
+		listResponseDb.add(line1);
+		RolDAO line2 = new RolDAO();
+		line2.setParticipantRoleId(new Integer(2));
+		line2.setInsuranceCompanyRoleId("9");
+		listResponseDb.add(line2);
+		RolDAO line3 = new RolDAO();
+		line3.setParticipantRoleId(new Integer(1));
+		line3.setInsuranceCompanyRoleId("23");
+		listResponseDb.add(line3);
+
+		when(this.pisdr040.executeListParticipantRolesByCompanyId(anyObject())).thenThrow(new BusinessException(ValidateParticipantErrors.SELECT_DB_ORACLE_ERROR.getAdviceCode(), false, ValidateParticipantErrors.SELECT_DB_ORACLE_ERROR.getMessage()));
+		List<RolDAO> result = this.rbvdR048.executeGetRolesByCompany(new BigDecimal(1));
+		Assert.assertNull(result);
+	}
 
 	@Test(expected = BusinessException.class)
 	public void testExecuteAddParticipantsServiceWithRestClientExceptionVD() {

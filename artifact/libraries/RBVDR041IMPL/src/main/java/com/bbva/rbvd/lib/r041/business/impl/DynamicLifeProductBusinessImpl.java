@@ -52,13 +52,13 @@ public class DynamicLifeProductBusinessImpl implements IThirdDynamicLifeBusiness
                 isParticipantsWithRolInsured = true;
                 if(Objects.nonNull(participant.getCustomer())){
                     person = PersonBean.buildPersonFromCustomer(participant.getCustomer(),participant.getRolCode());
-                }else if (Objects.nonNull(participant.getNonCustomer())){
+                }else if (Objects.nonNull(participant.getNonCustomerLife())){
                      Optional<Participant> managerParticipant = participants.stream()
                                 .filter(part -> part.getRolCode().equalsIgnoreCase(ConstantsUtil.Rol.PAYMENT_MANAGER.getName()))
                                 .findFirst();
                     if(managerParticipant.isPresent()){
                         PersonaBO personManager = PersonBean.buildPersonFromCustomer(managerParticipant.get().getCustomer(),managerParticipant.get().getRolCode());
-                        person = PersonBean.buildPersonFromNonCustomer(participant.getNonCustomer(),personManager);
+                        person = PersonBean.buildPersonFromNonCustomer(participant.getNonCustomerLife(),personManager);
                     }
                 }
             }

@@ -3,11 +3,7 @@ package com.bbva.rbvd.util;
 import com.bbva.pbtq.dto.validatedocument.response.host.pewu.PEMSALW4;
 import com.bbva.pbtq.dto.validatedocument.response.host.pewu.PEMSALWU;
 import com.bbva.pbtq.dto.validatedocument.response.host.pewu.PEWUResponse;
-import com.bbva.pisd.dto.insurancedao.entities.InsuranceBusinessEntity;
-import com.bbva.pisd.dto.insurancedao.entities.InsuranceProductEntity;
-import com.bbva.pisd.dto.insurancedao.entities.QuotationEntity;
-import com.bbva.pisd.dto.insurancedao.entities.QuotationModEntity;
-import com.bbva.pisd.dto.insurancedao.join.QuotationCustomerDTO;
+import com.bbva.rbvd.dto.participant.dao.*;
 import com.bbva.rbvd.dto.participant.request.ParticipantsDTO;
 import com.bbva.rbvd.dto.participant.request.ContactDetailsDTO;
 import com.bbva.rbvd.dto.participant.request.ParticipantTypeDTO;
@@ -195,13 +191,14 @@ InputParticipantsDTO requestBody = new InputParticipantsDTO();
         return requestBody;
     }
 
-    public static QuotationCustomerDTO buildFindQuotationJoinByPolicyQuotaInternalId(String participantPersonalId){
-        QuotationCustomerDTO quotationJoinInformation = new QuotationCustomerDTO();
+    public static QuotationCustomerDAO buildFindQuotationJoinByPolicyQuotaInternalId(String participantPersonalId){
+        QuotationCustomerDAO quotationJoinInformation = new QuotationCustomerDAO();
 
-        QuotationEntity quotationEntity = new QuotationEntity();
-        QuotationModEntity quotationModEntity = new QuotationModEntity();
-        InsuranceProductEntity insuranceProductEntity = new InsuranceProductEntity();
-        InsuranceBusinessEntity insuranceBusinessEntity = new InsuranceBusinessEntity();
+        QuotationDAO quotationEntity = new QuotationDAO();
+        QuotationModDAO quotationModEntity = new QuotationModDAO();
+        InsuranceProductDAO insuranceProductEntity = new InsuranceProductDAO();
+        InsuranceBusinessDAO insuranceBusinessEntity = new InsuranceBusinessDAO();
+        InsuranceCompanyDAO insuranceCompanyDAO = new InsuranceCompanyDAO();
 
         quotationEntity.setInsuredCustomerName("customer name");
         quotationEntity.setClientLasName("client last name");
@@ -213,13 +210,16 @@ InputParticipantsDTO requestBody = new InputParticipantsDTO();
         quotationModEntity.setInsuranceModalityType("02");
 
         insuranceProductEntity.setInsuranceProductType("830");
-
+        insuranceProductEntity.setInsuranceProductId(new BigDecimal(1));
         insuranceBusinessEntity.setInsuranceBusinessName("VEHICULAR");
+
+        insuranceCompanyDAO.setInsuranceCompanyId(new BigDecimal(1));
 
         quotationJoinInformation.setQuotation(quotationEntity);
         quotationJoinInformation.setQuotationMod(quotationModEntity);
         quotationJoinInformation.setInsuranceProduct(insuranceProductEntity);
         quotationJoinInformation.setInsuranceBusiness(insuranceBusinessEntity);
+        quotationJoinInformation.setInsuranceCompanyDAO(insuranceCompanyDAO);
         return quotationJoinInformation;
     }
 
@@ -826,22 +826,24 @@ InputParticipantsDTO requestBody = new InputParticipantsDTO();
         return pewuResponse;
     }
 
-    public static Map<String, Object> buildRolByParticipantTypeResponse(){
-        Map<String, Object> line1 = new HashMap<>();
-        line1.put("PARTICIPANT_ROLE_ID", new BigDecimal(7));
-        line1.put("INSURANCE_COMPANY_ROLE_ID", "8");
-        Map<String, Object> line2 = new HashMap<>();
-        line2.put("PARTICIPANT_ROLE_ID",new BigDecimal(2));
-        line2.put("INSURANCE_COMPANY_ROLE_ID","9");
-        Map<String, Object> line3 = new HashMap<>();
-        line3.put("PARTICIPANT_ROLE_ID",new BigDecimal(1));
-        line3.put("INSURANCE_COMPANY_ROLE_ID","23");
-        List<Map<String, Object>> listResponseDb = new ArrayList<>();
+    public static List<RolDAO> buildRolByParticipantTypeResponse(){
+
+        List<RolDAO> listResponseDb = new ArrayList<>();
+
+        RolDAO line1 = new RolDAO();
+        line1.setParticipantRoleId(new Integer(7));
+        line1.setInsuranceCompanyRoleId("8");
         listResponseDb.add(line1);
+        RolDAO line2 = new RolDAO();
+        line2.setParticipantRoleId(new Integer(2));
+        line2.setInsuranceCompanyRoleId("9");
         listResponseDb.add(line2);
+        RolDAO line3 = new RolDAO();
+        line3.setParticipantRoleId(new Integer(1));
+        line3.setInsuranceCompanyRoleId("23");
         listResponseDb.add(line3);
 
-        return Collections.singletonMap("dtoInsurance",listResponseDb);
+        return listResponseDb;
 
     }
 

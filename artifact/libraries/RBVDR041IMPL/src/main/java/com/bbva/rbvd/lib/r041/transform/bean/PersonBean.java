@@ -2,13 +2,10 @@ package com.bbva.rbvd.lib.r041.transform.bean;
 
 import com.bbva.pbtq.dto.validatedocument.response.host.pewu.PEWUResponse;
 import com.bbva.rbvd.dto.insrncsale.bo.emision.PersonaBO;
-import com.bbva.rbvd.dto.insrncsale.utils.LifeInsuranceInsuredData;
+import com.bbva.rbvd.dto.participant.dao.QuotationLifeDAO;
 import com.bbva.rbvd.lib.r041.util.ConstantsUtil;
 import com.bbva.rbvd.lib.r041.validation.ValidationUtil;
 import org.apache.commons.lang3.StringUtils;
-
-import java.util.Map;
-
 
 public class PersonBean {
 
@@ -37,9 +34,9 @@ public class PersonBean {
         return personCustomer;
     }
 
-    public static PersonaBO buildPersonFromNonCustomer(Map mapParticipant, PersonaBO personManager){
+    public static PersonaBO buildPersonFromNonCustomer(QuotationLifeDAO participant, PersonaBO personManager){
         PersonaBO personNonCustomer = new PersonaBO();
-        String apellidos = (String) mapParticipant.get(LifeInsuranceInsuredData.FIELD_CLIENT_LAST_NAME);
+        String apellidos = participant.getClientLastName();
         String apPaterno="";
         String apMaterno="";
 
@@ -48,23 +45,23 @@ public class PersonBean {
             apPaterno = apellidos.substring(ConstantsUtil.Number.CERO,index);
             apMaterno = apellidos.substring(index+ConstantsUtil.Number.UNO);
         }
-        String fechaNacimiento = String.valueOf(mapParticipant.get(LifeInsuranceInsuredData.FIELD_CUSTOMER_BIRTH_DATE));
+        String fechaNacimiento = participant.getCustomerBirthDate();
         if(StringUtils.isNotEmpty(fechaNacimiento)){
             fechaNacimiento = fechaNacimiento.substring(ConstantsUtil.Number.CERO,ConstantsUtil.Number.DIEZ);
         }
 
-        personNonCustomer.setNombres((String) mapParticipant.get(LifeInsuranceInsuredData.FIELD_INSURED_CUSTOMER_NAME));
+        personNonCustomer.setNombres(participant.getInsuredCustomerName());
         personNonCustomer.setApePaterno(apPaterno);
         personNonCustomer.setApeMaterno(apMaterno);
 
-        personNonCustomer.setTipoDocumento((String) mapParticipant.get("CUSTOMER_DOCUMENT_TYPE"));
-        personNonCustomer.setNroDocumento((String) mapParticipant.get("PERSONAL_ID"));
+        personNonCustomer.setTipoDocumento(participant.getCustomerDocumentType());
+        personNonCustomer.setNroDocumento(participant.getPersonalId());
 
         personNonCustomer.setFechaNacimiento(fechaNacimiento);
-        personNonCustomer.setSexo((String) mapParticipant.get(LifeInsuranceInsuredData.FIELD_GENDER_ID));
-        personNonCustomer.setCorreoElectronico((String) mapParticipant.get(LifeInsuranceInsuredData.FIELD_USER_EMAIL_PERSONAL_DESC));
+        personNonCustomer.setSexo(participant.getGenderId());
+        personNonCustomer.setCorreoElectronico(participant.getUserEmailPersonalDesc());
         personNonCustomer.setRol(ConstantsUtil.Rol.INSURED.getValue());
-        personNonCustomer.setCelular((String) mapParticipant.get(LifeInsuranceInsuredData.FIELD_PHONE_ID));
+        personNonCustomer.setCelular(participant.getPhoneId());
 
         personNonCustomer.setTipoVia(ValidationUtil.validateAllVia(personManager.getTipoVia()));
         personNonCustomer.setNombreVia(ValidationUtil.validateAllVia(personManager.getNombreVia()));

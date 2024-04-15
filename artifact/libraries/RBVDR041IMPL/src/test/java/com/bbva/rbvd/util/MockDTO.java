@@ -1,13 +1,13 @@
 package com.bbva.rbvd.util;
 
-import com.bbva.pisd.dto.insurance.mapper.ObjectMapperHelper;
 import com.bbva.rbvd.dto.insrncsale.aso.listbusinesses.ListBusinessesASO;
+import com.bbva.rbvd.mapper.ObjectMapperHelper;
 
 import java.io.IOException;
 
 public class MockDTO {
     private static final MockDTO INSTANCE = new MockDTO();
-    private final com.bbva.pisd.dto.insurance.mapper.ObjectMapperHelper objectMapperHelper = ObjectMapperHelper.getInstance();
+    private final ObjectMapperHelper objectMapperHelper = ObjectMapperHelper.getInstance();
 
     private MockDTO() {
 

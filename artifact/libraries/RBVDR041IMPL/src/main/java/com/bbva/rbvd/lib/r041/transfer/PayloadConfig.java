@@ -1,12 +1,11 @@
 package com.bbva.rbvd.lib.r041.transfer;
 
+import com.bbva.rbvd.dto.participant.dao.QuotationCustomerDAO;
+import com.bbva.rbvd.dto.participant.dao.RolDAO;
 import com.bbva.rbvd.dto.participant.request.InputParticipantsDTO;
-import com.bbva.pisd.dto.insurancedao.join.QuotationCustomerDTO;
 import com.bbva.rbvd.lib.r041.properties.ParticipantProperties;
-import com.bbva.rbvd.dto.participant.mapper.RolDTO;
 
 import java.util.List;
-import java.util.Map;
 
 public class PayloadConfig {
 
@@ -14,8 +13,8 @@ public class PayloadConfig {
     private List<Participant> participants;
     private String quotationId;
     private String personType;
-    private List<RolDTO> registeredRolesDB;
-    private QuotationCustomerDTO quotationInformation;
+    private List<RolDAO> registeredRolesDB;
+    private QuotationCustomerDAO quotationInformation;
     private ParticipantProperties participantProperties;
 
     public InputParticipantsDTO getInput() {
@@ -43,11 +42,11 @@ public class PayloadConfig {
     }
 
 
-    public List<RolDTO> getRegisteredRolesDB() {
+    public List<RolDAO> getRegisteredRolesDB() {
         return registeredRolesDB;
     }
 
-    public void setRegisteredRolesDB(List<RolDTO> registeredRolesDB) {
+    public void setRegisteredRolesDB(List<RolDAO> registeredRolesDB) {
         this.registeredRolesDB = registeredRolesDB;
     }
 
@@ -59,11 +58,11 @@ public class PayloadConfig {
         this.personType = personType;
     }
 
-    public QuotationCustomerDTO getQuotationInformation() {
+    public QuotationCustomerDAO getQuotationInformation() {
         return quotationInformation;
     }
 
-    public void setQuotationInformation(QuotationCustomerDTO quotationInformation) {
+    public void setQuotationInformation(QuotationCustomerDAO quotationInformation) {
         this.quotationInformation = quotationInformation;
     }
 

@@ -25,17 +25,11 @@
 			<groupId>com.bbva.pbtq.dto.validatedocument</groupId>
 			<artifactId>PBTQC001</artifactId>
 			<version>0.1.8</version>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.bbva.pbtq.dto.validatedocument</groupId>
-			<artifactId>PBTQC001</artifactId>
-			<version>0.1.8</version>
 		</dependency>
 		<dependency>
 			<groupId>com.bbva.rbvd.dto.participant</groupId>
 			<artifactId>RBVDC008</artifactId>
-			<version>0.1.2</version>
+			<version>0.2.0</version>
 			<exclusions>
 				<exclusion>
 					<groupId>org.slf4j</groupId>

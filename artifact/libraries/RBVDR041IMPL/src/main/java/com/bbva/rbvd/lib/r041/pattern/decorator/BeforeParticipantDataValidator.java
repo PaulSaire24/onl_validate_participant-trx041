@@ -9,6 +9,5 @@ import com.bbva.rbvd.lib.r041.transfer.PayloadConfig;
 public interface BeforeParticipantDataValidator {
 
     PayloadConfig before(InputParticipantsDTO input, ApplicationConfigurationService applicationConfigurationService, QuotationCustomerDAO quotationInformation);
-    PayloadConfig before(InputParticipantsDTO input, ApplicationConfigurationService applicationConfigurationService, QuotationCustomerDAO quotationInformation, String personType);
 
 }

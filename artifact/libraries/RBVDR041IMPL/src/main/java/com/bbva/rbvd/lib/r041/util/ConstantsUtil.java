@@ -73,6 +73,34 @@ public class ConstantsUtil {
         }
     }
 
+    public enum PersonTypeEnum {
+        NATURAL("L", "NATURAL", "DNI"),
+        NATURAL_WITH_BUSINESS("R", "NATURAL CON NEGOCIO", "RUC"),
+        JURIDIC("J", "JURIDICO", "RUC");
+
+        private final String code;
+        private final String description;
+        private final String documentType;
+
+        private PersonTypeEnum(String code, String description, String documentType) {
+            this.description = description;
+            this.code = code;
+            this.documentType = documentType;
+        }
+
+        public String getDescription() {
+            return this.description;
+        }
+
+        public String getCode() {
+            return this.code;
+        }
+
+        public String getDocumentType() {
+            return this.documentType;
+        }
+    }
+
     public static int getValueByName(String name){
         Rol[] val = Rol.values();
         for (Rol er: val) {

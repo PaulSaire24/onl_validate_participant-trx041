@@ -44,31 +44,29 @@ public class NonLifeProductBusinessImpl implements INonLifeProductBusiness {
         List<Participant> participantList = payloadConfig.getParticipants();
         List<RolDAO> selectedRoles = payloadConfig.getRegisteredRolesDB();
 
-        if(RBVDInternalConstants.TypeParticipant.NATURAL.toString().equalsIgnoreCase(payloadConfig.getPersonType())){
+        List<PersonaBO> personaList = new ArrayList<>();
+        List<OrganizacionBO> organizacionList = new ArrayList<>();
 
-            List<PersonaBO> personaList = new ArrayList<>();
-
-            participantList.forEach(part-> {
+        participantList.forEach(part-> {
+            if(RBVDInternalConstants.TypeParticipant.NATURAL.toString().equalsIgnoreCase(part.getInputParticipant().getPerson().getPersonType())){
                 ParticipantType participantType1 = Objects.nonNull(part.getCustomer()) ? ParticipantType.CUSTOMER : ParticipantType.NON_CUSTOMER;
                 com.bbva.rbvd.lib.r041.pattern.factory.Participant participant = ParticipantFactory.buildParticipant(participantType1);
                 personaList.add(participant.createRequestParticipant(part.getCustomer(),part.getInputParticipant(), payloadConfig.getQuotationInformation(),
                         ValidationUtil.obtainExistingCompanyRole(part.getInputParticipant(),
                                 payloadConfig.getParticipantProperties(),selectedRoles)));
-            });
-            addTerceroByCompany.setPersona(personaList);
-        }else{
 
-            List<OrganizacionBO> organizacionList = new ArrayList<>();
-
-            participantList.forEach(part-> {
-                PersonaBO personaBO = ValidateRimacNaturalPerson.mapCustomerRequestData(participantList.get(0).getCustomer(),participantList.get(0).getInputParticipant(), payloadConfig.getQuotationInformation(),
+                addTerceroByCompany.setPersona(personaList);
+            }else{
+                PersonaBO personaBO = ValidateRimacNaturalPerson.mapCustomerRequestData(part.getCustomer(),part.getInputParticipant(), payloadConfig.getQuotationInformation(),
                         null);
                 OrganizacionBO personaBO2 = ValidateRimacLegalPerson.getDataOrganization(part.getLegalCustomer().getData().get(0), personaBO, payloadConfig.getQuotationInformation(), ValidationUtil.obtainExistingCompanyRole(part.getInputParticipant(),payloadConfig.getParticipantProperties(),selectedRoles),part.getInputParticipant());
                 organizacionList.add(personaBO2);
-            });
-            addTerceroByCompany.setOrganizacion(organizacionList);
-        }
 
+                addTerceroByCompany.setOrganizacion(organizacionList);
+            }
+        });
+
+        addTerceroByCompany.setProducto(payloadConfig.getQuotationInformation().getInsuranceProduct().getInsuranceProductDesc());
         requestCompany.setPayload(addTerceroByCompany);
         FactoryProduct.enrichPayloadByProduct(addTerceroByCompany,payloadConfig.getQuotationInformation());
 

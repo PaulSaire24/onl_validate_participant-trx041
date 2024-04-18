@@ -83,6 +83,8 @@ public class RBVDR041Test {
 				.thenReturn("L");
 		when(this.applicationConfigurationService.getProperty("RUC"))
 				.thenReturn("R");
+		when(this.applicationConfigurationService.getProperty("FOREIGNERS"))
+				.thenReturn("F");
 		when(this.applicationConfigurationService.getProperty(ConstantsUtil.ENABLED_LIFE_PRODUCTS))
 				.thenReturn("841");
 		when(this.applicationConfigurationService.getProperty(ConstantsUtil.ENABLED_NON_LIFE_PRODUCTS))
@@ -150,11 +152,14 @@ public class RBVDR041Test {
         quotationJoinCustomerInformation.setQuotation(new QuotationDAO());
 		quotationJoinCustomerInformation.setQuotationMod(new QuotationModDAO());
 		quotationJoinCustomerInformation.setInsuranceBusiness(new InsuranceBusinessDAO());
+		quotationJoinCustomerInformation.setInsuranceCompanyDAO(new InsuranceCompanyDAO());
 		quotationJoinCustomerInformation.getInsuranceBusiness().setInsuranceBusinessName("VIDA");
         quotationJoinCustomerInformation.getInsuranceProduct().setInsuranceProductType("841");
         quotationJoinCustomerInformation.getQuotation().setInsuranceCompanyQuotaId("0814000038990");
 		quotationJoinCustomerInformation.getInsuranceProduct().setInsuranceProductId(new BigDecimal(11));
 		quotationJoinCustomerInformation.getQuotationMod().setInsuranceModalityType("02");
+		quotationJoinCustomerInformation.getInsuranceProduct().setInsuranceProductDesc("VIDAINVERSION");
+		quotationJoinCustomerInformation.getInsuranceCompanyDAO().setInsuranceCompanyId(new BigDecimal(21));
 		QuotationLifeDAO quotationLifeDAOResponseDB = new QuotationLifeDAO();
 		quotationLifeDAOResponseDB.setClientLastName("Romero|Aguilar");
 		quotationLifeDAOResponseDB.setCustomerBirthDate("2023-05-15");
@@ -385,11 +390,14 @@ public class RBVDR041Test {
 		quotationJoinCustomerInformation.setQuotationMod(new QuotationModDAO());
 		quotationJoinCustomerInformation.setInsuranceProduct(new InsuranceProductDAO());
 		quotationJoinCustomerInformation.setInsuranceBusiness(new InsuranceBusinessDAO());
+		quotationJoinCustomerInformation.setInsuranceCompanyDAO(new InsuranceCompanyDAO());
 		quotationJoinCustomerInformation.getInsuranceBusiness().setInsuranceBusinessName("VIDA");
 		quotationJoinCustomerInformation.getInsuranceProduct().setInsuranceProductType("841");
+		quotationJoinCustomerInformation.getInsuranceProduct().setInsuranceProductDesc("VIDAINVERSION");
 		quotationJoinCustomerInformation.getQuotation().setInsuranceCompanyQuotaId("0814000038990");
 		quotationJoinCustomerInformation.getInsuranceProduct().setInsuranceProductId(new BigDecimal(1));
 		quotationJoinCustomerInformation.getQuotationMod().setInsuranceModalityType("02");
+		quotationJoinCustomerInformation.getInsuranceCompanyDAO().setInsuranceCompanyId(new BigDecimal(21));
 
 		QuotationLifeDAO quotationLifeDAOResponseDB = new QuotationLifeDAO();
 		quotationLifeDAOResponseDB.setClientLastName("Romero|Aguilar");
@@ -420,11 +428,14 @@ public class RBVDR041Test {
 		quotationJoinCustomerInformation.setQuotationMod(new QuotationModDAO());
 		quotationJoinCustomerInformation.setInsuranceProduct(new InsuranceProductDAO());
 		quotationJoinCustomerInformation.setInsuranceBusiness(new InsuranceBusinessDAO());
+		quotationJoinCustomerInformation.setInsuranceCompanyDAO(new InsuranceCompanyDAO());
 		quotationJoinCustomerInformation.getInsuranceBusiness().setInsuranceBusinessName("VIDA");
 		quotationJoinCustomerInformation.getInsuranceProduct().setInsuranceProductType("841");
+		quotationJoinCustomerInformation.getInsuranceProduct().setInsuranceProductDesc("VIDAINVERSION");
 		quotationJoinCustomerInformation.getQuotation().setInsuranceCompanyQuotaId("0814000038990");
 		quotationJoinCustomerInformation.getInsuranceProduct().setInsuranceProductId(new BigDecimal(1));
 		quotationJoinCustomerInformation.getQuotationMod().setInsuranceModalityType("02");
+		quotationJoinCustomerInformation.getInsuranceCompanyDAO().setInsuranceCompanyId(new BigDecimal(21));
         //request of trx
 
 		QuotationLifeDAO quotationLifeDAOResponseDB = new QuotationLifeDAO();
@@ -457,12 +468,15 @@ public class RBVDR041Test {
 		quotationJoinCustomerInformation.setQuotation(new QuotationDAO());
 		quotationJoinCustomerInformation.setQuotationMod(new QuotationModDAO());
 		quotationJoinCustomerInformation.setInsuranceProduct(new InsuranceProductDAO());
+		quotationJoinCustomerInformation.setInsuranceCompanyDAO(new InsuranceCompanyDAO());
 		quotationJoinCustomerInformation.setInsuranceBusiness(new InsuranceBusinessDAO());
 		quotationJoinCustomerInformation.getInsuranceBusiness().setInsuranceBusinessName("VIDA");
 		quotationJoinCustomerInformation.getInsuranceProduct().setInsuranceProductType("841");
+		quotationJoinCustomerInformation.getInsuranceProduct().setInsuranceProductDesc("VIDAINVERSION");
 		quotationJoinCustomerInformation.getQuotation().setInsuranceCompanyQuotaId("0814000038990");
 		quotationJoinCustomerInformation.getInsuranceProduct().setInsuranceProductId(new BigDecimal(1));
 		quotationJoinCustomerInformation.getQuotationMod().setInsuranceModalityType("02");
+		quotationJoinCustomerInformation.getInsuranceCompanyDAO().setInsuranceCompanyId(new BigDecimal(21));
 
         Map<String,Object> responseData = new HashMap<>();
         responseData.put("INSURANCE_PRODUCT_ID",new BigDecimal(21));
@@ -507,17 +521,6 @@ public class RBVDR041Test {
 		Mockito.when(rbvdr048.executeGetRolesByCompany(anyObject())).thenThrow(new BusinessException(DatabaseParticipantErrors.QUERY_EMPTY_RESULT.getAdviceCode(), false, DatabaseParticipantErrors.QUERY_EMPTY_RESULT.getMessage()));
 
 		AgregarTerceroBO response =  rbvdR041.executeValidateAddParticipant(ParticipantsUtil.getMockRequestBodyValidateNaturalParticipants());
-		Assert.assertNull(response);
-		Assert.assertEquals(1,this.context.getAdviceList().size());
-
-	}
-
-	@Test
-	public void executeValidationWithWrongPersonTypeListFormatted(){
-
-		InputParticipantsDTO InputParticipantsDTO = ParticipantsUtil.getMockRequestBodyValidateNaturalParticipants();
-		InputParticipantsDTO.getParticipants().get(0).getPerson().setPersonType("LEGAL");
-		AgregarTerceroBO response =  rbvdR041.executeValidateAddParticipant(InputParticipantsDTO);
 		Assert.assertNull(response);
 		Assert.assertEquals(1,this.context.getAdviceList().size());
 

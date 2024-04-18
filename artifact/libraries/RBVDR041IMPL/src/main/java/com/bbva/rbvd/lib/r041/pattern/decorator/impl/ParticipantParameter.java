@@ -33,38 +33,18 @@ public class ParticipantParameter implements BeforeParticipantDataValidator {
 
     @Override
     public PayloadConfig before(InputParticipantsDTO input, ApplicationConfigurationService applicationConfigurationService, QuotationCustomerDAO quotationInformation) {
-        LOGGER.info("** before dinamic life :: start **");
+        LOGGER.info("** before - non life insurance :: start **");
 
         PayloadConfig payloadConfig = new PayloadConfig();
 
-        String productId = quotationInformation.getInsuranceProduct().getInsuranceProductId().toString();
-        String planId = quotationInformation.getQuotationMod().getInsuranceModalityType();
-
         ParticipantsBusiness participantsBusiness = new ParticipantsBusiness(applicationConfigurationService,this.rbvdr048);
-        List<Participant> participants = participantsBusiness.getParticipants(input,productId, planId);
-        LOGGER.info("** before :: participants.size()  {} **",participants.size());
+        List<Participant> participants = participantsBusiness.getParticipants(input,quotationInformation);
+        LOGGER.info("** before :: participants.size()  {}",participants.size());
 
         payloadConfig.setQuotationId(quotationInformation.getQuotation().getInsuranceCompanyQuotaId());
         payloadConfig.setParticipants(participants);
         payloadConfig.setInput(input);
-        return payloadConfig;
-    }
-
-
-    @Override
-    public PayloadConfig before(InputParticipantsDTO input, ApplicationConfigurationService applicationConfigurationService, QuotationCustomerDAO quotationInformation, String personType) {
-        LOGGER.info("** before non life :: start **");
-
-        PayloadConfig payloadConfig = new PayloadConfig();
-
-        ParticipantsBusiness participantsBusiness = new ParticipantsBusiness(applicationConfigurationService,this.rbvdr048);
-        List<Participant> participants = participantsBusiness.getParticipants(input);
-        LOGGER.info("** before :: participants.size()  {}",participants.size());
-
-        payloadConfig.setParticipants(participants);
-        payloadConfig.setInput(input);
         payloadConfig.setRegisteredRolesDB(this.getCompanyRoles(quotationInformation.getInsuranceCompanyDAO().getInsuranceCompanyId()));
-        payloadConfig.setPersonType(personType);
         payloadConfig.setQuotationInformation(quotationInformation);
         payloadConfig.setParticipantProperties(participantProperties);
         return payloadConfig;

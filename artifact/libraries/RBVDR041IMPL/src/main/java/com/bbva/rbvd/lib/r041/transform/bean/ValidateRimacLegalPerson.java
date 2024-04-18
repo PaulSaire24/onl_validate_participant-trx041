@@ -3,8 +3,10 @@ package com.bbva.rbvd.lib.r041.transform.bean;
 import com.bbva.rbvd.dto.insrncsale.aso.CommonFieldsASO;
 import com.bbva.rbvd.dto.insrncsale.aso.FormationASO;
 import com.bbva.rbvd.dto.insrncsale.aso.listbusinesses.BusinessASO;
+import com.bbva.rbvd.dto.insrncsale.bo.emision.EntidadBO;
 import com.bbva.rbvd.dto.insrncsale.bo.emision.OrganizacionBO;
 import com.bbva.rbvd.dto.insrncsale.bo.emision.PersonaBO;
+import com.bbva.rbvd.dto.insrncsale.utils.PersonTypeEnum;
 import com.bbva.rbvd.dto.participant.dao.QuotationCustomerDAO;
 import com.bbva.rbvd.dto.participant.request.ContactDetailsDTO;
 import com.bbva.rbvd.dto.participant.request.ParticipantsDTO;
@@ -38,12 +40,12 @@ public class ValidateRimacLegalPerson {
         celular = StringUtils.defaultString(quotation.getQuotationMod().getCustomerPhoneDesc(),celular);
 
         OrganizacionBO organizacion = new OrganizacionBO();
-        organizacion.setDireccion(validateSN(persona.getDireccion()));
+        organizacion.setDireccion(persona.getDireccion());
         organizacion.setRol(rolId);
         organizacion.setTipoDocumento(RUC_ID);
-        organizacion.setNroDocumento(FunctionUtils.isNotEmptyList(business.getBusinessDocuments()).map(businessDocument -> businessDocument.get(0).getDocumentNumber()).orElse(StringUtils.EMPTY));
-        organizacion.setRazonSocial(business.getLegalName());
-        organizacion.setNombreComercial(business.getLegalName());
+        organizacion.setNroDocumento(FunctionUtils.isNotEmptyList(requestBody.getIdentityDocuments()).map(identityDocument -> identityDocument.get(0).getValue()).orElse(StringUtils.EMPTY));
+        organizacion.setRazonSocial(validateSN(business.getLegalName()));
+        organizacion.setNombreComercial(validateSN(business.getLegalName()));
 
         if(Objects.nonNull(business.getFormation())) {
             organizacion.setPaisOrigen(Optional.ofNullable(business.getFormation()).map(ValidateRimacLegalPerson::mapPaisOrigen).orElse(StringUtils.EMPTY));
@@ -67,6 +69,7 @@ public class ValidateRimacLegalPerson {
         organizacion.setNombreVia(persona.getNombreVia());
         organizacion.setTipoVia(persona.getTipoVia());
         organizacion.setNumeroVia(persona.getNumeroVia());
+        organizacion.setTipoPersona(getPersonType(organizacion).getCode());
 
         return organizacion;
     }
@@ -85,5 +88,13 @@ public class ValidateRimacLegalPerson {
             return StringUtils.EMPTY;
         }
         return formationASO.getCountry().getName();
+    }
+
+    public static PersonTypeEnum getPersonType(EntidadBO person) {
+        if (RUC_ID.equalsIgnoreCase(person.getTipoDocumento())){
+            if (StringUtils.startsWith(person.getNroDocumento(), "20")) return PersonTypeEnum.JURIDIC;
+            else return PersonTypeEnum.NATURAL_WITH_BUSINESS;
+        }
+        return PersonTypeEnum.NATURAL;
     }
 }

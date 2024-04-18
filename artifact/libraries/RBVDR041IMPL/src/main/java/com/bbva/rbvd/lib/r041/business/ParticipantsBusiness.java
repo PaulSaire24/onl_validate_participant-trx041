@@ -4,12 +4,14 @@ import com.bbva.elara.configuration.manager.application.ApplicationConfiguration
 import com.bbva.pbtq.dto.validatedocument.response.host.pewu.PEWUResponse;
 import com.bbva.rbvd.dto.insrncsale.aso.listbusinesses.ListBusinessesASO;
 import com.bbva.rbvd.dto.participant.constants.RBVDInternalConstants;
+import com.bbva.rbvd.dto.participant.dao.QuotationCustomerDAO;
 import com.bbva.rbvd.dto.participant.dao.QuotationLifeDAO;
 import com.bbva.rbvd.dto.participant.group.ParticipantGroupDTO;
 import com.bbva.rbvd.dto.participant.request.InputParticipantsDTO;
 import com.bbva.rbvd.dto.participant.request.ParticipantsDTO;
 import com.bbva.rbvd.lib.r041.service.api.ConsumerInternalService;
 import com.bbva.rbvd.lib.r041.transfer.Participant;
+import com.bbva.rbvd.lib.r041.util.ConstantsUtil;
 import com.bbva.rbvd.lib.r041.validation.ValidationUtil;
 import com.bbva.rbvd.lib.r048.RBVDR048;
 import org.apache.commons.lang3.StringUtils;
@@ -60,7 +62,7 @@ public class ParticipantsBusiness {
         return participants;
     }
 
-    public List<Participant> getParticipants(InputParticipantsDTO input) {
+    public List<Participant> getParticipants(InputParticipantsDTO input, QuotationCustomerDAO quotationInformation) {
         List<ParticipantGroupDTO> groupParticipant = groupByDocumentNumberAndDocumentType(input);
         LOGGER.info(" ** GetConfig :: groupParticipant -> {}",groupParticipant);
         List<Participant> participants = new ArrayList<>();
@@ -83,6 +85,7 @@ public class ParticipantsBusiness {
             }else{
                 payloadProperties.setDocumentType(documentTypeHost);
                 payloadProperties.setDocumentNumber(part.getDocumentNumber());
+                additionalPropertiesByProduct(payloadProperties,input.getQuotationId(),quotationInformation);
             }
 
            fillTotalParticipantsPerGroup(participants, part.getParticipantList(), payloadProperties);
@@ -122,8 +125,21 @@ public class ParticipantsBusiness {
     public void fillTotalParticipantsPerGroup(List<Participant> participantOutList, List<ParticipantsDTO> inputParticipant, Participant participant){
         for (int i = 0; i < inputParticipant.size(); i++) {
             Participant participantOutput = participant.clone();
-            participantOutput.setInputParticipant(inputParticipant.get(i));
+            inputParticipant.get(i).getIdentityDocuments().get(0).getDocumentType().setId(participantOutput.getDocumentType());
+            ParticipantsDTO inputParticipantDTO = inputParticipant.get(i);
+            participantOutput.setInputParticipant(inputParticipantDTO);
+            participantOutput.setRolCode(inputParticipantDTO.getParticipantType().getId());
             participantOutList.add(participantOutput);
+        }
+    }
+
+    public void additionalPropertiesByProduct(Participant participant, String internalQuotationId,QuotationCustomerDAO quotationInformation){
+        if(ConstantsUtil.Product.BUSINESS_LIFE.getCode().equals(quotationInformation.getInsuranceBusiness().getInsuranceBusinessName())){
+            String productId = quotationInformation.getInsuranceProduct().getInsuranceProductId().toString();
+            String planId = quotationInformation.getQuotationMod().getInsuranceModalityType();
+            QuotationLifeDAO insuredInformation = getInsuredFromQuotation(internalQuotationId,productId,planId,participant.getDocumentNumber(),participant.getDocumentType());
+            LOGGER.info("** getConfig dataInsured -> {}",insuredInformation);
+            participant.setNonCustomerLife(insuredInformation);
         }
     }
 

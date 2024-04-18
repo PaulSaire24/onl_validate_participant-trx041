@@ -13,17 +13,17 @@ import com.bbva.rbvd.lib.r048.RBVDR048;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class InsuranceProductNonLifeProducts extends ParticipantDataValidatorDecorator {
+public class NonLifeProducts extends ParticipantDataValidatorDecorator {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(InsuranceProductNonLifeProducts.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(NonLifeProducts.class);
 
-    public InsuranceProductNonLifeProducts(BeforeParticipantDataValidator preValidate) {
+    public NonLifeProducts(BeforeParticipantDataValidator preValidate) {
         super(preValidate);
     }
 
     @Override
     public PayloadStore start(InputParticipantsDTO input, QuotationCustomerDAO quotationInformation, RBVDR048 rbvdr048, ApplicationConfigurationService applicationConfigurationService) {
-        PayloadConfig payloadConfig = this.getBeforeValidator().before(input,applicationConfigurationService, quotationInformation, input.getParticipants().get(0).getPerson().getPersonType());
+        PayloadConfig payloadConfig = this.getBeforeValidator().before(input,applicationConfigurationService, quotationInformation);
         LOGGER.info(" :: PayloadConfig :: {} :: ",payloadConfig);
         NonLifeProductBusinessImpl nonLifeProductBusiness = new NonLifeProductBusinessImpl(rbvdr048);
         AgregarTerceroBO responseCompany = nonLifeProductBusiness.createRequestByCompany(payloadConfig);
@@ -41,17 +41,17 @@ public class InsuranceProductNonLifeProducts extends ParticipantDataValidatorDec
         private Builder() {
         }
 
-        public static InsuranceProductNonLifeProducts.Builder an() {
-            return new InsuranceProductNonLifeProducts.Builder();
+        public static NonLifeProducts.Builder an() {
+            return new NonLifeProducts.Builder();
         }
 
-        public InsuranceProductNonLifeProducts.Builder preValidate(BeforeParticipantDataValidator preValidate) {
+        public NonLifeProducts.Builder preValidate(BeforeParticipantDataValidator preValidate) {
             this.preValidate = preValidate;
             return this;
         }
 
-        public InsuranceProductNonLifeProducts build() {
-            return new InsuranceProductNonLifeProducts(preValidate);
+        public NonLifeProducts build() {
+            return new NonLifeProducts(preValidate);
         }
     }
 }

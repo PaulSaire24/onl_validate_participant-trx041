@@ -24,9 +24,6 @@ public class RBVDR041Impl extends RBVDR041Abstract {
         LOGGER.info(" :: executeValidateAddParticipant :: ValidateParticipant :: {}",input);
 
         try{
-            String personType = getFirstLegalPerson(input);
-            LOGGER.info("** validateAllParticipantsByIndicatedType :: Person type {} ", personType);
-            ValidationUtil.verifyAllParticipantAsSameLegalPerson(input.getParticipants(), personType);
             ParticipantParameter participantParameter = new ParticipantParameter(rbvdR048, participantProperties);
             QuotationCustomerDAO quotationInformation =  getGeneralQuotationInformation(input.getQuotationId());
             LOGGER.info(" :: executeValidateAddParticipant :: productId -> {}", quotationInformation.getInsuranceProduct().getInsuranceProductType());
@@ -41,10 +38,6 @@ public class RBVDR041Impl extends RBVDR041Abstract {
             this.addAdviceWithDescription(businessException.getAdviceCode(),businessException.getMessage());
             return null;
         }
-    }
-
-    private static String getFirstLegalPerson(InputParticipantsDTO input) {
-        return input.getParticipants().get(0).getPerson().getPersonType();
     }
 
     private QuotationCustomerDAO getGeneralQuotationInformation(String quotationId) {

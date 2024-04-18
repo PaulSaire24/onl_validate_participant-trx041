@@ -11,7 +11,7 @@ import com.bbva.rbvd.dto.participant.utils.TypeErrorControllerEnum;
 import com.bbva.rbvd.dto.participant.utils.ValidateParticipantErrors;
 import com.bbva.rbvd.lib.r041.pattern.decorator.ParticipantDataValidator;
 import com.bbva.rbvd.lib.r041.pattern.decorator.impl.ParticipantParameter;
-import com.bbva.rbvd.lib.r041.pattern.decorator.products.InsuranceProductNonLifeProducts;
+import com.bbva.rbvd.lib.r041.pattern.decorator.products.NonLifeProducts;
 import com.bbva.rbvd.lib.r041.pattern.decorator.products.LifeProduct;
 import com.bbva.rbvd.lib.r041.util.ConstantsUtil;
 import com.bbva.rbvd.lib.r048.RBVDR048;
@@ -40,7 +40,7 @@ public class FactoryProduct {
                     .build();
         } else if(excludedNonLifeProductList.contains(productId)){
             LOGGER.info("** FactoryProductValidate: NON LIFE product **");
-            return InsuranceProductNonLifeProducts.Builder.an()
+            return NonLifeProducts.Builder.an()
                     .preValidate(validationParameter)
                     .build();
         } else {

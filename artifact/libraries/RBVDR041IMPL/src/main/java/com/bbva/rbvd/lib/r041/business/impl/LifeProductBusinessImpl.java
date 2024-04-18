@@ -75,7 +75,7 @@ public class LifeProductBusinessImpl implements IThirdDynamicLifeBusiness {
 
         LOGGER.info("** doDynamicLife - persona List after enrich -> {}",personList);
         aggregateTercero.setPersona(personList);
-        aggregateTercero.setProducto(ConstantsUtil.Product.DYNAMIC_LIFE.getName());
+        aggregateTercero.setProducto(payloadConfig.getQuotationInformation().getInsuranceProduct().getInsuranceProductDesc());
         requestRimac.setPayload(aggregateTercero);
         LOGGER.info("** doDynamicLife - request Rimac -> {}",requestRimac);
 
@@ -83,7 +83,7 @@ public class LifeProductBusinessImpl implements IThirdDynamicLifeBusiness {
         ConsumerExternalService consumerService = new ConsumerExternalService(rbvdr048);
 
         String quotationId = payloadConfig.getQuotationId();
-        String productId = ConstantsUtil.Product.DYNAMIC_LIFE.getCode();
+        String productId = payloadConfig.getQuotationInformation().getInsuranceProduct().getInsuranceProductDesc();
         String traceId = payloadConfig.getInput().getTraceId();
         String channelCode = payloadConfig.getInput().getChannelId();
         return consumerService.executeValidateParticipantRimacService(requestRimac,quotationId,productId,traceId,channelCode);

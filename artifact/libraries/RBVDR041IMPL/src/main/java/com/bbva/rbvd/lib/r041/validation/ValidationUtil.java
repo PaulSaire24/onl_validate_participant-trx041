@@ -16,12 +16,6 @@ public class ValidationUtil {
     public static boolean isBBVAClient(String clientId){
         return StringUtils.isNotEmpty(clientId) && !(clientId.matches(ConstantsUtil.RegularExpression.CONTAIN_ONLY_LETTERS) && clientId.matches(ConstantsUtil.RegularExpression.CONTAIN_ONLY_NUMBERS) && clientId.length()>ConstantsUtil.Number.CLIENT_BANK_LENGHT);
     }
-    public static void verifyAllParticipantAsSameLegalPerson(List<ParticipantsDTO> participants, String personType){
-        if(!participants.stream().allMatch(participant -> personType.equalsIgnoreCase(participant.getPerson().getPersonType()))){
-            throw new BusinessException(ValidateParticipantErrors.ERROR_BBVA_VALIDATION.getAdviceCode(), false, TypeErrorControllerEnum.ERROR_PARTICIPANTS_OF_DIFFERENT_TYPE.getValue());
-        }
-    }
-
     public static Integer obtainExistingCompanyRole(ParticipantsDTO participantDTO, ParticipantProperties participantProperties, List<RolDAO> roles) {
         String roleCodeBank = participantProperties.obtainRoleCodeByEnum(participantDTO.getParticipantType().getId());
         return Integer.parseInt(roles.stream().filter(rolDTO -> roleCodeBank.equalsIgnoreCase(rolDTO.getParticipantRoleId().toString())).findFirst()

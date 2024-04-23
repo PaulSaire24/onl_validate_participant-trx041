@@ -19,7 +19,7 @@ public class RBVDR041Impl extends RBVDR041Abstract {
     private ParticipantProperties participantProperties;
 
     @Override
-    public AgregarTerceroBO executeValidateAddParticipant(InputParticipantsDTO input) {
+    public AgregarTerceroBO executeValidateParticipants(InputParticipantsDTO input) {
         LOGGER.info(" :: executeValidateAddParticipant :: START");
         LOGGER.info(" :: executeValidateAddParticipant :: ValidateParticipant :: {}",input);
 

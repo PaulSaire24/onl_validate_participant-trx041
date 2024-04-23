@@ -9,6 +9,7 @@ import com.bbva.rbvd.dto.participant.dao.QuotationLifeDAO;
 import com.bbva.rbvd.dto.participant.group.ParticipantGroupDTO;
 import com.bbva.rbvd.dto.participant.request.InputParticipantsDTO;
 import com.bbva.rbvd.dto.participant.request.ParticipantsDTO;
+import com.bbva.rbvd.dto.participant.request.PersonDTO;
 import com.bbva.rbvd.lib.r041.service.api.ConsumerInternalService;
 import com.bbva.rbvd.lib.r041.transfer.Participant;
 import com.bbva.rbvd.lib.r041.util.ConstantsUtil;
@@ -20,6 +21,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.IntStream;
 
 public class ParticipantsBusiness {
@@ -63,35 +65,62 @@ public class ParticipantsBusiness {
     }
 
     public List<Participant> getParticipants(InputParticipantsDTO input, QuotationCustomerDAO quotationInformation) {
-        List<ParticipantGroupDTO> groupParticipant = groupByDocumentNumberAndDocumentType(input);
-        LOGGER.info(" ** GetConfig :: groupParticipant -> {}",groupParticipant);
+        List<ParticipantGroupDTO> inputParticipantsGrouped = groupByDocumentNumberAndDocumentType(input);
+        LOGGER.info(" ** GetConfig :: groupParticipant -> {}",inputParticipantsGrouped);
         List<Participant> participants = new ArrayList<>();
-        groupParticipant.forEach(part -> {
-            String documentTypeHost = applicationConfigurationService.getProperty(part.getDocumentType());
-            String customerId = part.getParticipantList().get(0).getPerson().getCustomerId();
-            Participant payloadProperties = new Participant();
+        inputParticipantsGrouped.forEach(inputParticipant -> {
+            String documentType = applicationConfigurationService.getProperty(inputParticipant.getDocumentType());
+            Optional<ParticipantsDTO> optInputPerson = inputParticipant.getParticipantList().stream().findFirst();
+            Participant myParticipant = new Participant();
+            if(optInputPerson.isPresent()){
+                PersonDTO inputPerson = optInputPerson.get().getPerson();
+                if(ValidationUtil.isBBVAClient(inputPerson.getCustomerId())){
 
-            if(ValidationUtil.isBBVAClient(customerId)){
+                    myParticipant.setDocumentType(documentType);
+                    myParticipant.setCustomerId(inputPerson.getCustomerId());
+                    myParticipant.setDocumentNumber(inputParticipant.getDocumentNumber());
 
-                payloadProperties.setDocumentType(documentTypeHost);
-                payloadProperties.setCustomerId(customerId);
-                payloadProperties.setDocumentNumber(part.getDocumentNumber());
-                payloadProperties.setCustomer(executeGetCustomer(part.getDocumentNumber(),documentTypeHost));
+                    if(isCompanyCustomer(inputParticipant)){
+                        myParticipant.setLegalCustomer(executeGetBusinessAgentASOInformation(inputPerson.getCustomerId()));
+                    }else {
+                        myParticipant.setCustomer(executeGetCustomer(inputParticipant.getDocumentNumber(),documentType));
+                    }
 
-                if(StringUtils.startsWith(part.getDocumentNumber(), RBVDInternalConstants.Number.VEINTE)){
-                    payloadProperties.setLegalCustomer(executeGetBusinessAgentASOInformation(customerId));
+                }else{
+                    myParticipant.setDocumentType(documentType);
+                    myParticipant.setDocumentNumber(inputParticipant.getDocumentNumber());
+
+                    //validar si los atributos(firstName, LastName) de PersonaDTO tiene valores, si es asi llenar el objeto myParticipant con todos los atributos de PersonaDTO
+                    if(inputPerson.getFirstName() != null && inputPerson.getLastName() != null) {
+                       // corregir en la forma correcta ,( pienseo que el attributo de nonCustomer de
+                        // MyParticipant debe ser de otra clase que contenga los atributos de PersonaDTO y no hacer referencia al Quotation.
+                        myParticipant.setFirstName(inputPerson.getFirstName());
+                        myParticipant.setLastName(inputPerson.getLastName());
+                        myParticipant.setSecondLastName(inputPerson.getSecondLastName());
+                        myParticipant.setGender(inputPerson.getGender());
+                        myParticipant.setBirthDate(inputPerson.getBirthDate());
+                        myParticipant.setCountry(inputPerson.getCountry());
+                        myParticipant.setNationality(inputPerson.getNationality());
+                        myParticipant.setMaritalStatus(inputPerson.getMaritalStatus());
+                        myParticipant.setOccupation(inputPerson.getOccupation());
+                        myParticipant.setCustomerType(inputPerson.getCustomerType());
+                        myParticipant.setCustomerSubType(inputPerson.getCustomerSubType());
+                        myParticipant.setCustomerSegment(inputPerson.getCustomerSegment());
+                    }else {
+                        nonCustomerFromQuotation(myParticipant,input.getQuotationId(),quotationInformation);
+                    }
+
                 }
 
-            }else{
-                payloadProperties.setDocumentType(documentTypeHost);
-                payloadProperties.setDocumentNumber(part.getDocumentNumber());
-                additionalPropertiesByProduct(payloadProperties,input.getQuotationId(),quotationInformation);
+                fillTotalParticipantsPerGroup(participants, inputParticipant.getParticipantList(), myParticipant);
             }
-
-           fillTotalParticipantsPerGroup(participants, part.getParticipantList(), payloadProperties);
 
         });
         return participants;
+    }
+
+    private static boolean isCompanyCustomer(ParticipantGroupDTO part) {
+        return StringUtils.startsWith(part.getDocumentNumber(), RBVDInternalConstants.Number.VEINTE);
     }
 
     public List<ParticipantGroupDTO> groupByDocumentNumberAndDocumentType(InputParticipantsDTO participant){
@@ -133,7 +162,10 @@ public class ParticipantsBusiness {
         }
     }
 
-    public void additionalPropertiesByProduct(Participant participant, String internalQuotationId,QuotationCustomerDAO quotationInformation){
+    public void nonCustomerFromQuotation(Participant participant, String internalQuotationId, QuotationCustomerDAO quotationInformation){
+
+
+
         if(ConstantsUtil.Product.BUSINESS_LIFE.getCode().equals(quotationInformation.getInsuranceBusiness().getInsuranceBusinessName())){
             String productId = quotationInformation.getInsuranceProduct().getInsuranceProductId().toString();
             String planId = quotationInformation.getQuotationMod().getInsuranceModalityType();

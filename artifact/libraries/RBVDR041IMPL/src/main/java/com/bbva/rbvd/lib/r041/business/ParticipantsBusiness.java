@@ -79,41 +79,21 @@ public class ParticipantsBusiness {
                     myParticipant.setDocumentType(documentType);
                     myParticipant.setCustomerId(inputPerson.getCustomerId());
                     myParticipant.setDocumentNumber(inputParticipant.getDocumentNumber());
-
+                    myParticipant.setCustomer(executeGetCustomer(inputParticipant.getDocumentNumber(),documentType));
                     if(isCompanyCustomer(inputParticipant)){
                         myParticipant.setLegalCustomer(executeGetBusinessAgentASOInformation(inputPerson.getCustomerId()));
-                    }else {
-                        myParticipant.setCustomer(executeGetCustomer(inputParticipant.getDocumentNumber(),documentType));
                     }
 
                 }else{
                     myParticipant.setDocumentType(documentType);
                     myParticipant.setDocumentNumber(inputParticipant.getDocumentNumber());
 
-                    //validar si los atributos(firstName, LastName) de PersonaDTO tiene valores, si es asi llenar el objeto myParticipant con todos los atributos de PersonaDTO
-                    if(inputPerson.getFirstName() != null && inputPerson.getLastName() != null) {
-                       // corregir en la forma correcta ,( pienseo que el attributo de nonCustomer de
-                        // MyParticipant debe ser de otra clase que contenga los atributos de PersonaDTO y no hacer referencia al Quotation.
-                        myParticipant.setFirstName(inputPerson.getFirstName());
-                        myParticipant.setLastName(inputPerson.getLastName());
-                        myParticipant.setSecondLastName(inputPerson.getSecondLastName());
-                        myParticipant.setGender(inputPerson.getGender());
-                        myParticipant.setBirthDate(inputPerson.getBirthDate());
-                        myParticipant.setCountry(inputPerson.getCountry());
-                        myParticipant.setNationality(inputPerson.getNationality());
-                        myParticipant.setMaritalStatus(inputPerson.getMaritalStatus());
-                        myParticipant.setOccupation(inputPerson.getOccupation());
-                        myParticipant.setCustomerType(inputPerson.getCustomerType());
-                        myParticipant.setCustomerSubType(inputPerson.getCustomerSubType());
-                        myParticipant.setCustomerSegment(inputPerson.getCustomerSegment());
-                    }else {
-                        nonCustomerFromQuotation(myParticipant,input.getQuotationId(),quotationInformation);
+                    nonCustomerFromQuotation(myParticipant,input.getQuotationId(),quotationInformation);
                     }
 
                 }
 
                 fillTotalParticipantsPerGroup(participants, inputParticipant.getParticipantList(), myParticipant);
-            }
 
         });
         return participants;

@@ -39,7 +39,7 @@ public class HandlerErrorBusiness {
         if(!CollectionUtils.isEmpty(err.getDetails())){
             LOGGER.info("** RBVDR048Impl - with reference {} **",err);
             ErrorResponseDTO responseErr = this.pisdR403.executeFindError(err);
-            if(Objects.nonNull(responseErr) && !StringUtils.isEmpty(responseErr.getCode()) && !StringUtils.isEmpty(responseErr.getMessage())){
+                if(Objects.nonNull(responseErr) && !StringUtils.isEmpty(responseErr.getCode()) && !StringUtils.isEmpty(responseErr.getMessage())){
                 LOGGER.info("** RBVDR048Impl - Error encontrado en base de datos");
                 throw new BusinessException(responseErr.getCode(), false, responseErr.getMessage());
             }

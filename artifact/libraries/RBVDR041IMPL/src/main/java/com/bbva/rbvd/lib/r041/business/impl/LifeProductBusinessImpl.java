@@ -20,11 +20,11 @@ import java.util.Optional;
 
 
 
-public class DynamicLifeProductBusinessImpl implements IThirdDynamicLifeBusiness {
+public class LifeProductBusinessImpl implements IThirdDynamicLifeBusiness {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(DynamicLifeProductBusinessImpl.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(LifeProductBusinessImpl.class);
     private RBVDR048 rbvdr048;
-    public DynamicLifeProductBusinessImpl(RBVDR048 rbvdr048) {
+    public LifeProductBusinessImpl(RBVDR048 rbvdr048) {
         this.rbvdr048 = rbvdr048;
     }
 
@@ -52,13 +52,13 @@ public class DynamicLifeProductBusinessImpl implements IThirdDynamicLifeBusiness
                 isParticipantsWithRolInsured = true;
                 if(Objects.nonNull(participant.getCustomer())){
                     person = PersonBean.buildPersonFromCustomer(participant.getCustomer(),participant.getRolCode());
-                }else if (Objects.nonNull(participant.getNonCustomer())){
+                }else if (Objects.nonNull(participant.getNonCustomerLife())){
                      Optional<Participant> managerParticipant = participants.stream()
                                 .filter(part -> part.getRolCode().equalsIgnoreCase(ConstantsUtil.Rol.PAYMENT_MANAGER.getName()))
                                 .findFirst();
                     if(managerParticipant.isPresent()){
                         PersonaBO personManager = PersonBean.buildPersonFromCustomer(managerParticipant.get().getCustomer(),managerParticipant.get().getRolCode());
-                        person = PersonBean.buildPersonFromNonCustomer(participant.getNonCustomer(),personManager);
+                        person = PersonBean.buildPersonFromNonCustomer(participant.getNonCustomerLife(),personManager);
                     }
                 }
             }
@@ -75,7 +75,7 @@ public class DynamicLifeProductBusinessImpl implements IThirdDynamicLifeBusiness
 
         LOGGER.info("** doDynamicLife - persona List after enrich -> {}",personList);
         aggregateTercero.setPersona(personList);
-        aggregateTercero.setProducto(ConstantsUtil.Product.DYNAMIC_LIFE.getName());
+        aggregateTercero.setProducto(payloadConfig.getQuotationInformation().getInsuranceProduct().getInsuranceProductDesc());
         requestRimac.setPayload(aggregateTercero);
         LOGGER.info("** doDynamicLife - request Rimac -> {}",requestRimac);
 
@@ -83,7 +83,7 @@ public class DynamicLifeProductBusinessImpl implements IThirdDynamicLifeBusiness
         ConsumerExternalService consumerService = new ConsumerExternalService(rbvdr048);
 
         String quotationId = payloadConfig.getQuotationId();
-        String productId = ConstantsUtil.Product.DYNAMIC_LIFE.getCode();
+        String productId = payloadConfig.getQuotationInformation().getInsuranceProduct().getInsuranceProductDesc();
         String traceId = payloadConfig.getInput().getTraceId();
         String channelCode = payloadConfig.getInput().getChannelId();
         return consumerService.executeValidateParticipantRimacService(requestRimac,quotationId,productId,traceId,channelCode);

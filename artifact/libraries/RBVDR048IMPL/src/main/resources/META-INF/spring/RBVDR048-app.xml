@@ -4,9 +4,9 @@
 	<bean id="rbvdR048" class="com.bbva.rbvd.lib.r048.impl.RBVDR048Impl" parent="rbvdR048Abstract">
 		<property name="pisdR014" ref="pisdR014"/>
 		<property name="pisdR403" ref="pisdR403"/>
-        <property name="pbtqR002" ref="pbtqR002"/>
-        <property name="ksmkR002" ref="ksmkR002"/>
-        <property name="rbvdR066" ref="rbvdR066"/>
-        <property name="pisdR350" ref="pisdR350"/>
+		<property name="pbtqR002" ref="pbtqR002"/>
+		<property name="ksmkR002" ref="ksmkR002"/>
+		<property name="rbvdR066" ref="rbvdR066"/>
+		<property name="pisdR040" ref="pisdR040"/>
 	</bean>
 </beans>

@@ -4,11 +4,11 @@ import com.bbva.rbvd.dto.insrncsale.bo.emision.AgregarTerceroBO;
 import com.bbva.rbvd.dto.insrncsale.bo.emision.OrganizacionBO;
 import com.bbva.rbvd.dto.insrncsale.bo.emision.PayloadAgregarTerceroBO;
 import com.bbva.rbvd.dto.insrncsale.bo.emision.PersonaBO;
+import com.bbva.rbvd.dto.participant.dao.RolDAO;
 import com.bbva.rbvd.dto.participant.request.ParticipantsDTO;
 import com.bbva.rbvd.dto.participant.constants.RBVDInternalConstants.ParticipantType;
 
 import com.bbva.rbvd.dto.participant.constants.RBVDInternalConstants;
-import com.bbva.rbvd.dto.participant.mapper.RolDTO;
 import com.bbva.rbvd.lib.r041.business.INonLifeProductBusiness;
 import com.bbva.rbvd.lib.r041.pattern.factory.ParticipantFactory;
 import com.bbva.rbvd.lib.r041.pattern.factory.FactoryProduct;
@@ -24,6 +24,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class NonLifeProductBusinessImpl implements INonLifeProductBusiness {
 
@@ -39,42 +40,35 @@ public class NonLifeProductBusinessImpl implements INonLifeProductBusiness {
     public AgregarTerceroBO createRequestByCompany(PayloadConfig payloadConfig) {
         AgregarTerceroBO requestCompany = new AgregarTerceroBO();
         PayloadAgregarTerceroBO addTerceroByCompany = new PayloadAgregarTerceroBO();
-        List<ParticipantsDTO> participantsInputList = payloadConfig.getInput().getParticipants();//input de la trx
-        List<Participant> participantsPropertiesList = payloadConfig.getParticipants();//properties agrupadas
-        List<RolDTO> selectedRoles = payloadConfig.getRegisteredRolesDB();//roles
 
-        if(RBVDInternalConstants.TypeParticipant.NATURAL.toString().equalsIgnoreCase(payloadConfig.getPersonType())){
+        List<Participant> participantList = payloadConfig.getParticipants();
+        List<RolDAO> selectedRoles = payloadConfig.getRegisteredRolesDB();
 
-            List<PersonaBO> personaList = new ArrayList<>();
-            participantsInputList.forEach(partInput->
-                participantsPropertiesList.forEach(partProp->{
-                    //Factoria cliente,
-                    ParticipantType participantType = ValidationUtil.isBBVAClient(partInput.getPerson().getCustomerId()) ? ParticipantType.CUSTOMER : ParticipantType.NON_CUSTOMER;
-                    com.bbva.rbvd.lib.r041.pattern.factory.Participant participant = ParticipantFactory.buildParticipant(participantType);
+        List<PersonaBO> personaList = new ArrayList<>();
+        List<OrganizacionBO> organizacionList = new ArrayList<>();
 
-                    if(validateDocumentEqualsCondition(partInput, partProp)){
-                        personaList.add(participant.createRequestParticipant(partProp.getCustomer(),partInput, payloadConfig.getQuotationInformation(), ValidationUtil.obtainExistingCompanyRole(partInput,payloadConfig.getParticipantProperties(),selectedRoles)));
-                    }
-                }));
-            addTerceroByCompany.setPersona(personaList);
-            requestCompany.setPayload(addTerceroByCompany);
-            FactoryProduct.enrichPayloadByProduct(addTerceroByCompany,payloadConfig.getQuotationInformation());
-        }else{
+        participantList.forEach(part-> {
+            if(RBVDInternalConstants.TypeParticipant.NATURAL.toString().equalsIgnoreCase(part.getInputParticipant().getPerson().getPersonType())){
+                ParticipantType participantType1 = Objects.nonNull(part.getCustomer()) ? ParticipantType.CUSTOMER : ParticipantType.NON_CUSTOMER;
+                com.bbva.rbvd.lib.r041.pattern.factory.Participant participant = ParticipantFactory.buildParticipant(participantType1);
+                personaList.add(participant.createRequestParticipant(part.getCustomer(),part.getInputParticipant(), payloadConfig.getQuotationInformation(),
+                        ValidationUtil.obtainExistingCompanyRole(part.getInputParticipant(),
+                                payloadConfig.getParticipantProperties(),selectedRoles)));
 
-            List<OrganizacionBO> organizacionList = new ArrayList<>();
-            PersonaBO personaBO = ValidateRimacNaturalPerson.mapInRequestRimacNonLife(participantsPropertiesList.get(0).getCustomer(),participantsInputList.get(0), payloadConfig.getQuotationInformation(),
-                    null);
-            participantsInputList.forEach(partInput->
-                participantsPropertiesList.forEach(partProp->{
-                    if(validateDocumentEqualsCondition(partInput, partProp)){
-                        OrganizacionBO personaB2 = ValidateRimacLegalPerson.getDataOrganization(partProp.getLegalCustomer().getData().get(0), personaBO, payloadConfig.getQuotationInformation(), ValidationUtil.obtainExistingCompanyRole(partInput,payloadConfig.getParticipantProperties(),selectedRoles),partInput);
-                        organizacionList.add(personaB2);
-                    }
-                }));
-            addTerceroByCompany.setOrganizacion(organizacionList);
-            requestCompany.setPayload(addTerceroByCompany);
-            FactoryProduct.enrichPayloadByProduct(addTerceroByCompany,payloadConfig.getQuotationInformation());
-        }
+                addTerceroByCompany.setPersona(personaList);
+            }else{
+                PersonaBO personaBO = ValidateRimacNaturalPerson.mapCustomerRequestData(part.getCustomer(),part.getInputParticipant(), payloadConfig.getQuotationInformation(),
+                        null);
+                OrganizacionBO personaBO2 = ValidateRimacLegalPerson.getDataOrganization(part.getLegalCustomer().getData().get(0), personaBO, payloadConfig.getQuotationInformation(), ValidationUtil.obtainExistingCompanyRole(part.getInputParticipant(),payloadConfig.getParticipantProperties(),selectedRoles),part.getInputParticipant());
+                organizacionList.add(personaBO2);
+
+                addTerceroByCompany.setOrganizacion(organizacionList);
+            }
+        });
+
+        addTerceroByCompany.setProducto(payloadConfig.getQuotationInformation().getInsuranceProduct().getInsuranceProductDesc());
+        requestCompany.setPayload(addTerceroByCompany);
+        FactoryProduct.enrichPayloadByProduct(addTerceroByCompany,payloadConfig.getQuotationInformation());
 
         LOGGER.info("** createRequestByCompany - request Company -> {}",requestCompany);
 
@@ -86,10 +80,5 @@ public class NonLifeProductBusinessImpl implements INonLifeProductBusiness {
         String traceId = payloadConfig.getInput().getTraceId();
         String channel = payloadConfig.getInput().getChannelId();
         return consumerService.executeValidateParticipantRimacService(requestCompany,quotationId,productId,traceId,channel);
-    }
-
-    private boolean validateDocumentEqualsCondition(ParticipantsDTO participant, Participant payloadProperties){
-        return payloadProperties.getDocumentType().equalsIgnoreCase(participant.getIdentityDocuments().get(0).getDocumentType().getId())
-                && payloadProperties.getDocumentNumber().equalsIgnoreCase(participant.getIdentityDocuments().get(0).getValue());
     }
 }

@@ -30,7 +30,7 @@ public class RBVDT04101PETransaction extends AbstractRBVDT04101PETransaction {
 		String channelCode = (String) this.getRequestHeader().getHeaderParameter(RequestHeaderParamsName.CHANNELCODE);
 		inputParticipant.setTraceId(traceId);
 		inputParticipant.setChannelId(channelCode);
-		AgregarTerceroBO result = rbvdR041.executeValidateAddParticipant(inputParticipant);
+		AgregarTerceroBO result = rbvdR041.executeValidateParticipants(inputParticipant);
 		LOGGER.info(" :: executeValidateAddParticipant :: response rimac -> {}", result);
 		if(Objects.nonNull(result) && CollectionUtils.isEmpty(this.getAdviceList())){
 			LOGGER.info(" :: execute trx -> OK");

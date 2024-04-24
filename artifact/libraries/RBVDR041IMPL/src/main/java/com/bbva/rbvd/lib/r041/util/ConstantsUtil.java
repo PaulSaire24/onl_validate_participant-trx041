@@ -3,9 +3,9 @@ package com.bbva.rbvd.lib.r041.util;
 import java.time.ZoneId;
 
 public class ConstantsUtil {
-    public static final String INSURANCE_PRODUCT_ID = "INSURANCE_PRODUCT_ID";
-    public static final String INSURANCE_MODALITY_TYPE = "INSURANCE_MODALITY_TYPE";
 
+    public static final String ENABLED_LIFE_PRODUCTS = "life.prod.validate.participants";
+    public static final String ENABLED_NON_LIFE_PRODUCTS = "non.life.prod.validate.participants";
     public static final class Zone {
         public static final ZoneId ZONE_ID_GTM = ZoneId.of("GMT");
         private Zone() {
@@ -13,6 +13,7 @@ public class ConstantsUtil {
     }
     public enum Product {
 
+        BUSINESS_LIFE("BUSINESS_LIFE","VIDA"),
         DYNAMIC_LIFE("VIDADINAMICO","841");
         private final String name;
         private final String code;
@@ -69,6 +70,34 @@ public class ConstantsUtil {
 
         public int getValue() {
             return value;
+        }
+    }
+
+    public enum PersonTypeEnum {
+        NATURAL("L", "NATURAL", "DNI"),
+        NATURAL_WITH_BUSINESS("R", "NATURAL CON NEGOCIO", "RUC"),
+        JURIDIC("J", "JURIDICO", "RUC");
+
+        private final String code;
+        private final String description;
+        private final String documentType;
+
+        private PersonTypeEnum(String code, String description, String documentType) {
+            this.description = description;
+            this.code = code;
+            this.documentType = documentType;
+        }
+
+        public String getDescription() {
+            return this.description;
+        }
+
+        public String getCode() {
+            return this.code;
+        }
+
+        public String getDocumentType() {
+            return this.documentType;
         }
     }
 

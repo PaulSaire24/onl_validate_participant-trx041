@@ -9,6 +9,9 @@ import com.bbva.pbtq.dto.validatedocument.response.host.pewu.PEWUResponse;
 import com.bbva.pisd.dto.insurance.amazon.SignatureAWS;
 import com.bbva.rbvd.dto.insrncsale.aso.listbusinesses.ListBusinessesASO;
 import com.bbva.rbvd.dto.insrncsale.bo.emision.AgregarTerceroBO;
+import com.bbva.rbvd.dto.participant.dao.QuotationCustomerDAO;
+import com.bbva.rbvd.dto.participant.dao.QuotationLifeDAO;
+import com.bbva.rbvd.dto.participant.dao.RolDAO;
 import com.bbva.rbvd.dto.participant.utils.TypeErrorControllerEnum;
 import com.bbva.rbvd.dto.participant.utils.ValidateParticipantErrors;
 import com.bbva.rbvd.lib.r048.impl.business.HandlerErrorBusiness;
@@ -25,9 +28,8 @@ import org.springframework.http.HttpMethod;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.client.RestClientException;
 
+import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 import java.util.Collections;
@@ -91,7 +93,7 @@ public class RBVDR048Impl extends RBVDR048Abstract {
         LOGGER.info("***** RBVDR048Impl - executeGetCustomerService documentNumber {} - documentType {} *****", documentNumber, documentType);
         PEWUResponse result = pbtqR002.executeSearchInHostByDocument(documentType,documentNumber);
         LOGGER.info("***** RBVDR048Impl - executeGetCustomerService  ***** Response Host: {}", result);
-        if( Objects.isNull(result.getHostAdviceCode()) || result.getHostAdviceCode().isEmpty()){
+        if( Objects.isNull(result.getHostAdviceCode()) || result.getHostAdviceCode().isEmpty() || Objects.isNull(result)){
             return result;
         }
         LOGGER.info("***** RBVDR041Impl - executeGetListCustomer ***** with error: {}", result.getHostMessage());
@@ -101,27 +103,42 @@ public class RBVDR048Impl extends RBVDR048Abstract {
     }
 
     @Override
-    public Map<String, Object> executeGetDataInsuredBD(String quotationId, String productId, String planId, String ducumentNumber,String documentType) {
-        Map<String, Object> arguments = new HashMap<>();
-        arguments.put(Constants.POLICY_QUOTA_INTERNAL_ID,quotationId);
-        arguments.put(Constants.INSURANCE_PRODUCT_ID,productId);
-        arguments.put(Constants.INSURANCE_MODALITY_TYPE,planId);
-        arguments.put(Constants.PERSONAL_ID,ducumentNumber);
-        arguments.put(Constants.CUSTOMER_DOCUMENT_TYPE,documentType);
-        LOGGER.info("***** RBVDR048Impl - getDataInsuredBD ***** arguments: {}", arguments);
-        Map<String, Object> dataInsured = this.pisdR350.executeGetASingleRow(Constants.QUERY_GET_DATA_INSURED_BY_QUOTATION,arguments);
-        LOGGER.info("***** RBVDR048Impl - getDataInsuredBD ***** result: {}", dataInsured);
-        return dataInsured;
+    public QuotationLifeDAO executeGetDataInsuredBD(String quotationId, String productId, String planId, String documentNumber, String documentType) {
+        LOGGER.info("***** RBVDR048Impl - getDataInsuredBD - START ****");
+        try{
+            QuotationLifeDAO dataInsured = this.pisdR040.executeGetInsuredQuotationLife(quotationId, productId, planId, documentNumber, documentType);
+            LOGGER.info("***** RBVDR048Impl - getDataInsuredBD ***** result: {}", dataInsured);
+            return dataInsured;
+        }catch (BusinessException be){
+            throw new BusinessException(be.getAdviceCode(), false, ValidateParticipantErrors.SELECT_DB_ORACLE_ERROR.getMessage().
+                    concat(TypeErrorControllerEnum.ERROR_OBTAIN_QUOTATION_FROM_DB.getValue()));
+        }
     }
 
     @Override
-    public Map<String, Object> executeGetProducAndPlanByQuotation(String quotationId) {
-        Map<String, Object> arguments = new HashMap<>();
-        arguments.put(Constants.POLICY_QUOTA_INTERNAL_ID,quotationId);
-        LOGGER.info("***** RBVDR048Impl - getProducAndPlanByQuotation ***** arguments: {}", arguments);
-        Map<String, Object> result = this.pisdR350.executeGetASingleRow(Constants.QUERY_GET_PRODUCT_AND_MODALITY_TYPE_BY_QUOTATION,arguments);
-        LOGGER.info("***** RBVDR048Impl - getDataInsuredBD ***** result: {}", result);
-        return result;
+    public QuotationCustomerDAO executeGetCustomerInformationFromQuotation(String quotationId) {
+        try{
+            LOGGER.info("***** RBVDR048Impl - getCustomerBasicInformation START *****");
+            QuotationCustomerDAO responseQueryCustomerProductInformation = pisdR040.executeFindQuotationJoinByPolicyQuotaInternalId(quotationId);
+            LOGGER.info("***** RBVDR048Impl - getCustomerBasicInformation | responseQueryCustomerProductInformation {} *****",responseQueryCustomerProductInformation);
+            return responseQueryCustomerProductInformation;
+        }catch (BusinessException be){
+            throw new BusinessException(be.getAdviceCode(), false, ValidateParticipantErrors.SELECT_DB_ORACLE_ERROR.getMessage().
+                    concat(TypeErrorControllerEnum.ERROR_OBTAIN_QUOTATION_FROM_DB.getValue()));
+        }
+    }
+
+    @Override
+    public List<RolDAO> executeGetRolesByCompany(BigDecimal insuranceCompanyId) {
+        try{
+            LOGGER.info("***** RBVDR048Impl - executeGetRolesByCompany START *****");
+            List<RolDAO> responseCompanyRoleList = pisdR040.executeListParticipantRolesByCompanyId(insuranceCompanyId);
+            LOGGER.info("***** RBVDR048Impl - executeGetRolesByCompany | responseCompanyRoleList {} *****",responseCompanyRoleList);
+            return responseCompanyRoleList;
+        }catch (BusinessException be){
+            throw new BusinessException(be.getAdviceCode(), false,  ValidateParticipantErrors.SELECT_DB_ORACLE_ERROR.getMessage().
+                    concat(TypeErrorControllerEnum.ERROR_OBTAIN_COMPANY_ROLES_FROM_DB.getValue()));
+        }
     }
 
     @Override

@@ -2,8 +2,8 @@ package com.bbva.rbvd.lib.r041.transform.bean;
 
 import com.bbva.apx.exception.business.BusinessException;
 import com.bbva.pbtq.dto.validatedocument.response.host.pewu.PEWUResponse;
-import com.bbva.pisd.dto.insurancedao.join.QuotationCustomerDTO;
 import com.bbva.rbvd.dto.insrncsale.bo.emision.PersonaBO;
+import com.bbva.rbvd.dto.participant.dao.QuotationCustomerDAO;
 import com.bbva.rbvd.dto.participant.request.AddressComponentsDTO;
 import com.bbva.rbvd.dto.participant.request.ContactDetailsDTO;
 import com.bbva.rbvd.dto.participant.request.ParticipantsDTO;
@@ -39,7 +39,7 @@ public class ValidateRimacNaturalPerson {
     private static final String INTERIOR_NUMBER_ID = "DPTO.";
     ValidateRimacNaturalPerson() {}
 
-    public static PersonaBO mapInRequestRimacNonLife(PEWUResponse personInput, ParticipantsDTO participants, QuotationCustomerDTO customerInformationDb, Integer roleId){
+    public static PersonaBO mapCustomerRequestData(PEWUResponse personInput, ParticipantsDTO participants, QuotationCustomerDAO customerInformationDb, Integer roleId){
         validatePewuResponsePersonData(personInput);
 
         PersonaBO persona = constructPerson(participants,personInput,customerInformationDb, roleId);
@@ -53,7 +53,7 @@ public class ValidateRimacNaturalPerson {
         return persona;
     }
 
-    private static PersonaBO constructPerson(ParticipantsDTO participant, PEWUResponse customer, QuotationCustomerDTO customerInformationDb, Integer roleId){
+    private static PersonaBO constructPerson(ParticipantsDTO participant, PEWUResponse customer, QuotationCustomerDAO customerInformationDb, Integer roleId){
         PersonaBO persona = new PersonaBO();
         ContactDetailsDTO correoSelect = new ContactDetailsDTO();
         ContactDetailsDTO celularSelect = new ContactDetailsDTO();
@@ -64,15 +64,15 @@ public class ValidateRimacNaturalPerson {
                     filter(contactDetail -> contactDetail.getContactType().equals(MOBILE_VALUE)).findFirst().orElse(null);
         }
 
-        persona.setTipoDocumento(RUC_ID.equalsIgnoreCase(customer.getPemsalwu().getTdoi())?customerInformationDb.getQuotation().getParticipantPersonalId():customer.getPemsalwu().getTdoi());
-        persona.setNroDocumento(customer.getPemsalwu().getNdoi());
-        persona.setApePaterno(customer.getPemsalwu().getApellip());
+        persona.setTipoDocumento(participant.getIdentityDocuments().get(0).getDocumentType().getId());
+        persona.setNroDocumento((RUC_ID.equalsIgnoreCase(persona.getTipoDocumento())?participant.getIdentityDocuments().get(0).getValue():customer.getPemsalwu().getNdoi()));
+        persona.setApePaterno(validateSN(customer.getPemsalwu().getApellip()));
 
-        persona.setApeMaterno(StringUtils.defaultString(customer.getPemsalwu().getApellim()).trim().length()  > MAX_CHARACTER ? customer.getPemsalwu().getApellim() : StringUtils.EMPTY);
+        persona.setApeMaterno(StringUtils.defaultString(customer.getPemsalwu().getApellim()).trim().length()  > MAX_CHARACTER ? validateSN(customer.getPemsalwu().getApellim()) : StringUtils.EMPTY);
 
-        persona.setNombres(customer.getPemsalwu().getNombres());
+        persona.setNombres(validateSN(customer.getPemsalwu().getNombres()));
         persona.setFechaNacimiento(customer.getPemsalwu().getFechan());
-        if(!StringUtils.isEmpty(customer.getPemsalwu().getSexo())) persona.setSexo(customer.getPemsalwu().getSexo());
+        persona.setSexo(customer.getPemsalwu().getSexo());
 
         persona.setCorreoElectronico(Objects.isNull(correoSelect) ? customerInformationDb.getQuotationMod().getContactEmailDesc() : correoSelect.getContact());
 
@@ -347,6 +347,15 @@ public class ValidateRimacNaturalPerson {
             throw new BusinessException(ValidateParticipantErrors.ERROR_INTERNAL_SERVICE_INVOKATION.getAdviceCode(), false,
                     ValidateParticipantErrors.ERROR_INTERNAL_SERVICE_INVOKATION.getMessage()
                             .concat(TypeErrorControllerEnum.ERROR_PBTQ_INCOMPLETE_CLIENT_INFORMATION.getValue()));
+        }
+    }
+
+    private static String validateSN(String name) {
+        if(Objects.isNull(name) || "null".equals(name) || " ".equals(name)){
+            return "";
+        }else{
+            name = name.replace("#","Ñ");
+            return name;
         }
     }
 

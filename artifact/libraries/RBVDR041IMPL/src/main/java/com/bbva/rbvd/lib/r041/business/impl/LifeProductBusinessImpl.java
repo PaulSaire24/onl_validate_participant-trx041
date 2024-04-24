@@ -83,7 +83,7 @@ public class LifeProductBusinessImpl implements IThirdDynamicLifeBusiness {
         ConsumerExternalService consumerService = new ConsumerExternalService(rbvdr048);
 
         String quotationId = payloadConfig.getQuotationId();
-        String productId = payloadConfig.getQuotationInformation().getInsuranceProduct().getInsuranceProductDesc();
+        String productId = payloadConfig.getQuotationInformation().getInsuranceProduct().getInsuranceProductType();
         String traceId = payloadConfig.getInput().getTraceId();
         String channelCode = payloadConfig.getInput().getChannelId();
         return consumerService.executeValidateParticipantRimacService(requestRimac,quotationId,productId,traceId,channelCode);

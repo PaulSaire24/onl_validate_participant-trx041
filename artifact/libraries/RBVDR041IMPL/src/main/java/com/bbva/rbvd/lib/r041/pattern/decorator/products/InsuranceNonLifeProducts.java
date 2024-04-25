@@ -13,11 +13,11 @@ import com.bbva.rbvd.lib.r048.RBVDR048;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class InsuranceProductNonLifeProducts extends ParticipantDataValidatorDecorator {
+public class InsuranceNonLifeProducts extends ParticipantDataValidatorDecorator {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(InsuranceProductNonLifeProducts.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(InsuranceNonLifeProducts.class);
 
-    public InsuranceProductNonLifeProducts(BeforeParticipantDataValidator preValidate) {
+    public InsuranceNonLifeProducts(BeforeParticipantDataValidator preValidate) {
         super(preValidate);
     }
 
@@ -41,17 +41,17 @@ public class InsuranceProductNonLifeProducts extends ParticipantDataValidatorDec
         private Builder() {
         }
 
-        public static InsuranceProductNonLifeProducts.Builder an() {
-            return new InsuranceProductNonLifeProducts.Builder();
+        public static InsuranceNonLifeProducts.Builder an() {
+            return new InsuranceNonLifeProducts.Builder();
         }
 
-        public InsuranceProductNonLifeProducts.Builder preValidate(BeforeParticipantDataValidator preValidate) {
+        public InsuranceNonLifeProducts.Builder preValidate(BeforeParticipantDataValidator preValidate) {
             this.preValidate = preValidate;
             return this;
         }
 
-        public InsuranceProductNonLifeProducts build() {
-            return new InsuranceProductNonLifeProducts(preValidate);
+        public InsuranceNonLifeProducts build() {
+            return new InsuranceNonLifeProducts(preValidate);
         }
     }
 }

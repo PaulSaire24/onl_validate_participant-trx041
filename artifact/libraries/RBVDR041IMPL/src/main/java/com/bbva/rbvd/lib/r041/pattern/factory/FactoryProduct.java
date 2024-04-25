@@ -7,8 +7,8 @@ import com.bbva.rbvd.dto.participant.constants.RBVDInternalConstants;
 import com.bbva.rbvd.dto.participant.dao.QuotationCustomerDAO;
 import com.bbva.rbvd.lib.r041.pattern.decorator.ParticipantDataValidator;
 import com.bbva.rbvd.lib.r041.pattern.decorator.impl.ParticipantParameter;
-import com.bbva.rbvd.lib.r041.pattern.decorator.products.InsuranceProductNonLifeProducts;
-import com.bbva.rbvd.lib.r041.pattern.decorator.products.DynamicLifeProduct;
+import com.bbva.rbvd.lib.r041.pattern.decorator.products.InsuranceNonLifeProducts;
+import com.bbva.rbvd.lib.r041.pattern.decorator.products.InsuranceLifeProducts;
 import com.bbva.rbvd.lib.r041.util.ConstantsUtil;
 import com.bbva.rbvd.lib.r048.RBVDR048;
 import org.slf4j.Logger;
@@ -23,12 +23,12 @@ public class FactoryProduct {
     public static ParticipantDataValidator getProductObject(String productId, RBVDR048 rbvdr048, ParticipantParameter validationParameter){
         if(ConstantsUtil.Product.DYNAMIC_LIFE.getCode().equalsIgnoreCase(productId)){
             LOGGER.info("**FactoryProductValidate: Dynamic Life product **");
-            return  DynamicLifeProduct.Builder.an()
+            return  InsuranceLifeProducts.Builder.an()
                     .preValidate(ParticipantParameter.Builder.an().rbvdr048(rbvdr048).buildOne())
                     .build();
         } else {
             LOGGER.info("** FactoryProductValidate: NON LIFE product **");
-            return InsuranceProductNonLifeProducts.Builder.an()
+            return InsuranceNonLifeProducts.Builder.an()
                     .preValidate(validationParameter)
                     .build();
         }

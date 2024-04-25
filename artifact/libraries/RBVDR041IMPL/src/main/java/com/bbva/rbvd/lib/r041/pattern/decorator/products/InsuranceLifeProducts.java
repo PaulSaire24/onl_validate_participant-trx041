@@ -13,10 +13,10 @@ import com.bbva.rbvd.lib.r048.RBVDR048;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class DynamicLifeProduct extends ParticipantDataValidatorDecorator {
+public class InsuranceLifeProducts extends ParticipantDataValidatorDecorator {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(DynamicLifeProduct.class);
-    public DynamicLifeProduct(BeforeParticipantDataValidator preValidate) {
+    private static final Logger LOGGER = LoggerFactory.getLogger(InsuranceLifeProducts.class);
+    public InsuranceLifeProducts(BeforeParticipantDataValidator preValidate) {
         super(preValidate);
     }
 
@@ -48,8 +48,8 @@ public class DynamicLifeProduct extends ParticipantDataValidatorDecorator {
             this.preValidate = preValidate;
             return this;
         }
-        public DynamicLifeProduct build() {
-            return new DynamicLifeProduct(preValidate);
+        public InsuranceLifeProducts build() {
+            return new InsuranceLifeProducts(preValidate);
         }
     }
 }

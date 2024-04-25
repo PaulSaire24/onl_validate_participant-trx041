@@ -8,6 +8,7 @@ import com.bbva.rbvd.dto.participant.dao.QuotationLifeDAO;
 import com.bbva.rbvd.dto.participant.group.ParticipantGroupDTO;
 import com.bbva.rbvd.dto.participant.request.InputParticipantsDTO;
 import com.bbva.rbvd.dto.participant.request.ParticipantsDTO;
+import com.bbva.rbvd.dto.participant.request.PersonDTO;
 import com.bbva.rbvd.lib.r041.service.api.ConsumerInternalService;
 import com.bbva.rbvd.lib.r041.transfer.Participant;
 import com.bbva.rbvd.lib.r041.validation.ValidationUtil;
@@ -67,7 +68,9 @@ public class ParticipantsBusiness {
         groupParticipant.forEach(part -> {
             String documentTypeHost = applicationConfigurationService.getProperty(part.getDocumentType());
             part.getParticipantList().forEach(p -> p.getIdentityDocuments().get(0).getDocumentType().setId(documentTypeHost));
+            PersonDTO personDTO = part.getParticipantList().stream().findFirst().get().getPerson();
             if(ValidationUtil.isBBVAClient(part.getParticipantList().get(0).getPerson().getCustomerId())){
+
                 Participant payloadProperties = new Participant();
                 payloadProperties.setDocumentType(documentTypeHost);
                 payloadProperties.setCustomerId(part.getParticipantList().get(0).getPerson().getCustomerId());

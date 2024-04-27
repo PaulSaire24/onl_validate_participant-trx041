@@ -4,13 +4,14 @@ import com.bbva.apx.exception.business.BusinessException;
 import com.bbva.rbvd.dto.insrncsale.bo.emision.AgregarTerceroBO;
 import com.bbva.rbvd.dto.participant.dao.QuotationCustomerDAO;
 import com.bbva.rbvd.dto.participant.request.InputParticipantsDTO;
-import com.bbva.rbvd.lib.r041.pattern.decorator.ParticipantDataValidator;
-import com.bbva.rbvd.lib.r041.pattern.decorator.impl.ParticipantParameter;
+import com.bbva.rbvd.lib.r041.enrichoperation.IEnrichPayloadProduct;
+import com.bbva.rbvd.lib.r041.enrichoperation.impl.EnrichPayloadProductImpl;
+import com.bbva.rbvd.lib.r041.pattern.composite.ParticipantHandler;
 import com.bbva.rbvd.lib.r041.pattern.factory.FactoryProduct;
+import com.bbva.rbvd.lib.r041.pattern.strategy.StrategyProductHandler;
 import com.bbva.rbvd.lib.r041.properties.ParticipantProperties;
 import com.bbva.rbvd.lib.r041.service.api.ConsumerInternalService;
-import com.bbva.rbvd.lib.r041.transfer.PayloadStore;
-import com.bbva.rbvd.lib.r041.validation.ValidationUtil;
+import com.bbva.rbvd.lib.r041.transfer.PayloadConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,19 +22,18 @@ public class RBVDR041Impl extends RBVDR041Abstract {
     @Override
     public AgregarTerceroBO executeValidateParticipants(InputParticipantsDTO input) {
         LOGGER.info(" :: executeValidateAddParticipant :: START");
-        LOGGER.info(" :: executeValidateAddParticipant :: ValidateParticipant :: {}",input);
+        LOGGER.info(" :: executeValidateAddParticipant :: Input DTO -> {} ::",input);
 
         try{
-            ParticipantParameter participantParameter = new ParticipantParameter(rbvdR048, participantProperties);
-            QuotationCustomerDAO quotationInformation =  getGeneralQuotationInformation(input.getQuotationId());
-            LOGGER.info(" :: executeValidateAddParticipant :: productId -> {}", quotationInformation.getInsuranceProduct().getInsuranceProductType());
-            ParticipantDataValidator productObject = FactoryProduct.getProductObject(quotationInformation.getInsuranceProduct().getInsuranceProductType(),
-                    quotationInformation.getInsuranceBusiness().getInsuranceBusinessName(),
-                    rbvdR048,participantParameter, applicationConfigurationService);
-            LOGGER.info(" :: executeValidateAddParticipant :: quotationId -> {}", quotationInformation.getQuotation().getInsuranceCompanyQuotaId());
-            PayloadStore payloadStore = productObject.start(input, quotationInformation, this.rbvdR048,this.applicationConfigurationService);
-            LOGGER.info(" :: executeValidateAddParticipant :: PayloadStore -> {}",payloadStore);
-            return payloadStore.getResponseRimac();
+            QuotationCustomerDAO quotationInformation = getGeneralQuotationInformation(input.getQuotationId());
+            LOGGER.info(" :: executeValidateAddParticipant :: productId -> {} ::", quotationInformation.getInsuranceProduct().getInsuranceProductType());
+
+            ParticipantHandler participantHandler = FactoryProduct.getStrategyByProduct(rbvdR048, applicationConfigurationService,participantProperties,quotationInformation);
+
+            AgregarTerceroBO responseCompany =  participantHandler.handleRequest(input, rbvdR048, applicationConfigurationService,participantProperties,quotationInformation);
+
+            LOGGER.info(" :: executeValidateAddParticipant :: RimacValidationApiResponse -> {} ::",responseCompany);
+            return responseCompany;
         }catch (BusinessException businessException){
             this.addAdviceWithDescription(businessException.getAdviceCode(),businessException.getMessage());
             return null;

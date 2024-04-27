@@ -12,7 +12,6 @@ public class PayloadConfig {
     private InputParticipantsDTO input;
     private List<Participant> participants;
     private String quotationId;
-    private String personType;
     private List<RolDAO> registeredRolesDB;
     private QuotationCustomerDAO quotationInformation;
     private ParticipantProperties participantProperties;
@@ -49,15 +48,6 @@ public class PayloadConfig {
     public void setRegisteredRolesDB(List<RolDAO> registeredRolesDB) {
         this.registeredRolesDB = registeredRolesDB;
     }
-
-    public String getPersonType() {
-        return personType;
-    }
-
-    public void setPersonType(String personType) {
-        this.personType = personType;
-    }
-
     public QuotationCustomerDAO getQuotationInformation() {
         return quotationInformation;
     }
@@ -72,18 +62,5 @@ public class PayloadConfig {
 
     public void setParticipantProperties(ParticipantProperties participantProperties) {
         this.participantProperties = participantProperties;
-    }
-
-    @Override
-    public String toString() {
-        return "PayloadConfig{" +
-                "input=" + input +
-                ", properties=" + participants +
-                ", quotationId='" + quotationId + '\'' +
-                ", personType='" + personType + '\'' +
-                ", registeredRolesDB=" + registeredRolesDB +
-                ", quotationInformation=" + quotationInformation +
-                ", participantProperties=" + participantProperties +
-                '}';
     }
 }

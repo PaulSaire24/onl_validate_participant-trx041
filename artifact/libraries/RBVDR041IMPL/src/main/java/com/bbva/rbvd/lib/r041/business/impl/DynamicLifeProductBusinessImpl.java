@@ -3,7 +3,7 @@ package com.bbva.rbvd.lib.r041.business.impl;
 import com.bbva.rbvd.dto.insrncsale.bo.emision.AgregarTerceroBO;
 import com.bbva.rbvd.dto.insrncsale.bo.emision.PayloadAgregarTerceroBO;
 import com.bbva.rbvd.dto.insrncsale.bo.emision.PersonaBO;
-import com.bbva.rbvd.lib.r041.business.IThirdDynamicLifeBusiness;
+import com.bbva.rbvd.lib.r041.business.IDynamicLifeBusiness;
 import com.bbva.rbvd.lib.r041.service.api.ConsumerExternalService;
 import com.bbva.rbvd.lib.r041.transfer.Participant;
 import com.bbva.rbvd.lib.r041.transfer.PayloadConfig;
@@ -20,11 +20,12 @@ import java.util.Optional;
 
 
 
-public class LifeProductBusinessImpl implements IThirdDynamicLifeBusiness {
+public class DynamicLifeProductBusinessImpl implements IDynamicLifeBusiness {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(LifeProductBusinessImpl.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(DynamicLifeProductBusinessImpl.class);
     private RBVDR048 rbvdr048;
-    public LifeProductBusinessImpl(RBVDR048 rbvdr048) {
+
+    public DynamicLifeProductBusinessImpl(RBVDR048 rbvdr048) {
         this.rbvdr048 = rbvdr048;
     }
 
@@ -52,13 +53,13 @@ public class LifeProductBusinessImpl implements IThirdDynamicLifeBusiness {
                 isParticipantsWithRolInsured = true;
                 if(Objects.nonNull(participant.getCustomer())){
                     person = PersonBean.buildPersonFromCustomer(participant.getCustomer(),participant.getRolCode());
-                }else if (Objects.nonNull(participant.getNonCustomerLife())){
+                }else if (Objects.nonNull(participant.getNonCustomerFromDB())){
                      Optional<Participant> managerParticipant = participants.stream()
                                 .filter(part -> part.getRolCode().equalsIgnoreCase(ConstantsUtil.Rol.PAYMENT_MANAGER.getName()))
                                 .findFirst();
                     if(managerParticipant.isPresent()){
                         PersonaBO personManager = PersonBean.buildPersonFromCustomer(managerParticipant.get().getCustomer(),managerParticipant.get().getRolCode());
-                        person = PersonBean.buildPersonFromNonCustomer(participant.getNonCustomerLife(),personManager);
+                        person = PersonBean.buildPersonFromNonCustomer(participant.getNonCustomerFromDB(),personManager);
                     }
                 }
             }
@@ -79,7 +80,6 @@ public class LifeProductBusinessImpl implements IThirdDynamicLifeBusiness {
         requestRimac.setPayload(aggregateTercero);
         LOGGER.info("** doDynamicLife - request Rimac -> {}",requestRimac);
 
-        //call to RIMAC add third
         ConsumerExternalService consumerService = new ConsumerExternalService(rbvdr048);
 
         String quotationId = payloadConfig.getQuotationId();

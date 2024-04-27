@@ -28,6 +28,7 @@ import com.bbva.rbvd.dto.insrncsale.mock.MockData;
 import com.bbva.rbvd.dto.participant.dao.*;
 import com.bbva.rbvd.dto.participant.utils.TypeErrorControllerEnum;
 import com.bbva.rbvd.dto.participant.utils.ValidateParticipantErrors;
+import com.bbva.rbvd.lib.r048.factory.ApiConnectorFactoryTest;
 import com.bbva.rbvd.lib.r048.impl.RBVDR048Impl;
 import com.bbva.rbvd.mock.MockBundleContext;
 import com.bbva.rbvd.dto.insuranceroyal.error.ErrorResponseDTO;
@@ -125,6 +126,9 @@ public class RBVDR048Test {
 		ThreadContext.set(context);
 		getObjectIntrospection();
 		MockBundleContext mockBundleContext = mock(MockBundleContext.class);
+
+		ApiConnectorFactoryTest apiConnectorFactoryMock = new ApiConnectorFactoryTest();
+		apiConnectorFactoryMock.getAPIConnector(mockBundleContext);
 
 		when(applicationConfigurationService.getDefaultProperty(anyString(),anyString())).thenReturn("PATCH");
 		when(pisdr014.executeSignatureConstruction(anyString(), anyString(), anyString(), anyString(), anyString()))

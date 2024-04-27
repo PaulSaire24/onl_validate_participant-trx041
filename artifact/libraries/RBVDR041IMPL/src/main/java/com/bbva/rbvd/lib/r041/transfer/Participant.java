@@ -2,35 +2,24 @@ package com.bbva.rbvd.lib.r041.transfer;
 
 import com.bbva.pbtq.dto.validatedocument.response.host.pewu.PEWUResponse;
 import com.bbva.rbvd.dto.insrncsale.aso.listbusinesses.ListBusinessesASO;
-import com.bbva.rbvd.dto.participant.dao.QuotationLifeDAO;
 import com.bbva.rbvd.dto.participant.request.ParticipantsDTO;
 
 public class Participant implements Cloneable{
-
-
-    private String customerId;
     private String documentType;
     private String documentNumber;
     private String rolCode;
     private ParticipantsDTO inputParticipant;
     private PEWUResponse customer;
-    private QuotationLifeDAO nonCustomerLife;
     private ListBusinessesASO legalCustomer;
+    private InputNonCustomer inputNonCustomer;
+    private NonCustomerFromDB nonCustomerFromDB;
 
-    public String getCustomerId() {
-        return customerId;
+    public NonCustomerFromDB getNonCustomerFromDB() {
+        return nonCustomerFromDB;
     }
 
-    public void setCustomerId(String customerId) {
-        this.customerId = customerId;
-    }
-
-    public QuotationLifeDAO getNonCustomerLife() {
-        return nonCustomerLife;
-    }
-
-    public void setNonCustomerLife(QuotationLifeDAO nonCustomerLife) {
-        this.nonCustomerLife = nonCustomerLife;
+    public void setNonCustomerFromDB(NonCustomerFromDB nonCustomerFromDB) {
+        this.nonCustomerFromDB = nonCustomerFromDB;
     }
 
     public String getRolCode() {
@@ -81,28 +70,22 @@ public class Participant implements Cloneable{
         this.inputParticipant = inputParticipant;
     }
 
-    @Override
-    public String toString() {
-        return "Participant{" +
-                "customerId='" + customerId + '\'' +
-                ", documentType='" + documentType + '\'' +
-                ", documentNumber='" + documentNumber + '\'' +
-                ", rolCode='" + rolCode + '\'' +
-                ", inputParticipant=" + inputParticipant +
-                ", customer=" + customer +
-                ", nonCustomerLife=" + nonCustomerLife +
-                ", legalCustomer=" + legalCustomer +
-                '}';
+    public InputNonCustomer getInputNonCustomer() {
+        return inputNonCustomer;
     }
 
-    public Participant(String customerId, String documentType, String documentNumber, String rolCode, ParticipantsDTO inputParticipant, PEWUResponse customer, QuotationLifeDAO nonCustomerLife, ListBusinessesASO legalCustomer) {
-        this.customerId = customerId;
+    public void setInputNonCustomer(InputNonCustomer inputNonCustomer) {
+        this.inputNonCustomer = inputNonCustomer;
+    }
+
+    public Participant(String documentType, String documentNumber, String rolCode, ParticipantsDTO inputParticipant, PEWUResponse customer, NonCustomerFromDB nonCustomerFromDB, ListBusinessesASO legalCustomer, InputNonCustomer inputNonCustomer) {
         this.documentType = documentType;
         this.documentNumber = documentNumber;
         this.rolCode = rolCode;
         this.inputParticipant = inputParticipant;
         this.customer = customer;
-        this.nonCustomerLife = nonCustomerLife;
+        this.nonCustomerFromDB = nonCustomerFromDB;
+        this.inputNonCustomer = inputNonCustomer;
         this.legalCustomer = legalCustomer;
     }
 
@@ -110,7 +93,6 @@ public class Participant implements Cloneable{
 
     @Override
     public Participant clone() {
-       Participant participant = new Participant(this.customerId, this.documentType, this.documentNumber, this.rolCode, this.inputParticipant, this.customer, this.nonCustomerLife, this.legalCustomer);
-       return participant;
+        return new Participant(this.documentType, this.documentNumber, this.rolCode, this.inputParticipant, this.customer, this.nonCustomerFromDB, this.legalCustomer, this.inputNonCustomer);
     }
 }

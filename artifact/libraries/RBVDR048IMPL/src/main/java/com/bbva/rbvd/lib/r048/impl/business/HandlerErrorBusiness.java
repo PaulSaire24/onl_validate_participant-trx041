@@ -32,7 +32,7 @@ public class HandlerErrorBusiness {
         this.pisdR403 = pisdR403;
     }
 
-    public void startHandlerError(String channelId,RestClientException ex) throws BusinessException{
+    public void startHandlerError(String channelId,RestClientException ex){
 
         ErrorRequestDTO err =  getErrorRequestFromException(ex,Constants.OriginError.RIMAC,channelId);
         LOGGER.info("** RBVDR048Impl - executeAddParticipantsService catch {} **",err);

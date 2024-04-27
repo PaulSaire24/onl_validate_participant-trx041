@@ -3,6 +3,7 @@ package com.bbva.rbvd.lib.r041.transform.bean;
 import com.bbva.pbtq.dto.validatedocument.response.host.pewu.PEWUResponse;
 import com.bbva.rbvd.dto.insrncsale.bo.emision.PersonaBO;
 import com.bbva.rbvd.dto.participant.dao.QuotationLifeDAO;
+import com.bbva.rbvd.lib.r041.transfer.NonCustomerFromDB;
 import com.bbva.rbvd.lib.r041.util.ConstantsUtil;
 import com.bbva.rbvd.lib.r041.validation.ValidationUtil;
 import org.apache.commons.lang3.StringUtils;
@@ -34,8 +35,9 @@ public class PersonBean {
         return personCustomer;
     }
 
-    public static PersonaBO buildPersonFromNonCustomer(QuotationLifeDAO participant, PersonaBO personManager){
+    public static PersonaBO buildPersonFromNonCustomer(NonCustomerFromDB nonCustomerFromDB, PersonaBO personManager){
         PersonaBO personNonCustomer = new PersonaBO();
+        QuotationLifeDAO participant = nonCustomerFromDB.getQuotationLife();
         String apellidos = participant.getClientLastName();
         String apPaterno="";
         String apMaterno="";
@@ -99,4 +101,6 @@ public class PersonBean {
         return personContractor;
     }
 
+    private PersonBean() {
+    }
 }

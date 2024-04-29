@@ -404,6 +404,9 @@ public class RBVDR048Test {
 		assertNotNull(validation);
 	}
 
+
+
+
 	@Test(expected = BusinessException.class)
 	public void testExecuteAddParticipantsServiceWithRestClientExceptionWrongDetailsFormat() {
 		LOGGER.info("RBVDR048 - Executing testExecuteAddParticipantsServiceWithRestClientException...");

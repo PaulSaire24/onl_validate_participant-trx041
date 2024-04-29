@@ -2,6 +2,7 @@ package com.bbva.rbvd.lib.r048.impl.business;
 
 import com.bbva.apx.exception.business.BusinessException;
 import com.bbva.pisd.lib.r403.PISDR403;
+import com.bbva.rbvd.dto.insrncsale.bo.emision.PersonaBO;
 import com.bbva.rbvd.dto.insuranceroyal.error.DetailsErrorDTO;
 import com.bbva.rbvd.dto.insuranceroyal.error.ErrorRequestDTO;
 import com.bbva.rbvd.dto.insuranceroyal.error.ErrorResponseDTO;
@@ -17,11 +18,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClientException;
 
-import java.util.Map;
-import java.util.HashMap;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Objects;
+import java.util.*;
 
 public class HandlerErrorBusiness {
 
@@ -32,14 +29,15 @@ public class HandlerErrorBusiness {
         this.pisdR403 = pisdR403;
     }
 
-    public void startHandlerError(String channelId,RestClientException ex) throws BusinessException{
+    public void startHandlerError(List<PersonaBO> personas,String channelId, RestClientException ex) throws BusinessException{
 
         ErrorRequestDTO err =  getErrorRequestFromException(ex,Constants.OriginError.RIMAC,channelId);
         LOGGER.info("** RBVDR048Impl - executeAddParticipantsService catch {} **",err);
         if(!CollectionUtils.isEmpty(err.getDetails())){
             LOGGER.info("** RBVDR048Impl - with reference {} **",err);
             ErrorResponseDTO responseErr = this.pisdR403.executeFindError(err);
-                if(Objects.nonNull(responseErr) && !StringUtils.isEmpty(responseErr.getCode()) && !StringUtils.isEmpty(responseErr.getMessage())){
+            //groupMessagesByRole(personas,responseErr);
+            if(Objects.nonNull(responseErr) && !StringUtils.isEmpty(responseErr.getCode()) && !StringUtils.isEmpty(responseErr.getMessage())){
                 LOGGER.info("** RBVDR048Impl - Error encontrado en base de datos");
                 throw new BusinessException(responseErr.getCode(), false, responseErr.getMessage());
             }
@@ -48,7 +46,7 @@ public class HandlerErrorBusiness {
         throw new BusinessException(ValidateParticipantErrors.ERROR_NOT_FOUND.getAdviceCode(), false, ValidateParticipantErrors.ERROR_NOT_FOUND.getMessage());
     }
 
-    public ErrorRequestDTO getErrorRequestFromException(RestClientException exception, String scope, String channelId) {
+    private ErrorRequestDTO getErrorRequestFromException(RestClientException exception, String scope, String channelId) {
         ErrorRequestDTO error = new ErrorRequestDTO();
         if(exception instanceof HttpClientErrorException) {
             HttpClientErrorException httpClientErrorException = (HttpClientErrorException) exception;
@@ -95,4 +93,57 @@ public class HandlerErrorBusiness {
         errorRequest.setTypeErrorScope(scope);
         return errorRequest;
     }
+
+    private void groupMessagesByRole(List<PersonaBO> personas,ErrorResponseDTO errorResponse) {
+        List<String> listMessage = Arrays.asList(errorResponse.getMessage().toLowerCase().split("\\|"));
+        List<String> messagesPayment = new ArrayList<>();
+        List<String> messagesContractor = new ArrayList<>();
+        List<String> messagesInsured = new ArrayList<>();
+
+        for (String message : listMessage) {
+            if (message.contains("responsable")) {
+                messagesPayment.add(message.trim());
+            } else if (message.contains("contratante")) {
+                messagesContractor.add(message.trim());
+            } else if (message.contains("asegurado")) {
+                messagesInsured.add(message.trim());
+            }
+        }
+        PersonaBO personManager = getPersonaBO(personas, 23);
+        PersonaBO personContractor = getPersonaBO(personas, 8);
+        PersonaBO personInsured = getPersonaBO(personas, 9);
+        StringBuilder messageGeneral = new StringBuilder();
+        if(personManager.getNroDocumento().equals(personContractor.getNroDocumento()) && personManager.getNroDocumento().equals(personInsured.getNroDocumento())){
+            getMessageByRol(messagesPayment, messageGeneral);
+            prepareMessageGeneral(errorResponse, messageGeneral);
+
+        } else if (personManager.getNroDocumento().equals(personContractor.getNroDocumento()) && !personManager.getNroDocumento().equals(personInsured.getNroDocumento())) {
+            getMessageByRol(messagesPayment, messageGeneral);
+            getMessageByRol(messagesInsured, messageGeneral);
+            prepareMessageGeneral(errorResponse, messageGeneral);
+        } else if (personContractor.getNroDocumento().equals(personInsured.getNroDocumento()) && !personContractor.getNroDocumento().equals(personManager.getNroDocumento())) {
+            getMessageByRol(messagesPayment, messageGeneral);
+            getMessageByRol(messagesContractor, messageGeneral);
+            prepareMessageGeneral(errorResponse, messageGeneral);
+        }
+
+    }
+
+    private void prepareMessageGeneral(ErrorResponseDTO errorResponse, StringBuilder messageGeneral) {
+        if(messageGeneral.length() > 0){
+            messageGeneral.delete(0, 3);
+            errorResponse.setMessage(messageGeneral.toString());
+        }
+    }
+    private void getMessageByRol(List<String> messages, StringBuilder messageGeneral) {
+        if(!CollectionUtils.isEmpty(messages)){
+            for (String message : messages) {
+                messageGeneral.append(" | ").append(message);
+            }
+        }
+    }
+    private PersonaBO getPersonaBO(List<PersonaBO> personas, int x) {
+        return personas.stream().filter(persona -> persona.getRol() == x).findFirst().orElse(null);
+    }
+
 }

@@ -44,10 +44,12 @@ public class LifeProductBusinessImpl implements IThirdDynamicLifeBusiness {
             PersonaBO person = new PersonaBO();
             if(ConstantsUtil.Rol.PAYMENT_MANAGER.getName().equalsIgnoreCase(participant.getRolCode())){
                person = PersonBean.buildPersonFromCustomer(participant.getCustomer(),participant.getRolCode());
+               person.setRolName("responsable");
             } else if (ConstantsUtil.Rol.CONTRACTOR.getName().equalsIgnoreCase(participant.getRolCode()) &&
                     Objects.nonNull(participant.getCustomer())) {
                 isParticipantsWithRolContractor = true;
                 person = PersonBean.buildPersonFromCustomer(participant.getCustomer(),participant.getRolCode());
+                person.setRolName("contratante");
             } else if (ConstantsUtil.Rol.INSURED.getName().equalsIgnoreCase(participant.getRolCode())) {
                 isParticipantsWithRolInsured = true;
                 if(Objects.nonNull(participant.getCustomer())){
@@ -61,6 +63,7 @@ public class LifeProductBusinessImpl implements IThirdDynamicLifeBusiness {
                         person = PersonBean.buildPersonFromNonCustomer(participant.getNonCustomerLife(),personManager);
                     }
                 }
+                person.setRolName("asegurado");
             }
             personList.add(person);
         }
@@ -69,8 +72,10 @@ public class LifeProductBusinessImpl implements IThirdDynamicLifeBusiness {
         Optional<PersonaBO> personManager = personList.stream().filter(person -> person.getRol() == ConstantsUtil.Rol.PAYMENT_MANAGER.getValue())
                 .findFirst();
         if(personManager.isPresent()) {
-            enrichPerson(isParticipantsWithRolContractor, personManager.get(), personList, ConstantsUtil.Rol.CONTRACTOR);
-            enrichPerson(isParticipantsWithRolInsured, personManager.get(), personList, ConstantsUtil.Rol.INSURED);
+            String rolContractor = "contratante";
+            String rolInsured = "asegurado";
+            enrichPerson(isParticipantsWithRolContractor, personManager.get(), personList, ConstantsUtil.Rol.CONTRACTOR,rolContractor);
+            enrichPerson(isParticipantsWithRolInsured, personManager.get(), personList, ConstantsUtil.Rol.INSURED,rolInsured);
         }
 
         LOGGER.info("** doDynamicLife - persona List after enrich -> {}",personList);
@@ -89,10 +94,11 @@ public class LifeProductBusinessImpl implements IThirdDynamicLifeBusiness {
         return consumerService.executeValidateParticipantRimacService(requestRimac,quotationId,productId,traceId,channelCode);
     }
 
-    private static void enrichPerson(boolean isRolPresent, PersonaBO personManager, List<PersonaBO> personList,ConstantsUtil.Rol rol) {
+    private static void enrichPerson(boolean isRolPresent, PersonaBO personManager, List<PersonaBO> personList,ConstantsUtil.Rol rol,String rolName) {
         if (!isRolPresent) {
-            PersonaBO personContractor = PersonBean.buildPersonFromManager(personManager, rol);
-            personList.add(personContractor);
+            PersonaBO person = PersonBean.buildPersonFromManager(personManager, rol);
+            person.setRolName(rolName);
+            personList.add(person);
         }
     }
 

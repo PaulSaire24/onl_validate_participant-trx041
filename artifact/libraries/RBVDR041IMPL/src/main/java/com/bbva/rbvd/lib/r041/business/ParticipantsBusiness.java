@@ -38,32 +38,6 @@ public class ParticipantsBusiness {
         consumerInternalService = new ConsumerInternalService(rbvdr048);
     }
 
-    public List<Participant> getParticipants(InputParticipantsDTO input,String productId, String planId) {
-        List<Participant> participants = new ArrayList<>();
-        input.getParticipants().forEach(part -> {
-            Participant participant = new Participant();
-            String documentType = applicationConfigurationService.getProperty(part.getIdentityDocuments().get(0).getDocumentType().getId());
-            part.getIdentityDocuments().get(0).getDocumentType().setId(documentType);
-            participant.setDocumentType(documentType);
-            participant.setCustomerId(part.getPerson().getCustomerId());
-            participant.setDocumentNumber(part.getIdentityDocuments().get(0).getValue());
-            participant.setRolCode(part.getParticipantType().getId());
-            if(ValidationUtil.isBBVAClient(part.getPerson().getCustomerId())){
-                PEWUResponse customer = executeGetCustomer(part.getIdentityDocuments().get(0).getValue(),documentType);
-                participant.setCustomer(customer);
-                LOGGER.info("** getConfig participant -> {}",participant);
-            }else{
-                // en el scrip ir por doc indentidad
-                QuotationLifeDAO insuredInformation = getInsuredFromQuotation(input.getQuotationId(),productId,planId,part.getIdentityDocuments().get(0).getValue(),documentType);
-                LOGGER.info("** getConfig dataInsured -> {}",insuredInformation);
-                participant.setNonCustomerLife(insuredInformation);
-
-            }
-            participants.add(participant);
-        });
-        return participants;
-    }
-
     public List<Participant> getParticipants(InputParticipantsDTO input, QuotationCustomerDAO quotationInformation) {
         List<ParticipantGroupDTO> inputParticipantsGrouped = groupByDocumentNumberAndDocumentType(input);
         LOGGER.info(" ** GetConfig :: groupParticipant -> {}",inputParticipantsGrouped);

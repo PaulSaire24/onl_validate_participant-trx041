@@ -22,13 +22,6 @@ public class Constants {
         public static final String INPUT_TEXT_SECURITY = "operation=DO;type=fpextff1;origin=ASO;endpoint=ASO;securityLevel=5";
         public static final String B64URL = "B64URL";
     }
-    public static final String QUERY_GET_DATA_INSURED_BY_QUOTATION = "PISD.GET_INSURED_DATA_FROM_QUOTATION";
-    public static final String QUERY_GET_PRODUCT_AND_MODALITY_TYPE_BY_QUOTATION = "PISD.GET_PRODUCT_AND_MODALITY_TYPE";
-    public static final String POLICY_QUOTA_INTERNAL_ID = "POLICY_QUOTA_INTERNAL_ID";
-    public static final String INSURANCE_PRODUCT_ID = "INSURANCE_PRODUCT_ID";
-    public static final String INSURANCE_MODALITY_TYPE = "INSURANCE_MODALITY_TYPE";
-    public static final String CUSTOMER_DOCUMENT_TYPE = "CUSTOMER_DOCUMENT_TYPE";
-    public static final String PERSONAL_ID = "PERSONAL_ID";
     public static final String ERROR_NOT_FOUND_IN_DATA_BASE_CODE = "BBVAER200137";
     public static final String ERROR_NOT_FOUND_IN_DATA_BASE_MESSAGE = "Error no encontrado en base de datos";
 

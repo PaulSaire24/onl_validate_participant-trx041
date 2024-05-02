@@ -1,6 +1,7 @@
 package com.bbva.rbvd.lib.r048.impl.business;
 
 import com.bbva.apx.exception.business.BusinessException;
+import com.bbva.elara.configuration.manager.application.ApplicationConfigurationService;
 import com.bbva.pisd.lib.r403.PISDR403;
 import com.bbva.rbvd.dto.insrncsale.bo.emision.PersonaBO;
 import com.bbva.rbvd.dto.insuranceroyal.error.DetailsErrorDTO;
@@ -18,7 +19,12 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClientException;
 
-import java.util.*;
+import java.util.Objects;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.Arrays;
 
 public class HandlerErrorBusiness {
 
@@ -29,35 +35,47 @@ public class HandlerErrorBusiness {
         this.pisdR403 = pisdR403;
     }
 
-    public void startHandlerError(List<PersonaBO> personas,String channelId, RestClientException ex) throws BusinessException{
+    public void startHandlerError(List<PersonaBO> personas, String channelId, RestClientException ex, ApplicationConfigurationService applicationConfigurationService) throws BusinessException{
 
         ErrorRequestDTO err =  getErrorRequestFromException(ex,Constants.OriginError.RIMAC,channelId);
         LOGGER.info("** RBVDR048Impl - executeAddParticipantsService catch {} **",err);
         if(!CollectionUtils.isEmpty(err.getDetails())){
             LOGGER.info("** RBVDR048Impl - with reference {} **",err);
             ErrorResponseDTO responseErr = this.pisdR403.executeFindError(err);
-            //groupMessagesByRole(personas,responseErr);
-            if(Objects.nonNull(responseErr) && !StringUtils.isEmpty(responseErr.getCode()) && !StringUtils.isEmpty(responseErr.getMessage())){
+            if(!StringUtils.isEmpty(responseErr.getCode()) && !StringUtils.isEmpty(responseErr.getMessage())){
                 LOGGER.info("** RBVDR048Impl - Error encontrado en base de datos");
+                groupMessagesByRole(personas,responseErr);
                 throw new BusinessException(responseErr.getCode(), false, responseErr.getMessage());
+            }else{
+                propagateError(applicationConfigurationService,err);
             }
-            throw new BusinessException(Constants.ERROR_NOT_FOUND_IN_DATA_BASE_CODE, false, Constants.ERROR_NOT_FOUND_IN_DATA_BASE_MESSAGE);
         }
         throw new BusinessException(ValidateParticipantErrors.ERROR_NOT_FOUND.getAdviceCode(), false, ValidateParticipantErrors.ERROR_NOT_FOUND.getMessage());
     }
 
+    private void propagateError(ApplicationConfigurationService applicationConfigurationService, ErrorRequestDTO err) {
+        if(applicationConfigurationService.getProperty("flag.error.not.found.in.data.base").equals("true")){
+            StringBuilder message = new StringBuilder();
+            for (DetailsErrorDTO detail : err.getDetails()) {
+                LOGGER.info("** RBVDR048Impl - Error no encontrado en base de datos");
+                message.append(" | ").append(detail.getValue());
+            }
+            message.delete(0, 3);
+            throw new BusinessException("BBVA12345678", false, String.valueOf(message));
+        }else{
+            throw new BusinessException(Constants.ERROR_NOT_FOUND_IN_DATA_BASE_CODE, false, applicationConfigurationService.getProperty("error.not.found.in.data.base.message"));
+        }
+    }
     private ErrorRequestDTO getErrorRequestFromException(RestClientException exception, String scope, String channelId) {
         ErrorRequestDTO error = new ErrorRequestDTO();
         if(exception instanceof HttpClientErrorException) {
             HttpClientErrorException httpClientErrorException = (HttpClientErrorException) exception;
             String requestBody = httpClientErrorException.getResponseBodyAsString();
             LOGGER.info("HttpClientErrorException - Response body: {}", requestBody);
-
             if(org.apache.commons.lang3.StringUtils.isEmpty(requestBody) || requestBody.contains("html")) {
                 LOGGER.info("*** Null or empty error responseBody ***");
                 return error;
             }
-
             JsonObject jsonResponseObject = new JsonParser().parse(requestBody).getAsJsonObject();
             JsonObject jsonErrorObject = jsonResponseObject.getAsJsonObject("error");
             if (Objects.nonNull(jsonErrorObject)){
@@ -95,55 +113,35 @@ public class HandlerErrorBusiness {
     }
 
     private void groupMessagesByRole(List<PersonaBO> personas,ErrorResponseDTO errorResponse) {
-        List<String> listMessage = Arrays.asList(errorResponse.getMessage().toLowerCase().split("\\|"));
-        List<String> messagesPayment = new ArrayList<>();
-        List<String> messagesContractor = new ArrayList<>();
-        List<String> messagesInsured = new ArrayList<>();
+        Map<String, String> groupedMessages = new HashMap<>();
+        String[] messageList = errorResponse.getMessage().toLowerCase().split("\\|");
+        if(messageList.length > 1){
+            for (PersonaBO persona : personas) {
+                // Obtener el número de documento de la persona
+                String nroDocumento = persona.getNroDocumento();
+                // Obtener el rol de la persona
+                String rolName = persona.getRolName();
 
-        for (String message : listMessage) {
-            if (message.contains("responsable")) {
-                messagesPayment.add(message.trim());
-            } else if (message.contains("contratante")) {
-                messagesContractor.add(message.trim());
-            } else if (message.contains("asegurado")) {
-                messagesInsured.add(message.trim());
+                // Verificar si tiene el numero de documento
+                if(!groupedMessages.containsKey(nroDocumento)){
+                    // Verificar si el mensaje contiene el rol actual
+                    for (String part : messageList) {
+                        // Verificar si la parte actual contiene el rol buscado
+                        if (part.contains(rolName)) {
+                            // Si se encuentra, devolver el mensaje correspondiente
+                            String message = groupedMessages.get(nroDocumento)!=null? groupedMessages.get(nroDocumento) + " | " + part.trim() : part.trim();
+                            groupedMessages.put(nroDocumento, message);
+                        }
+                    }
+                }
             }
-        }
-        PersonaBO personManager = getPersonaBO(personas, 23);
-        PersonaBO personContractor = getPersonaBO(personas, 8);
-        PersonaBO personInsured = getPersonaBO(personas, 9);
-        StringBuilder messageGeneral = new StringBuilder();
-        if(personManager.getNroDocumento().equals(personContractor.getNroDocumento()) && personManager.getNroDocumento().equals(personInsured.getNroDocumento())){
-            getMessageByRol(messagesPayment, messageGeneral);
-            prepareMessageGeneral(errorResponse, messageGeneral);
 
-        } else if (personManager.getNroDocumento().equals(personContractor.getNroDocumento()) && !personManager.getNroDocumento().equals(personInsured.getNroDocumento())) {
-            getMessageByRol(messagesPayment, messageGeneral);
-            getMessageByRol(messagesInsured, messageGeneral);
-            prepareMessageGeneral(errorResponse, messageGeneral);
-        } else if (personContractor.getNroDocumento().equals(personInsured.getNroDocumento()) && !personContractor.getNroDocumento().equals(personManager.getNroDocumento())) {
-            getMessageByRol(messagesPayment, messageGeneral);
-            getMessageByRol(messagesContractor, messageGeneral);
-            prepareMessageGeneral(errorResponse, messageGeneral);
-        }
-
-    }
-
-    private void prepareMessageGeneral(ErrorResponseDTO errorResponse, StringBuilder messageGeneral) {
-        if(messageGeneral.length() > 0){
-            messageGeneral.delete(0, 3);
-            errorResponse.setMessage(messageGeneral.toString());
-        }
-    }
-    private void getMessageByRol(List<String> messages, StringBuilder messageGeneral) {
-        if(!CollectionUtils.isEmpty(messages)){
-            for (String message : messages) {
-                messageGeneral.append(" | ").append(message);
+            StringBuilder message = new StringBuilder();
+            for (Map.Entry<String, String> entry : groupedMessages.entrySet()) {
+                message.append(" | ").append(entry.getValue());
             }
+            message.delete(0, 3);
+            errorResponse.setMessage(message.toString());
         }
     }
-    private PersonaBO getPersonaBO(List<PersonaBO> personas, int x) {
-        return personas.stream().filter(persona -> persona.getRol() == x).findFirst().orElse(null);
-    }
-
 }

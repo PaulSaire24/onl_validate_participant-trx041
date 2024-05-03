@@ -10,7 +10,7 @@ import com.bbva.rbvd.lib.r048.RBVDR048;
 public class DynamicLifeStrategy implements StrategyProductHandler {
 
     @Override
-    public AgregarTerceroBO addParticipantsToInsuranceCompany(PayloadConfig payloadConfig,RBVDR048 rbvdr048, ApplicationConfigurationService applicationConfigurationService) {
+    public AgregarTerceroBO prepareCompanyRequest(PayloadConfig payloadConfig, RBVDR048 rbvdr048, ApplicationConfigurationService applicationConfigurationService) {
         DynamicLifeProductBusinessImpl dynamicLifeParticipantBusiness = new DynamicLifeProductBusinessImpl(rbvdr048, applicationConfigurationService);
         return dynamicLifeParticipantBusiness.doDynamicLife(payloadConfig);
     }

@@ -18,7 +18,7 @@ public class ValidationUtil {
         return StringUtils.isNotEmpty(clientId) && !(clientId.matches(ConstantsUtil.RegularExpression.CONTAIN_ONLY_LETTERS) && clientId.matches(ConstantsUtil.RegularExpression.CONTAIN_ONLY_NUMBERS) && clientId.length()>ConstantsUtil.Number.CLIENT_BANK_LENGHT);
     }
     public static Integer obtainExistingCompanyRole(ParticipantsDTO participantDTO, ParticipantProperties participantProperties, List<RolDAO> roles) {
-        String roleCodeBank = participantProperties.obtainRoleCodeByEnum(participantDTO.getParticipantType().getId());
+        String roleCodeBank = participantProperties.obtainRoleCodeByEnum(participantDTO.getParticipantType().getId().concat(".bank.role"));
         return roles.stream()
                 .filter(rolDTO -> roleCodeBank.equalsIgnoreCase(rolDTO.getParticipantRoleId().toString()))
                 .map(RolDAO::getInsuranceCompanyRoleId)

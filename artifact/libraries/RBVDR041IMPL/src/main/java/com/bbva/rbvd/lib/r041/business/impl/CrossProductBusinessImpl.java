@@ -1,5 +1,6 @@
 package com.bbva.rbvd.lib.r041.business.impl;
 
+import com.bbva.elara.configuration.manager.application.ApplicationConfigurationService;
 import com.bbva.rbvd.dto.insrncsale.bo.emision.AgregarTerceroBO;
 import com.bbva.rbvd.dto.insrncsale.bo.emision.OrganizacionBO;
 import com.bbva.rbvd.dto.insrncsale.bo.emision.PayloadAgregarTerceroBO;
@@ -31,9 +32,11 @@ public class CrossProductBusinessImpl implements ICrossProductBusiness {
     private static final Logger LOGGER = LoggerFactory.getLogger(CrossProductBusinessImpl.class);
 
     private RBVDR048 rbvdr048;
+    private ApplicationConfigurationService applicationConfigurationService;
 
-    public CrossProductBusinessImpl(RBVDR048 rbvdr048) {
+    public CrossProductBusinessImpl(RBVDR048 rbvdr048, ApplicationConfigurationService applicationConfigurationService) {
         this.rbvdr048 = rbvdr048;
+        this.applicationConfigurationService = applicationConfigurationService;
     }
 
     @Override
@@ -54,15 +57,17 @@ public class CrossProductBusinessImpl implements ICrossProductBusiness {
                 if(RBVDInternalConstants.TypeParticipant.NATURAL.toString().equalsIgnoreCase(part.getInputParticipant().getPerson().getPersonType())){
                     ParticipantType participantType = Objects.nonNull(part.getCustomer()) ? ParticipantType.CUSTOMER : ParticipantType.NON_CUSTOMER;
                     com.bbva.rbvd.lib.r041.pattern.factory.Participant participant = ParticipantFactory.buildParticipant(participantType);
-                    personaList.add(participant.createRequestParticipant(part, payloadConfig.getQuotationInformation(),
-                            roleId));
-
+                    PersonaBO persona = participant.createRequestParticipant(part, payloadConfig.getQuotationInformation(),
+                            roleId);
+                    persona.setTipoPersona(applicationConfigurationService.getProperty(part.getInputParticipant().getParticipantType().getId()));
+                    personaList.add(persona);
                     addTerceroByCompany.setPersona(personaList);
                 }else{
                     PersonaBO personaBO = ValidateRimacNaturalPerson.mapCustomerRequestData(part, payloadConfig.getQuotationInformation(),
                             null);
                     OrganizacionBO organizacionBO = ValidateRimacLegalPerson.getDataOrganization(part.getLegalCustomer().getData().get(0), personaBO, payloadConfig.getQuotationInformation(), roleId,
                             part.getInputParticipant());
+                    organizacionBO.setTipoPersona(applicationConfigurationService.getProperty(part.getInputParticipant().getParticipantType().getId()));
                     organizacionList.add(organizacionBO);
 
                     addTerceroByCompany.setOrganizacion(organizacionList);
@@ -70,18 +75,12 @@ public class CrossProductBusinessImpl implements ICrossProductBusiness {
         }});
 
         addTerceroByCompany.setProducto(payloadConfig.getQuotationInformation().getInsuranceProduct().getInsuranceProductDesc());
-        requestCompany.setPayload(addTerceroByCompany);
         enrichPayloadByProduct(addTerceroByCompany,payloadConfig.getQuotationInformation());
+        requestCompany.setPayload(addTerceroByCompany);
 
         LOGGER.info("** createRequestByCompany - request Company -> {}",requestCompany);
 
-        ConsumerExternalService consumerService = new ConsumerExternalService(rbvdr048);
-
-        String quotationId = payloadConfig.getQuotationInformation().getQuotation().getInsuranceCompanyQuotaId();
-        String productId = payloadConfig.getQuotationInformation().getInsuranceProduct().getInsuranceProductType();
-        String traceId = payloadConfig.getInput().getTraceId();
-        String channel = payloadConfig.getInput().getChannelId();
-        return consumerService.executeValidateParticipantRimacService(requestCompany,quotationId,productId,traceId,channel);
+        return requestCompany;
     }
 
     public static void enrichPayloadByProduct(PayloadAgregarTerceroBO payloadAgregarTerceroBO, QuotationCustomerDAO quotationInformation) {

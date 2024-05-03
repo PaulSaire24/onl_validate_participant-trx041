@@ -10,8 +10,8 @@ import com.bbva.rbvd.lib.r048.RBVDR048;
 public class GeneralProductStrategy implements StrategyProductHandler {
 
     @Override
-    public AgregarTerceroBO addParticipantsToInsuranceCompany(PayloadConfig payloadConfig, RBVDR048 rbvdr048, ApplicationConfigurationService applicationConfigurationService) {
-        CrossProductBusinessImpl crossProductBusiness = new CrossProductBusinessImpl(rbvdr048);
+    public AgregarTerceroBO prepareCompanyRequest(PayloadConfig payloadConfig, RBVDR048 rbvdr048, ApplicationConfigurationService applicationConfigurationService) {
+        CrossProductBusinessImpl crossProductBusiness = new CrossProductBusinessImpl(rbvdr048,applicationConfigurationService);
         return crossProductBusiness.createRequestByCompany(payloadConfig);
     }
 }

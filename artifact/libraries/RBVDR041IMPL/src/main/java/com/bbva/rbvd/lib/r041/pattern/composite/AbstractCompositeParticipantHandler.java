@@ -3,13 +3,12 @@ package com.bbva.rbvd.lib.r041.pattern.composite;
 import com.bbva.elara.configuration.manager.application.ApplicationConfigurationService;
 import com.bbva.rbvd.dto.insrncsale.bo.emision.AgregarTerceroBO;
 import com.bbva.rbvd.dto.participant.dao.QuotationCustomerDAO;
-import com.bbva.rbvd.dto.participant.dao.RolDAO;
 import com.bbva.rbvd.dto.participant.request.InputParticipantsDTO;
-import com.bbva.rbvd.lib.r041.business.ParticipantsBusiness;
 import com.bbva.rbvd.lib.r041.enrichoperation.impl.EnrichPayloadProductImpl;
 import com.bbva.rbvd.lib.r041.pattern.strategy.StrategyProductHandler;
 import com.bbva.rbvd.lib.r041.pattern.strategy.product.GeneralProductStrategy;
 import com.bbva.rbvd.lib.r041.properties.ParticipantProperties;
+import com.bbva.rbvd.lib.r041.service.api.ConsumerExternalService;
 import com.bbva.rbvd.lib.r041.transfer.PayloadConfig;
 import com.bbva.rbvd.lib.r048.RBVDR048;
 
@@ -30,14 +29,15 @@ public abstract class AbstractCompositeParticipantHandler implements Participant
         StrategyProductHandler productHandler = productHandlers.get(quotationInformation.getInsuranceProduct().getInsuranceProductType());
 
         StrategyProductHandler strategyProductHandler;
-
+        AgregarTerceroBO rimacRequest;
         if (Objects.nonNull(productHandler)) {
-            strategyProductHandler = productHandler;
+             rimacRequest =  productHandler.prepareCompanyRequest(payloadConfig,rbvdr048,applicationConfigurationService);
         } else {
             strategyProductHandler = new GeneralProductStrategy();
+            rimacRequest = strategyProductHandler.prepareCompanyRequest(payloadConfig,rbvdr048,applicationConfigurationService);
         }
 
-        return strategyProductHandler.addParticipantsToInsuranceCompany(payloadConfig,rbvdr048,applicationConfigurationService);
+        return new ConsumerExternalService(rbvdr048).sendToApiAndValidateResponseError(payloadConfig, rimacRequest);
     }
 
     protected static void addProductHandler(String productCode, StrategyProductHandler strategyProductHandler) {

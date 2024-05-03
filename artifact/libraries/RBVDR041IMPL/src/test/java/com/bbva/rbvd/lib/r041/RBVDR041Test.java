@@ -100,10 +100,10 @@ public class RBVDR041Test {
 		when(this.applicationConfigurationService.getProperty(ConstantsUtil.ENABLED_NON_LIFE_PRODUCTS))
 				.thenReturn("830");
 
-		when(this.participantProperties.obtainRoleCodeByEnum("PAYMENT_MANAGER")).thenReturn("7");
-		when(this.participantProperties.obtainRoleCodeByEnum("INSURED")).thenReturn("2");
-		when(this.participantProperties.obtainRoleCodeByEnum("CONTRACTOR")).thenReturn("1");
-		when(this.participantProperties.obtainRoleCodeByEnum("LEGAL_REPRESENTATIVE")).thenReturn("");
+		when(this.participantProperties.obtainRoleCodeByEnum("PAYMENT_MANAGER.bank.role")).thenReturn("7");
+		when(this.participantProperties.obtainRoleCodeByEnum("INSURED.bank.role")).thenReturn("2");
+		when(this.participantProperties.obtainRoleCodeByEnum("CONTRACTOR.bank.role")).thenReturn("1");
+		when(this.participantProperties.obtainRoleCodeByEnum("LEGAL_REPRESENTATIVE.bank.role")).thenReturn("");
 
 	}
 	

@@ -24,10 +24,17 @@ import com.bbva.rbvd.dto.insrncsale.aso.listbusinesses.BusinessASO;
 import com.bbva.rbvd.dto.insrncsale.aso.listbusinesses.ListBusinessesASO;
 import com.bbva.rbvd.dto.insrncsale.bo.emision.AgregarTerceroBO;
 import com.bbva.rbvd.dto.insrncsale.bo.emision.PayloadAgregarTerceroBO;
+import com.bbva.rbvd.dto.insrncsale.bo.emision.PersonaBO;
 import com.bbva.rbvd.dto.insrncsale.mock.MockData;
-import com.bbva.rbvd.dto.participant.dao.*;
-import com.bbva.rbvd.dto.participant.utils.TypeErrorControllerEnum;
+import com.bbva.rbvd.dto.participant.dao.RolDAO;
+import com.bbva.rbvd.dto.participant.dao.QuotationCustomerDAO;
+import com.bbva.rbvd.dto.participant.dao.InsuranceProductDAO;
+import com.bbva.rbvd.dto.participant.dao.InsuranceBusinessDAO;
+import com.bbva.rbvd.dto.participant.dao.QuotationModDAO;
+import com.bbva.rbvd.dto.participant.dao.QuotationLifeDAO;
+import com.bbva.rbvd.dto.participant.dao.QuotationDAO;
 import com.bbva.rbvd.dto.participant.utils.ValidateParticipantErrors;
+import com.bbva.rbvd.lib.r048.factory.ApiConnectorFactoryTest;
 import com.bbva.rbvd.lib.r048.impl.RBVDR048Impl;
 import com.bbva.rbvd.mock.MockBundleContext;
 import com.bbva.rbvd.dto.insuranceroyal.error.ErrorResponseDTO;
@@ -125,6 +132,9 @@ public class RBVDR048Test {
 		ThreadContext.set(context);
 		getObjectIntrospection();
 		MockBundleContext mockBundleContext = mock(MockBundleContext.class);
+
+		ApiConnectorFactoryTest apiConnectorFactoryMock = new ApiConnectorFactoryTest();
+		apiConnectorFactoryMock.getAPIConnector(mockBundleContext);
 
 		when(applicationConfigurationService.getDefaultProperty(anyString(),anyString())).thenReturn("PATCH");
 		when(pisdr014.executeSignatureConstruction(anyString(), anyString(), anyString(), anyString(), anyString()))
@@ -363,6 +373,23 @@ public class RBVDR048Test {
 				"    }\n" +
 				"}";
 
+		AgregarTerceroBO agregarTerceroBO = new AgregarTerceroBO();
+		agregarTerceroBO.setPayload(new PayloadAgregarTerceroBO());
+		PersonaBO personaManager = new PersonaBO();
+		personaManager.setRol(23);
+		personaManager.setNroDocumento("70221978");
+		PersonaBO personaContractor = new PersonaBO();
+		personaContractor.setRol(8);
+		personaContractor.setNroDocumento("70221978");
+		PersonaBO personaInsured = new PersonaBO();
+		personaInsured.setRol(9);
+		personaInsured.setNroDocumento("70221978");
+		List<PersonaBO> personas = new ArrayList<>();
+		personas.add(personaManager);
+		personas.add(personaContractor);
+		personas.add(personaInsured);
+		agregarTerceroBO.getPayload().setPersona(personas);
+
 		ErrorResponseDTO res = new ErrorResponseDTO();
 		res.setCode("Bbva41255");
 		res.setMessage("Error al consumir serviciso rimac ");
@@ -370,7 +397,7 @@ public class RBVDR048Test {
 		when(this.externalApiConnector.exchange(anyString(), anyObject(),anyObject(), (Class<AgregarTerceroBO>) any(), anyMap()))
 				.thenThrow(new HttpClientErrorException(HttpStatus.BAD_REQUEST, "", responseBody.getBytes(), StandardCharsets.UTF_8));
 		when(pisdr403.executeFindError(anyObject())).thenReturn(res);
-		AgregarTerceroBO validation = this.rbvdR048.executeAddParticipants(new AgregarTerceroBO(),"quotationId","productId","traceId", "PC");
+		AgregarTerceroBO validation = this.rbvdR048.executeAddParticipants(agregarTerceroBO,"quotationId","productId","traceId", "PC");
 
 		assertNotNull(validation);
 	}
@@ -380,7 +407,7 @@ public class RBVDR048Test {
 		LOGGER.info("RBVDR048 - Executing testExecuteAddParticipantsServiceWithRestClientException...");
 
 		String responseBody = "{\n" +
-				"    \"errorWrongFormat\": {\n" +
+				"    \"error\": {\n" +
 				"        \"code\": \"VIDACOT005\",\n" +
 				"        \"message\": \"Validacion de Datos\",\n" +
 				"        \"details\": {\n" +
@@ -392,14 +419,31 @@ public class RBVDR048Test {
 				"    }\n" +
 				"}";
 
+		AgregarTerceroBO agregarTerceroBO = new AgregarTerceroBO();
+		agregarTerceroBO.setPayload(new PayloadAgregarTerceroBO());
+		PersonaBO personaManager = new PersonaBO();
+		personaManager.setRolName("responsable");
+		personaManager.setNroDocumento("70221978");
+		PersonaBO personaContractor = new PersonaBO();
+		personaContractor.setRolName("contratante");
+		personaContractor.setNroDocumento("70221978");
+		PersonaBO personaInsured = new PersonaBO();
+		personaInsured.setRolName("asegurado");
+		personaInsured.setNroDocumento("70221978");
+		List<PersonaBO> personas = new ArrayList<>();
+		personas.add(personaManager);
+		personas.add(personaContractor);
+		personas.add(personaInsured);
+		agregarTerceroBO.getPayload().setPersona(personas);
+
 		ErrorResponseDTO res = new ErrorResponseDTO();
 		res.setCode("Bbva41255");
-		res.setMessage("Error al consumir serviciso rimac ");
+		res.setMessage("La dirección del Contratante debe ser enviado como parte de los datos del alta  y no debe estar vacío. Verificar y corregir en Nacar o PIC, si el error persiste contactar al Network Support | La dirección del Asegurado debe ser enviado como parte de los datos del alta  y no debe estar vacío. Verificar y corregir en Nacar o PIC, si el error persiste contactar al Network Support | La dirección del Responsable de Pago debe ser enviado como parte de los datos del alta  y no debe estar vacío. Verificar y corregir en Nacar o PIC, si el error persiste contactar al Network Support | El provincia del Responsable de Pago debe ser enviado como parte de los datos del alta  y no debe estar vacío. Verificar y corregir en Nacar o PIC, si el error persiste contactar al Network Support | El provincia del Contratante debe ser enviado como parte de los datos del alta  y no debe estar vacío. Verificar y corregir en Nacar o PIC, si el error persiste contactar al Network Support | El provincia del Asegurado debe ser enviado como parte de los datos del alta  y no debe estar vacío. Verificar y corregir en Nacar o PIC, si el error persiste contactar al Network Support");
 		when(this.applicationConfigurationService.getProperty(anyString())).thenReturn("https://apitest.rimac.com/api-vida/V1/cotizaciones/{cotizacion}/persona-agregar");
 		when(this.externalApiConnector.exchange(anyString(), anyObject(),anyObject(), (Class<AgregarTerceroBO>) any(), anyMap()))
 				.thenThrow(new HttpClientErrorException(HttpStatus.BAD_REQUEST, "", responseBody.getBytes(), StandardCharsets.UTF_8));
 		when(pisdr403.executeFindError(anyObject())).thenReturn(res);
-		AgregarTerceroBO validation = this.rbvdR048.executeAddParticipants(new AgregarTerceroBO(),"quotationId","productId","traceId", "PC");
+		AgregarTerceroBO validation = this.rbvdR048.executeAddParticipants(agregarTerceroBO,"quotationId","productId","traceId", "PC");
 
 		assertNotNull(validation);
 	}
@@ -421,6 +465,23 @@ public class RBVDR048Test {
 				"    }\n" +
 				"}";
 
+		AgregarTerceroBO agregarTerceroBO = new AgregarTerceroBO();
+		agregarTerceroBO.setPayload(new PayloadAgregarTerceroBO());
+		PersonaBO personaManager = new PersonaBO();
+		personaManager.setRol(23);
+		personaManager.setNroDocumento("70221978");
+		PersonaBO personaContractor = new PersonaBO();
+		personaContractor.setRol(8);
+		personaContractor.setNroDocumento("70221978");
+		PersonaBO personaInsured = new PersonaBO();
+		personaInsured.setRol(9);
+		personaInsured.setNroDocumento("70221978");
+		List<PersonaBO> personas = new ArrayList<>();
+		personas.add(personaManager);
+		personas.add(personaContractor);
+		personas.add(personaInsured);
+		agregarTerceroBO.getPayload().setPersona(personas);
+
 		ErrorResponseDTO res = new ErrorResponseDTO();
 		res.setCode("Bbva41255");
 		res.setMessage("Error al consumir serviciso rimac ");
@@ -428,7 +489,7 @@ public class RBVDR048Test {
 		when(this.externalApiConnector.exchange(anyString(), anyObject(),anyObject(), (Class<AgregarTerceroBO>) any(), anyMap()))
 				.thenThrow(new HttpClientErrorException(HttpStatus.BAD_REQUEST, "", responseBody.getBytes(), StandardCharsets.UTF_8));
 		when(pisdr403.executeFindError(anyObject())).thenReturn(res);
-		AgregarTerceroBO validation = this.rbvdR048.executeAddParticipants(new AgregarTerceroBO(),"quotationId","productId","traceId", "PC");
+		AgregarTerceroBO validation = this.rbvdR048.executeAddParticipants(agregarTerceroBO,"quotationId","productId","traceId", "PC");
 
 		assertNotNull(validation);
 	}
@@ -449,34 +510,80 @@ public class RBVDR048Test {
 				"        \"httpStatusWrongFormat\": 403\n" +
 				"    }\n" +
 				"}";
+		AgregarTerceroBO agregarTerceroBO = new AgregarTerceroBO();
+		agregarTerceroBO.setPayload(new PayloadAgregarTerceroBO());
+		PersonaBO personaManager = new PersonaBO();
+		personaManager.setRolName("responsable");
+		personaManager.setNroDocumento("70221978");
+		PersonaBO personaContractor = new PersonaBO();
+		personaContractor.setRolName("contratante");
+		personaContractor.setNroDocumento("70221978");
+		PersonaBO personaInsured = new PersonaBO();
+		personaInsured.setRolName("asegurado");
+		personaInsured.setNroDocumento("70221978");
+		List<PersonaBO> personas = new ArrayList<>();
+		personas.add(personaManager);
+		personas.add(personaContractor);
+		personas.add(personaInsured);
+		agregarTerceroBO.getPayload().setPersona(personas);
 
 		ErrorResponseDTO res = new ErrorResponseDTO();
 		res.setCode("Bbva41255");
-		res.setMessage("Error al consumir serviciso rimac ");
+		res.setMessage("Error en el servidor");
 		when(this.applicationConfigurationService.getProperty(anyString())).thenReturn("https://apitest.rimac.com/api-vida/V1/cotizaciones/{cotizacion}/persona-agregar");
 		when(this.externalApiConnector.exchange(anyString(), anyObject(),anyObject(), (Class<AgregarTerceroBO>) any(), anyMap()))
 				.thenThrow(new HttpClientErrorException(HttpStatus.BAD_REQUEST, "", responseBody.getBytes(), StandardCharsets.UTF_8));
 		when(pisdr403.executeFindError(anyObject())).thenReturn(res);
-		AgregarTerceroBO validation = this.rbvdR048.executeAddParticipants(new AgregarTerceroBO(),"quotationId","productId","traceId", "PC");
+		AgregarTerceroBO validation = this.rbvdR048.executeAddParticipants(agregarTerceroBO,"quotationId","productId","traceId", "PC");
 
 		assertNotNull(validation);
+
 	}
 
 	@Test(expected = BusinessException.class)
 	public void testExecuteAddParticipantsServiceWithRestClientExceptionUnrecognized() {
 		LOGGER.info("RBVDR048 - Executing testExecuteAddParticipantsServiceWithRestClientExceptionUnrecognized...");
 
-		String responseBody = "";
+		String responseBody = "{\n" +
+				"    \"error\": {\n" +
+				"        \"code\": \"VIDACOT005\",\n" +
+				"        \"message\": \"Validacion de Datos\",\n" +
+				"        \"details\": {\n" +
+				"            \"PE008002\": \"El campo apePaterno de persona en su elemento 3 es requerido\",\n" +
+				"            \"PE009002\": \"El campo apeMaterno de persona en su elemento 3 es requerido\",\n" +
+				"            \"PE011002\": \"El campo fechaNacimiento de persona en su elemento 3 es requerido\"\n" +
+				"        },\n" +
+				"        \"httpStatus\": 403\n" +
+				"    }\n" +
+				"}";
+
+		AgregarTerceroBO agregarTerceroBO = new AgregarTerceroBO();
+		agregarTerceroBO.setPayload(new PayloadAgregarTerceroBO());
+		PersonaBO personaManager = new PersonaBO();
+		personaManager.setRolName("responsable");
+		personaManager.setNroDocumento("70221978");
+		PersonaBO personaContractor = new PersonaBO();
+		personaContractor.setRolName("contratante");
+		personaContractor.setNroDocumento("70221978");
+		PersonaBO personaInsured = new PersonaBO();
+		personaInsured.setRolName("asegurado");
+		personaInsured.setNroDocumento("70221979");
+		List<PersonaBO> personas = new ArrayList<>();
+		personas.add(personaManager);
+		personas.add(personaContractor);
+		personas.add(personaInsured);
+		agregarTerceroBO.getPayload().setPersona(personas);
+
 
 		ErrorResponseDTO res = new ErrorResponseDTO();
 		res.setCode("Bbva41255");
-		res.setMessage("Error al consumir serviciso rimac ");
+		res.setMessage("La dirección del Contratante debe ser enviado como parte de los datos del alta  y no debe estar vacío. Verificar y corregir en Nacar o PIC, si el error persiste contactar al Network Support | La dirección del Asegurado debe ser enviado como parte de los datos del alta  y no debe estar vacío. Verificar y corregir en Nacar o PIC, si el error persiste contactar al Network Support | La dirección del Responsable de Pago debe ser enviado como parte de los datos del alta  y no debe estar vacío. Verificar y corregir en Nacar o PIC, si el error persiste contactar al Network Support | El provincia del Responsable de Pago debe ser enviado como parte de los datos del alta  y no debe estar vacío. Verificar y corregir en Nacar o PIC, si el error persiste contactar al Network Support | El provincia del Contratante debe ser enviado como parte de los datos del alta  y no debe estar vacío. Verificar y corregir en Nacar o PIC, si el error persiste contactar al Network Support | El provincia del Asegurado debe ser enviado como parte de los datos del alta  y no debe estar vacío. Verificar y corregir en Nacar o PIC, si el error persiste contactar al Network Support");
 		when(this.applicationConfigurationService.getProperty(anyString())).thenReturn("https://apitest.rimac.com/api-vida/V1/cotizaciones/{cotizacion}/persona-agregar");
 		when(this.externalApiConnector.exchange(anyString(), anyObject(),anyObject(), (Class<AgregarTerceroBO>) any(), anyMap()))
 				.thenThrow(new HttpClientErrorException(HttpStatus.BAD_REQUEST, "", responseBody.getBytes(), StandardCharsets.UTF_8));
 
 		when(pisdr403.executeFindError(anyObject())).thenReturn(res);
-		AgregarTerceroBO validation = this.rbvdR048.executeAddParticipants(new AgregarTerceroBO(),"quotationId","productId","traceId", "PC");
+		AgregarTerceroBO validation = this.rbvdR048.executeAddParticipants(agregarTerceroBO,"quotationId","productId","traceId", "PC");
 
 		assertNotNull(validation);
 	}
@@ -485,24 +592,138 @@ public class RBVDR048Test {
 	public void testExecuteAddParticipantsServiceWithRestClientExceptionInstance() {
 		LOGGER.info("RBVDR048 - Executing testExecuteAddParticipantsServiceWithRestClientExceptionInstance...");
 
-		String responseBody = "";
+		String responseBody = "{\n" +
+				"    \"error\": {\n" +
+				"        \"code\": \"VIDACOT005\",\n" +
+				"        \"message\": \"Validacion de Datos\",\n" +
+				"        \"details\": {\n" +
+				"            \"PE008002\": \"El campo apePaterno de persona en su elemento 3 es requerido\",\n" +
+				"            \"PE009002\": \"El campo apeMaterno de persona en su elemento 3 es requerido\",\n" +
+				"            \"PE011002\": \"El campo fechaNacimiento de persona en su elemento 3 es requerido\"\n" +
+				"        },\n" +
+				"        \"httpStatus\": 403\n" +
+				"    }\n" +
+				"}";
+		AgregarTerceroBO agregarTerceroBO = new AgregarTerceroBO();
+		agregarTerceroBO.setPayload(new PayloadAgregarTerceroBO());
+		PersonaBO personaManager = new PersonaBO();
+		personaManager.setRolName("responsable");
+		personaManager.setNroDocumento("70221978");
+		PersonaBO personaContractor = new PersonaBO();
+		personaContractor.setRolName("contratante");
+		personaContractor.setNroDocumento("70221979");
+		PersonaBO personaInsured = new PersonaBO();
+		personaInsured.setRolName("asegurado");
+		personaInsured.setNroDocumento("70221980");
+		List<PersonaBO> personas = new ArrayList<>();
+		personas.add(personaManager);
+		personas.add(personaContractor);
+		personas.add(personaInsured);
+		agregarTerceroBO.getPayload().setPersona(personas);
 
 		ErrorResponseDTO res = new ErrorResponseDTO();
 		res.setCode("Bbva41255");
-		res.setMessage("Error al consumir serviciso rimac ");
+		res.setMessage("La dirección del Contratante debe ser enviado como parte de los datos del alta  y no debe estar vacío. Verificar y corregir en Nacar o PIC, si el error persiste contactar al Network Support | La dirección del Asegurado debe ser enviado como parte de los datos del alta  y no debe estar vacío. Verificar y corregir en Nacar o PIC, si el error persiste contactar al Network Support | La dirección del Responsable de Pago debe ser enviado como parte de los datos del alta  y no debe estar vacío. Verificar y corregir en Nacar o PIC, si el error persiste contactar al Network Support | El provincia del Responsable de Pago debe ser enviado como parte de los datos del alta  y no debe estar vacío. Verificar y corregir en Nacar o PIC, si el error persiste contactar al Network Support | El provincia del Contratante debe ser enviado como parte de los datos del alta  y no debe estar vacío. Verificar y corregir en Nacar o PIC, si el error persiste contactar al Network Support | El provincia del Asegurado debe ser enviado como parte de los datos del alta  y no debe estar vacío. Verificar y corregir en Nacar o PIC, si el error persiste contactar al Network Support");
+
 		when(this.applicationConfigurationService.getProperty(anyString())).thenReturn("https://apitest.rimac.com/api-vida/V1/cotizaciones/{cotizacion}/persona-agregar");
 		when(this.externalApiConnector.exchange(anyString(), anyObject(),anyObject(), (Class<AgregarTerceroBO>) any(), anyMap()))
-				.thenThrow(new RestClientException(responseBody));
+				.thenThrow(new HttpClientErrorException(HttpStatus.BAD_REQUEST, "", responseBody.getBytes(), StandardCharsets.UTF_8));
 		when(pisdr403.executeFindError(anyObject())).thenReturn(res);
-		AgregarTerceroBO validation = this.rbvdR048.executeAddParticipants(new AgregarTerceroBO(),"quotationId","productId","traceId", "PC");
+		AgregarTerceroBO validation = this.rbvdR048.executeAddParticipants(agregarTerceroBO,"quotationId","productId","traceId", "PC");
 
 		assertNotNull(validation);
 	}
 
 	@Test(expected = BusinessException.class)
+	public void testExecuteAddParticipantsServiceWithThrowExceptionWithFlagTrueNotFoundInDataBAse() {
+		LOGGER.info("RBVDR048 - Executing testExecuteAddParticipantsServiceWithRestClientExceptionInstance...");
+
+		String responseBody = "{\n" +
+				"    \"error\": {\n" +
+				"        \"code\": \"VIDACOT005\",\n" +
+				"        \"message\": \"Validacion de Datos\",\n" +
+				"        \"details\": {\n" +
+				"            \"PE008002\": \"El campo apePaterno de persona en su elemento 3 es requerido\",\n" +
+				"            \"PE009002\": \"El campo apeMaterno de persona en su elemento 3 es requerido\",\n" +
+				"            \"PE011002\": \"El campo fechaNacimiento de persona en su elemento 3 es requerido\"\n" +
+				"        },\n" +
+				"        \"httpStatus\": 403\n" +
+				"    }\n" +
+				"}";
+		AgregarTerceroBO agregarTerceroBO = new AgregarTerceroBO();
+		agregarTerceroBO.setPayload(new PayloadAgregarTerceroBO());
+		PersonaBO personaManager = new PersonaBO();
+		personaManager.setRol(23);
+		personaManager.setNroDocumento("70221978");
+		PersonaBO personaContractor = new PersonaBO();
+		personaContractor.setRol(8);
+		personaContractor.setNroDocumento("70221979");
+		PersonaBO personaInsured = new PersonaBO();
+		personaInsured.setRol(9);
+		personaInsured.setNroDocumento("70221980");
+		List<PersonaBO> personas = new ArrayList<>();
+		personas.add(personaManager);
+		personas.add(personaContractor);
+		personas.add(personaInsured);
+		agregarTerceroBO.getPayload().setPersona(personas);
+
+		ErrorResponseDTO res = new ErrorResponseDTO();
+		when(this.applicationConfigurationService.getProperty(anyString())).thenReturn("https://apitest.rimac.com/api-vida/V1/cotizaciones/{cotizacion}/persona-agregar");
+		when(this.applicationConfigurationService.getProperty("flag.error.not.found.in.data.base")).thenReturn("true");
+		when(this.externalApiConnector.exchange(anyString(), anyObject(),anyObject(), (Class<AgregarTerceroBO>) any(), anyMap()))
+				.thenThrow(new HttpClientErrorException(HttpStatus.BAD_REQUEST, "", responseBody.getBytes(), StandardCharsets.UTF_8));
+		when(pisdr403.executeFindError(anyObject())).thenReturn(res);
+		AgregarTerceroBO validation = this.rbvdR048.executeAddParticipants(agregarTerceroBO,"quotationId","productId","traceId", "PC");
+		assertNotNull(validation);
+	}
+
+	@Test(expected = BusinessException.class)
+	public void testExecuteAddParticipantsServiceWithThrowExceptionWithFlagFalseNotFoundInDataBAse() {
+		LOGGER.info("RBVDR048 - Executing testExecuteAddParticipantsServiceWithRestClientExceptionInstance...");
+
+		String responseBody = "{\n" +
+				"    \"error\": {\n" +
+				"        \"code\": \"VIDACOT005\",\n" +
+				"        \"message\": \"Validacion de Datos\",\n" +
+				"        \"details\": {\n" +
+				"            \"PE008002\": \"El campo apePaterno de persona en su elemento 3 es requerido\",\n" +
+				"            \"PE009002\": \"El campo apeMaterno de persona en su elemento 3 es requerido\",\n" +
+				"            \"PE011002\": \"El campo fechaNacimiento de persona en su elemento 3 es requerido\"\n" +
+				"        },\n" +
+				"        \"httpStatus\": 403\n" +
+				"    }\n" +
+				"}";
+		AgregarTerceroBO agregarTerceroBO = new AgregarTerceroBO();
+		agregarTerceroBO.setPayload(new PayloadAgregarTerceroBO());
+		PersonaBO personaManager = new PersonaBO();
+		personaManager.setRol(23);
+		personaManager.setNroDocumento("70221978");
+		PersonaBO personaContractor = new PersonaBO();
+		personaContractor.setRol(8);
+		personaContractor.setNroDocumento("70221979");
+		PersonaBO personaInsured = new PersonaBO();
+		personaInsured.setRol(9);
+		personaInsured.setNroDocumento("70221980");
+		List<PersonaBO> personas = new ArrayList<>();
+		personas.add(personaManager);
+		personas.add(personaContractor);
+		personas.add(personaInsured);
+		agregarTerceroBO.getPayload().setPersona(personas);
+
+		ErrorResponseDTO res = new ErrorResponseDTO();
+
+		when(this.applicationConfigurationService.getProperty(anyString())).thenReturn("https://apitest.rimac.com/api-vida/V1/cotizaciones/{cotizacion}/persona-agregar");
+		when(this.applicationConfigurationService.getProperty("flag.error.not.found.in.data.base")).thenReturn("false");
+		when(this.applicationConfigurationService.getProperty("error.not.found.in.data.base.message")).thenReturn("Error no encontrado en base de datos");
+		when(this.externalApiConnector.exchange(anyString(), anyObject(),anyObject(), (Class<AgregarTerceroBO>) any(), anyMap()))
+				.thenThrow(new HttpClientErrorException(HttpStatus.BAD_REQUEST, "", responseBody.getBytes(), StandardCharsets.UTF_8));
+		when(pisdr403.executeFindError(anyObject())).thenReturn(res);
+		AgregarTerceroBO validation = this.rbvdR048.executeAddParticipants(agregarTerceroBO,"quotationId","productId","traceId", "PC");
+		assertNotNull(validation);
+	}
+
+	@Test(expected = BusinessException.class)
 	public void testExecuteAddParticipantsServiceWithOutResponseOdDataBase() {
-
-
 		String responseBody = "{\n" +
 				"    \"error\": {\n" +
 				"        \"code\": \"VIDACOT005\",\n" +
@@ -515,13 +736,31 @@ public class RBVDR048Test {
 				"        \"httpStatusWrongFormat\": 403\n" +
 				"    }\n" +
 				"}";
+		AgregarTerceroBO agregarTerceroBO = new AgregarTerceroBO();
+		agregarTerceroBO.setPayload(new PayloadAgregarTerceroBO());
+		PersonaBO personaManager = new PersonaBO();
+		personaManager.setRolName("responsable");
+		personaManager.setNroDocumento("70221978");
+		PersonaBO personaContractor = new PersonaBO();
+		personaContractor.setRolName("contratante");
+		personaContractor.setNroDocumento("70221979");
+		PersonaBO personaInsured = new PersonaBO();
+		personaInsured.setRolName("asegurado");
+		personaInsured.setNroDocumento("70221979");
+		List<PersonaBO> personas = new ArrayList<>();
+		personas.add(personaManager);
+		personas.add(personaInsured);
+		personas.add(personaContractor);
+		agregarTerceroBO.getPayload().setPersona(personas);
 
 		ErrorResponseDTO res = new ErrorResponseDTO();
+		res.setMessage("La dirección del Contratante debe ser enviado como parte de los datos del alta  y no debe estar vacío. Verificar y corregir en Nacar o PIC, si el error persiste contactar al Network Support | La dirección del Asegurado debe ser enviado como parte de los datos del alta  y no debe estar vacío. Verificar y corregir en Nacar o PIC, si el error persiste contactar al Network Support | La dirección del Responsable de Pago debe ser enviado como parte de los datos del alta  y no debe estar vacío. Verificar y corregir en Nacar o PIC, si el error persiste contactar al Network Support | El provincia del Responsable de Pago debe ser enviado como parte de los datos del alta  y no debe estar vacío. Verificar y corregir en Nacar o PIC, si el error persiste contactar al Network Support | El provincia del Contratante debe ser enviado como parte de los datos del alta  y no debe estar vacío. Verificar y corregir en Nacar o PIC, si el error persiste contactar al Network Support | El provincia del Asegurado debe ser enviado como parte de los datos del alta  y no debe estar vacío. Verificar y corregir en Nacar o PIC, si el error persiste contactar al Network Support");
+		res.setCode("ERRD0001");
 		when(this.applicationConfigurationService.getProperty(anyString())).thenReturn("https://apitest.rimac.com/api-vida/V1/cotizaciones/{cotizacion}/persona-agregar");
 		when(this.externalApiConnector.exchange(anyString(), anyObject(),anyObject(), (Class<AgregarTerceroBO>) any(), anyMap()))
 				.thenThrow(new HttpClientErrorException(HttpStatus.BAD_REQUEST, "", responseBody.getBytes(), StandardCharsets.UTF_8));
 		when(pisdr403.executeFindError(anyObject())).thenReturn(res);
-		AgregarTerceroBO validation = this.rbvdR048.executeAddParticipants(new AgregarTerceroBO(),"quotationId","productId","traceId", "PC");
+		AgregarTerceroBO validation = this.rbvdR048.executeAddParticipants(agregarTerceroBO,"quotationId","productId","traceId", "PC");
 
 		assertNotNull(validation);
 	}

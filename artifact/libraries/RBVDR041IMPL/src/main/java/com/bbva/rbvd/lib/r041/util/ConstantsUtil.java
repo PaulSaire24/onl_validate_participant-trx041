@@ -43,6 +43,8 @@ public class ConstantsUtil {
     public static final class Delimeter{
         public static final String VERTICAL_BAR = "|";
 
+        private Delimeter() {
+        }
     }
     public final class Number{
         public static final int UNO = 1;
@@ -50,6 +52,9 @@ public class ConstantsUtil {
         public static final int DIEZ = 10;
 
         public static final int CLIENT_BANK_LENGHT =8;
+
+        private Number() {
+        }
     }
 
     public enum Rol{
@@ -70,34 +75,6 @@ public class ConstantsUtil {
 
         public int getValue() {
             return value;
-        }
-    }
-
-    public enum PersonTypeEnum {
-        NATURAL("L", "NATURAL", "DNI"),
-        NATURAL_WITH_BUSINESS("R", "NATURAL CON NEGOCIO", "RUC"),
-        JURIDIC("J", "JURIDICO", "RUC");
-
-        private final String code;
-        private final String description;
-        private final String documentType;
-
-        private PersonTypeEnum(String code, String description, String documentType) {
-            this.description = description;
-            this.code = code;
-            this.documentType = documentType;
-        }
-
-        public String getDescription() {
-            return this.description;
-        }
-
-        public String getCode() {
-            return this.code;
-        }
-
-        public String getDocumentType() {
-            return this.documentType;
         }
     }
 

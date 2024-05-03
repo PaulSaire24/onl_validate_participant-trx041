@@ -3,14 +3,13 @@ package com.bbva.rbvd.lib.r041.transform.bean;
 import com.bbva.rbvd.dto.insrncsale.aso.CommonFieldsASO;
 import com.bbva.rbvd.dto.insrncsale.aso.FormationASO;
 import com.bbva.rbvd.dto.insrncsale.aso.listbusinesses.BusinessASO;
-import com.bbva.rbvd.dto.insrncsale.bo.emision.EntidadBO;
 import com.bbva.rbvd.dto.insrncsale.bo.emision.OrganizacionBO;
 import com.bbva.rbvd.dto.insrncsale.bo.emision.PersonaBO;
-import com.bbva.rbvd.dto.insrncsale.utils.PersonTypeEnum;
 import com.bbva.rbvd.dto.participant.dao.QuotationCustomerDAO;
 import com.bbva.rbvd.dto.participant.request.ContactDetailsDTO;
 import com.bbva.rbvd.dto.participant.request.ParticipantsDTO;
 import com.bbva.rbvd.lib.r041.util.FunctionUtils;
+import com.bbva.rbvd.lib.r041.validation.ValidationUtil;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
@@ -69,7 +68,7 @@ public class ValidateRimacLegalPerson {
         organizacion.setNombreVia(persona.getNombreVia());
         organizacion.setTipoVia(persona.getTipoVia());
         organizacion.setNumeroVia(persona.getNumeroVia());
-        organizacion.setTipoPersona(getPersonType(organizacion).getCode());
+        organizacion.setTipoPersona(ValidationUtil.getPersonType(organizacion).getCode());
 
         return organizacion;
     }
@@ -90,11 +89,6 @@ public class ValidateRimacLegalPerson {
         return formationASO.getCountry().getName();
     }
 
-    public static PersonTypeEnum getPersonType(EntidadBO person) {
-        if (RUC_ID.equalsIgnoreCase(person.getTipoDocumento())){
-            if (StringUtils.startsWith(person.getNroDocumento(), "20")) return PersonTypeEnum.JURIDIC;
-            else return PersonTypeEnum.NATURAL_WITH_BUSINESS;
-        }
-        return PersonTypeEnum.NATURAL;
+    private ValidateRimacLegalPerson() {
     }
 }

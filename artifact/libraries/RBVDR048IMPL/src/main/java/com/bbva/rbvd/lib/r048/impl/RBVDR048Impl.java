@@ -75,7 +75,7 @@ public class RBVDR048Impl extends RBVDR048Abstract {
 		} catch (RestClientException ex) {
             LOGGER.info("***** RBVDR048Impl - executeAddParticipantsService catch {} *****", ex.getStackTrace());
             HandlerErrorBusiness handlerErrorBusiness = new HandlerErrorBusiness(this.pisdR403);
-            handlerErrorBusiness.startHandlerError(channelId,ex);
+            handlerErrorBusiness.startHandlerError(requestBody.getPayload().getPersona(),channelId,ex,this.applicationConfigurationService);
         }catch (TimeoutException toex) {
             throw new BusinessException(ValidateParticipantErrors.TIMEOUT_ADD_PARTICIPANTS_RIMAC_ERROR.getAdviceCode(), false, ValidateParticipantErrors.TIMEOUT_ADD_PARTICIPANTS_RIMAC_ERROR.getMessage());
         }
@@ -93,7 +93,7 @@ public class RBVDR048Impl extends RBVDR048Abstract {
         LOGGER.info("***** RBVDR048Impl - executeGetCustomerService documentNumber {} - documentType {} *****", documentNumber, documentType);
         PEWUResponse result = pbtqR002.executeSearchInHostByDocument(documentType,documentNumber);
         LOGGER.info("***** RBVDR048Impl - executeGetCustomerService  ***** Response Host: {}", result);
-        if( Objects.isNull(result.getHostAdviceCode()) || result.getHostAdviceCode().isEmpty() || Objects.isNull(result)){
+        if( Objects.isNull(result.getHostAdviceCode()) || result.getHostAdviceCode().isEmpty()){
             return result;
         }
         LOGGER.info("***** RBVDR041Impl - executeGetListCustomer ***** with error: {}", result.getHostMessage());

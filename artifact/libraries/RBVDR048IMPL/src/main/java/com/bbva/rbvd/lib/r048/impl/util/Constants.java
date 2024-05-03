@@ -7,12 +7,18 @@ public class Constants {
         public static final String X_AMZ_DATE_HEADER = "X-Amz-Date";
         public static final String X_API_KEY_HEADER = "x-api-key";
         public static final String TRACE_ID_HEADER = "traceId";
+
+        private Headers() {
+        }
     }
 
     public static final class OriginError {
         public static final String RIMAC = "RIMAC";
         public static final String APX = "APX";
         public static final String HOST = "HOST";
+
+        private OriginError() {
+        }
     }
 
     public static final class ConfigurationValues {
@@ -21,16 +27,12 @@ public class Constants {
         public static final String CRE_EXTRA_PARAMS = "user=KSMK;country=PE";
         public static final String INPUT_TEXT_SECURITY = "operation=DO;type=fpextff1;origin=ASO;endpoint=ASO;securityLevel=5";
         public static final String B64URL = "B64URL";
+
+        private ConfigurationValues() {
+        }
     }
-    public static final String QUERY_GET_DATA_INSURED_BY_QUOTATION = "PISD.GET_INSURED_DATA_FROM_QUOTATION";
-    public static final String QUERY_GET_PRODUCT_AND_MODALITY_TYPE_BY_QUOTATION = "PISD.GET_PRODUCT_AND_MODALITY_TYPE";
-    public static final String POLICY_QUOTA_INTERNAL_ID = "POLICY_QUOTA_INTERNAL_ID";
-    public static final String INSURANCE_PRODUCT_ID = "INSURANCE_PRODUCT_ID";
-    public static final String INSURANCE_MODALITY_TYPE = "INSURANCE_MODALITY_TYPE";
-    public static final String CUSTOMER_DOCUMENT_TYPE = "CUSTOMER_DOCUMENT_TYPE";
-    public static final String PERSONAL_ID = "PERSONAL_ID";
+
     public static final String ERROR_NOT_FOUND_IN_DATA_BASE_CODE = "BBVAER200137";
-    public static final String ERROR_NOT_FOUND_IN_DATA_BASE_MESSAGE = "Error no encontrado en base de datos";
-
-
+    private Constants() {
+    }
 }

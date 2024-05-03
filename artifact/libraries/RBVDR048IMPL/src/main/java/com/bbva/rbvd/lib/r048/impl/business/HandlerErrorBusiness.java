@@ -1,7 +1,9 @@
 package com.bbva.rbvd.lib.r048.impl.business;
 
 import com.bbva.apx.exception.business.BusinessException;
+import com.bbva.elara.configuration.manager.application.ApplicationConfigurationService;
 import com.bbva.pisd.lib.r403.PISDR403;
+import com.bbva.rbvd.dto.insrncsale.bo.emision.PersonaBO;
 import com.bbva.rbvd.dto.insuranceroyal.error.DetailsErrorDTO;
 import com.bbva.rbvd.dto.insuranceroyal.error.ErrorRequestDTO;
 import com.bbva.rbvd.dto.insuranceroyal.error.ErrorResponseDTO;
@@ -32,7 +34,7 @@ public class HandlerErrorBusiness {
         this.pisdR403 = pisdR403;
     }
 
-    public void startHandlerError(String channelId,RestClientException ex) throws BusinessException{
+    public void startHandlerError(List<PersonaBO> personas, String channelId, RestClientException ex, ApplicationConfigurationService applicationConfigurationService) throws BusinessException {
 
         ErrorRequestDTO err =  getErrorRequestFromException(ex,Constants.OriginError.RIMAC,channelId);
         LOGGER.info("** RBVDR048Impl - executeAddParticipantsService catch {} **",err);
@@ -41,11 +43,27 @@ public class HandlerErrorBusiness {
             ErrorResponseDTO responseErr = this.pisdR403.executeFindError(err);
                 if(Objects.nonNull(responseErr) && !StringUtils.isEmpty(responseErr.getCode()) && !StringUtils.isEmpty(responseErr.getMessage())){
                 LOGGER.info("** RBVDR048Impl - Error encontrado en base de datos");
+                groupMessagesByRole(personas,responseErr);
                 throw new BusinessException(responseErr.getCode(), false, responseErr.getMessage());
-            }
-            throw new BusinessException(Constants.ERROR_NOT_FOUND_IN_DATA_BASE_CODE, false, Constants.ERROR_NOT_FOUND_IN_DATA_BASE_MESSAGE);
+            }else{
+                    propagateError(applicationConfigurationService,err);
+                }
         }
         throw new BusinessException(ValidateParticipantErrors.ERROR_NOT_FOUND.getAdviceCode(), false, ValidateParticipantErrors.ERROR_NOT_FOUND.getMessage());
+    }
+
+    private void propagateError(ApplicationConfigurationService applicationConfigurationService, ErrorRequestDTO err) {
+        if(applicationConfigurationService.getProperty("flag.error.not.found.in.data.base").equals("true")){
+            StringBuilder message = new StringBuilder();
+            for (DetailsErrorDTO detail : err.getDetails()) {
+                LOGGER.info("** RBVDR048Impl - Error no encontrado en base de datos");
+                message.append(" | ").append(detail.getValue());
+            }
+            message.delete(0, 3);
+            throw new BusinessException("BBVA12345678", false, String.valueOf(message));
+        }else{
+            throw new BusinessException(Constants.ERROR_NOT_FOUND_IN_DATA_BASE_CODE, false, applicationConfigurationService.getProperty("error.not.found.in.data.base.message"));
+        }
     }
 
     public ErrorRequestDTO getErrorRequestFromException(RestClientException exception, String scope, String channelId) {
@@ -94,5 +112,43 @@ public class HandlerErrorBusiness {
         errorRequest.setDetails(detailsListr);
         errorRequest.setTypeErrorScope(scope);
         return errorRequest;
+    }
+
+    private void groupMessagesByRole(List<PersonaBO> personas,ErrorResponseDTO errorResponse) {
+        Map<String, String> groupedMessages = new HashMap<>();
+        String[] messageList = errorResponse.getMessage().toLowerCase().split("\\|");
+        if(messageList.length <= 1){
+            return;
+        }
+            for (PersonaBO persona : personas) {
+                // Obtener el número de documento de la persona
+                String nroDocumento = persona.getNroDocumento();
+                // Obtener el rol de la persona
+                String rolName = persona.getRolName();
+
+                // Verificar si tiene el numero de documento
+                if(!groupedMessages.containsKey(nroDocumento)){
+                    // Verificar si el mensaje contiene el rol actual
+                    for (String part : messageList) {
+                        // Verificar si la parte actual contiene el rol buscado
+                        assignMessageForRole(part, rolName, groupedMessages, nroDocumento);
+                    }
+                }
+            }
+
+            StringBuilder message = new StringBuilder();
+            for (Map.Entry<String, String> entry : groupedMessages.entrySet()) {
+                message.append(" | ").append(entry.getValue());
+            }
+            message.delete(0, 3);
+            errorResponse.setMessage(message.toString());
+    }
+
+    private void assignMessageForRole(String part, String rolName, Map<String, String> groupedMessages, String nroDocumento) {
+        if (part.contains(rolName)) {
+            // Si se encuentra, devolver el mensaje correspondiente
+            String message = groupedMessages.get(nroDocumento)!=null? groupedMessages.get(nroDocumento) + " | " + part.trim() : part.trim();
+            groupedMessages.put(nroDocumento, message);
+        }
     }
 }

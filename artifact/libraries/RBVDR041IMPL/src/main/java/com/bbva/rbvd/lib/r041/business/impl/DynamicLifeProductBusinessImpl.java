@@ -19,8 +19,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
-
-
 public class DynamicLifeProductBusinessImpl implements IDynamicLifeBusiness {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DynamicLifeProductBusinessImpl.class);

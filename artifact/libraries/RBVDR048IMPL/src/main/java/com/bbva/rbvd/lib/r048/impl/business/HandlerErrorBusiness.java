@@ -34,7 +34,7 @@ public class HandlerErrorBusiness {
         this.pisdR403 = pisdR403;
     }
 
-    public void startHandlerError(List<PersonaBO> personas, String channelId, RestClientException ex, ApplicationConfigurationService applicationConfigurationService) {
+    public void startHandlerError(List<PersonaBO> personas, String channelId, RestClientException ex, ApplicationConfigurationService applicationConfigurationService) throws BusinessException {
 
         ErrorRequestDTO err =  getErrorRequestFromException(ex,Constants.OriginError.RIMAC,channelId);
         LOGGER.info("** RBVDR048Impl - executeAddParticipantsService catch {} **",err);
@@ -114,13 +114,16 @@ public class HandlerErrorBusiness {
         return errorRequest;
     }
 
-    private void groupMessagesByRole(List<PersonaBO> personas, ErrorResponseDTO errorResponse) {
+    private void groupMessagesByRole(List<PersonaBO> personas,ErrorResponseDTO errorResponse) {
         Map<String, String> groupedMessages = new HashMap<>();
         String[] messageList = errorResponse.getMessage().toLowerCase().split("\\|");
-        if(messageList.length > 1){
+        if(messageList.length <= 1){
+            return;
+        }
             for (PersonaBO persona : personas) {
-
+                // Obtener el número de documento de la persona
                 String nroDocumento = persona.getNroDocumento();
+                // Obtener el rol de la persona
                 String rolName = persona.getRolName();
 
                 // Verificar si tiene el numero de documento
@@ -128,11 +131,7 @@ public class HandlerErrorBusiness {
                     // Verificar si el mensaje contiene el rol actual
                     for (String part : messageList) {
                         // Verificar si la parte actual contiene el rol buscado
-                        if (part.contains(rolName)) {
-                            // Si se encuentra, devolver el mensaje correspondiente
-                            String message = groupedMessages.get(nroDocumento)!=null? groupedMessages.get(nroDocumento) + " | " + part.trim() : part.trim();
-                            groupedMessages.put(nroDocumento, message);
-                        }
+                        assignMessageForRole(part, rolName, groupedMessages, nroDocumento);
                     }
                 }
             }
@@ -143,6 +142,13 @@ public class HandlerErrorBusiness {
             }
             message.delete(0, 3);
             errorResponse.setMessage(message.toString());
+    }
+
+    private void assignMessageForRole(String part, String rolName, Map<String, String> groupedMessages, String nroDocumento) {
+        if (part.contains(rolName)) {
+            // Si se encuentra, devolver el mensaje correspondiente
+            String message = groupedMessages.get(nroDocumento)!=null? groupedMessages.get(nroDocumento) + " | " + part.trim() : part.trim();
+            groupedMessages.put(nroDocumento, message);
         }
     }
 }

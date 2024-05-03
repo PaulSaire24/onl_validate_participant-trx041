@@ -668,7 +668,6 @@ public class RBVDR048Test {
 		agregarTerceroBO.getPayload().setPersona(personas);
 
 		ErrorResponseDTO res = new ErrorResponseDTO();
-
 		when(this.applicationConfigurationService.getProperty(anyString())).thenReturn("https://apitest.rimac.com/api-vida/V1/cotizaciones/{cotizacion}/persona-agregar");
 		when(this.applicationConfigurationService.getProperty("flag.error.not.found.in.data.base")).thenReturn("true");
 		when(this.externalApiConnector.exchange(anyString(), anyObject(),anyObject(), (Class<AgregarTerceroBO>) any(), anyMap()))
@@ -715,6 +714,7 @@ public class RBVDR048Test {
 
 		when(this.applicationConfigurationService.getProperty(anyString())).thenReturn("https://apitest.rimac.com/api-vida/V1/cotizaciones/{cotizacion}/persona-agregar");
 		when(this.applicationConfigurationService.getProperty("flag.error.not.found.in.data.base")).thenReturn("false");
+		when(this.applicationConfigurationService.getProperty("error.not.found.in.data.base.message")).thenReturn("Error no encontrado en base de datos");
 		when(this.externalApiConnector.exchange(anyString(), anyObject(),anyObject(), (Class<AgregarTerceroBO>) any(), anyMap()))
 				.thenThrow(new HttpClientErrorException(HttpStatus.BAD_REQUEST, "", responseBody.getBytes(), StandardCharsets.UTF_8));
 		when(pisdr403.executeFindError(anyObject())).thenReturn(res);

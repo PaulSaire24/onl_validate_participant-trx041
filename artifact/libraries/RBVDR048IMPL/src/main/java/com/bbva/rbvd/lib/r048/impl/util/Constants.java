@@ -33,8 +33,6 @@ public class Constants {
     }
 
     public static final String ERROR_NOT_FOUND_IN_DATA_BASE_CODE = "BBVAER200137";
-    public static final String ERROR_NOT_FOUND_IN_DATA_BASE_MESSAGE = "Error no encontrado en base de datos";
-
     private Constants() {
     }
 }

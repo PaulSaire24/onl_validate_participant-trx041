@@ -37,7 +37,7 @@ public abstract class AbstractCompositeParticipantHandler implements Participant
             strategyProductHandler = new GeneralProductStrategy();
         }
 
-        return strategyProductHandler.addParticipantsToInsuranceCompany(payloadConfig,rbvdr048);
+        return strategyProductHandler.addParticipantsToInsuranceCompany(payloadConfig,rbvdr048,applicationConfigurationService);
     }
 
     protected static void addProductHandler(String productCode, StrategyProductHandler strategyProductHandler) {

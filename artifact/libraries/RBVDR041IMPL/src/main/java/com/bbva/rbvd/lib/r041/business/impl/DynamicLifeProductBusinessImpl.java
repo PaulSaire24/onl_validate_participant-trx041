@@ -1,5 +1,6 @@
 package com.bbva.rbvd.lib.r041.business.impl;
 
+import com.bbva.elara.configuration.manager.application.ApplicationConfigurationService;
 import com.bbva.rbvd.dto.insrncsale.bo.emision.AgregarTerceroBO;
 import com.bbva.rbvd.dto.insrncsale.bo.emision.PayloadAgregarTerceroBO;
 import com.bbva.rbvd.dto.insrncsale.bo.emision.PersonaBO;
@@ -24,9 +25,11 @@ public class DynamicLifeProductBusinessImpl implements IDynamicLifeBusiness {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DynamicLifeProductBusinessImpl.class);
     private RBVDR048 rbvdr048;
+    private ApplicationConfigurationService applicationConfigurationService;
 
-    public DynamicLifeProductBusinessImpl(RBVDR048 rbvdr048) {
+    public DynamicLifeProductBusinessImpl(RBVDR048 rbvdr048, ApplicationConfigurationService applicationConfigurationService) {
         this.rbvdr048 = rbvdr048;
+        this.applicationConfigurationService = applicationConfigurationService;
     }
 
     @Override
@@ -45,10 +48,12 @@ public class DynamicLifeProductBusinessImpl implements IDynamicLifeBusiness {
             PersonaBO person = new PersonaBO();
             if(ConstantsUtil.Rol.PAYMENT_MANAGER.getName().equalsIgnoreCase(participant.getRolCode())){
                person = PersonBean.buildPersonFromCustomer(participant.getCustomer(),participant.getRolCode());
+                person.setRolName(applicationConfigurationService.getProperty(ConstantsUtil.Rol.PAYMENT_MANAGER.getName()));
             } else if (ConstantsUtil.Rol.CONTRACTOR.getName().equalsIgnoreCase(participant.getRolCode()) &&
                     Objects.nonNull(participant.getCustomer())) {
                 isParticipantsWithRolContractor = true;
                 person = PersonBean.buildPersonFromCustomer(participant.getCustomer(),participant.getRolCode());
+                person.setRolName(applicationConfigurationService.getProperty(ConstantsUtil.Rol.CONTRACTOR.getName()));
             } else if (ConstantsUtil.Rol.INSURED.getName().equalsIgnoreCase(participant.getRolCode())) {
                 isParticipantsWithRolInsured = true;
                 if(Objects.nonNull(participant.getCustomer())){
@@ -62,6 +67,7 @@ public class DynamicLifeProductBusinessImpl implements IDynamicLifeBusiness {
                         person = PersonBean.buildPersonFromNonCustomer(participant.getNonCustomerFromDB(),personManager);
                     }
                 }
+                person.setRolName(applicationConfigurationService.getProperty(ConstantsUtil.Rol.INSURED.getName()));
             }
             personList.add(person);
         }
@@ -70,8 +76,10 @@ public class DynamicLifeProductBusinessImpl implements IDynamicLifeBusiness {
         Optional<PersonaBO> personManager = personList.stream().filter(person -> person.getRol() == ConstantsUtil.Rol.PAYMENT_MANAGER.getValue())
                 .findFirst();
         if(personManager.isPresent()) {
-            enrichPerson(isParticipantsWithRolContractor, personManager.get(), personList, ConstantsUtil.Rol.CONTRACTOR);
-            enrichPerson(isParticipantsWithRolInsured, personManager.get(), personList, ConstantsUtil.Rol.INSURED);
+            String rolContractor = applicationConfigurationService.getProperty(ConstantsUtil.Rol.CONTRACTOR.getName());
+            String rolInsured = applicationConfigurationService.getProperty(ConstantsUtil.Rol.INSURED.getName());
+            enrichPerson(isParticipantsWithRolContractor, personManager.get(), personList, ConstantsUtil.Rol.CONTRACTOR,rolContractor);
+            enrichPerson(isParticipantsWithRolInsured, personManager.get(), personList, ConstantsUtil.Rol.INSURED,rolInsured);
         }
 
         LOGGER.info("** doDynamicLife - persona List after enrich -> {}",personList);
@@ -89,10 +97,11 @@ public class DynamicLifeProductBusinessImpl implements IDynamicLifeBusiness {
         return consumerService.executeValidateParticipantRimacService(requestRimac,quotationId,productId,traceId,channelCode);
     }
 
-    private static void enrichPerson(boolean isRolPresent, PersonaBO personManager, List<PersonaBO> personList,ConstantsUtil.Rol rol) {
+    private static void enrichPerson(boolean isRolPresent, PersonaBO personManager, List<PersonaBO> personList,ConstantsUtil.Rol rol,String rolName) {
         if (!isRolPresent) {
-            PersonaBO personContractor = PersonBean.buildPersonFromManager(personManager, rol);
-            personList.add(personContractor);
+            PersonaBO person = PersonBean.buildPersonFromManager(personManager, rol);
+            person.setRolName(rolName);
+            personList.add(person);
         }
     }
 

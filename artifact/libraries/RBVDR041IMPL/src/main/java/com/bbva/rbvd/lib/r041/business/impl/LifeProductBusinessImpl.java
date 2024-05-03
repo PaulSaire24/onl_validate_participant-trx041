@@ -75,8 +75,8 @@ public class LifeProductBusinessImpl implements IThirdDynamicLifeBusiness {
         Optional<PersonaBO> personManager = personList.stream().filter(person -> person.getRol() == ConstantsUtil.Rol.PAYMENT_MANAGER.getValue())
                 .findFirst();
         if(personManager.isPresent()) {
-            String rolContractor = "contratante";
-            String rolInsured = "asegurado";
+            String rolContractor = applicationConfigurationService.getProperty(ConstantsUtil.Rol.CONTRACTOR.getName());
+            String rolInsured = applicationConfigurationService.getProperty(ConstantsUtil.Rol.INSURED.getName());
             enrichPerson(isParticipantsWithRolContractor, personManager.get(), personList, ConstantsUtil.Rol.CONTRACTOR,rolContractor);
             enrichPerson(isParticipantsWithRolInsured, personManager.get(), personList, ConstantsUtil.Rol.INSURED,rolInsured);
         }

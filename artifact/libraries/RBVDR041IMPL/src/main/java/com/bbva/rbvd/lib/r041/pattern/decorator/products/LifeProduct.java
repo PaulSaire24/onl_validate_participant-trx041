@@ -25,7 +25,7 @@ public class LifeProduct extends ParticipantDataValidatorDecorator {
         LOGGER.info("** start - dinamic Life product");
         PayloadConfig payloadConfig = this.getBeforeValidator().before(input,applicationConfigurationService,quotationInformation);
         LOGGER.info("** start - PayloadConfig {} **",payloadConfig);
-        LifeProductBusinessImpl dynamicLifeParticipantBusiness = new LifeProductBusinessImpl(rbvdr048);
+        LifeProductBusinessImpl dynamicLifeParticipantBusiness = new LifeProductBusinessImpl(rbvdr048,applicationConfigurationService);
         AgregarTerceroBO responseRimac = dynamicLifeParticipantBusiness.doDynamicLife(payloadConfig);
         LOGGER.info("** start - response Rimac {} **",responseRimac);
 

@@ -1,5 +1,6 @@
 package com.bbva.rbvd.lib.r041.business.impl;
 
+import com.bbva.elara.configuration.manager.application.ApplicationConfigurationService;
 import com.bbva.rbvd.dto.insrncsale.bo.emision.AgregarTerceroBO;
 import com.bbva.rbvd.dto.insrncsale.bo.emision.PayloadAgregarTerceroBO;
 import com.bbva.rbvd.dto.insrncsale.bo.emision.PersonaBO;
@@ -18,15 +19,17 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
-
-
 public class LifeProductBusinessImpl implements IThirdDynamicLifeBusiness {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(LifeProductBusinessImpl.class);
     private RBVDR048 rbvdr048;
-    public LifeProductBusinessImpl(RBVDR048 rbvdr048) {
+    private ApplicationConfigurationService applicationConfigurationService;
+
+    public LifeProductBusinessImpl(RBVDR048 rbvdr048, ApplicationConfigurationService applicationConfigurationService) {
         this.rbvdr048 = rbvdr048;
+        this.applicationConfigurationService = applicationConfigurationService;
     }
+
 
     @Override
     public AgregarTerceroBO doDynamicLife(PayloadConfig payloadConfig) {
@@ -44,12 +47,12 @@ public class LifeProductBusinessImpl implements IThirdDynamicLifeBusiness {
             PersonaBO person = new PersonaBO();
             if(ConstantsUtil.Rol.PAYMENT_MANAGER.getName().equalsIgnoreCase(participant.getRolCode())){
                person = PersonBean.buildPersonFromCustomer(participant.getCustomer(),participant.getRolCode());
-               person.setRolName("responsable");
+               person.setRolName(applicationConfigurationService.getProperty(ConstantsUtil.Rol.PAYMENT_MANAGER.getName()));
             } else if (ConstantsUtil.Rol.CONTRACTOR.getName().equalsIgnoreCase(participant.getRolCode()) &&
                     Objects.nonNull(participant.getCustomer())) {
                 isParticipantsWithRolContractor = true;
                 person = PersonBean.buildPersonFromCustomer(participant.getCustomer(),participant.getRolCode());
-                person.setRolName("contratante");
+                person.setRolName(applicationConfigurationService.getProperty(ConstantsUtil.Rol.CONTRACTOR.getName()));
             } else if (ConstantsUtil.Rol.INSURED.getName().equalsIgnoreCase(participant.getRolCode())) {
                 isParticipantsWithRolInsured = true;
                 if(Objects.nonNull(participant.getCustomer())){
@@ -63,7 +66,7 @@ public class LifeProductBusinessImpl implements IThirdDynamicLifeBusiness {
                         person = PersonBean.buildPersonFromNonCustomer(participant.getNonCustomerLife(),personManager);
                     }
                 }
-                person.setRolName("asegurado");
+                person.setRolName(applicationConfigurationService.getProperty(ConstantsUtil.Rol.INSURED.getName()));
             }
             personList.add(person);
         }

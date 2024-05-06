@@ -28,12 +28,11 @@ public abstract class AbstractCompositeParticipantHandler implements Participant
 
         StrategyProductHandler productHandler = productHandlers.get(quotationInformation.getInsuranceProduct().getInsuranceProductType());
 
-        StrategyProductHandler strategyProductHandler;
         AgregarTerceroBO rimacRequest;
         if (Objects.nonNull(productHandler)) {
              rimacRequest =  productHandler.prepareCompanyRequest(payloadConfig,rbvdr048,applicationConfigurationService);
         } else {
-            strategyProductHandler = new GeneralProductStrategy();
+            StrategyProductHandler strategyProductHandler = new GeneralProductStrategy();
             rimacRequest = strategyProductHandler.prepareCompanyRequest(payloadConfig,rbvdr048,applicationConfigurationService);
         }
 

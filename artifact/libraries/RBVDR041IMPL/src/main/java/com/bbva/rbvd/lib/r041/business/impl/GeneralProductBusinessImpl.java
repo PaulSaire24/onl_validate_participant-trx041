@@ -10,9 +10,8 @@ import com.bbva.rbvd.dto.participant.dao.RolDAO;
 import com.bbva.rbvd.dto.participant.constants.RBVDInternalConstants.ParticipantType;
 
 import com.bbva.rbvd.dto.participant.constants.RBVDInternalConstants;
-import com.bbva.rbvd.lib.r041.business.ICrossProductBusiness;
+import com.bbva.rbvd.lib.r041.business.IGeneralProductBusiness;
 import com.bbva.rbvd.lib.r041.pattern.factory.ParticipantFactory;
-import com.bbva.rbvd.lib.r041.service.api.ConsumerExternalService;
 import com.bbva.rbvd.lib.r041.transfer.PayloadConfig;
 import com.bbva.rbvd.lib.r041.transfer.Participant;
 import com.bbva.rbvd.lib.r041.transform.bean.ValidateRimacLegalPerson;
@@ -27,14 +26,14 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-public class CrossProductBusinessImpl implements ICrossProductBusiness {
+public class GeneralProductBusinessImpl implements IGeneralProductBusiness {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(CrossProductBusinessImpl.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(GeneralProductBusinessImpl.class);
 
     private RBVDR048 rbvdr048;
     private ApplicationConfigurationService applicationConfigurationService;
 
-    public CrossProductBusinessImpl(RBVDR048 rbvdr048, ApplicationConfigurationService applicationConfigurationService) {
+    public GeneralProductBusinessImpl(RBVDR048 rbvdr048, ApplicationConfigurationService applicationConfigurationService) {
         this.rbvdr048 = rbvdr048;
         this.applicationConfigurationService = applicationConfigurationService;
     }
@@ -59,7 +58,7 @@ public class CrossProductBusinessImpl implements ICrossProductBusiness {
                     com.bbva.rbvd.lib.r041.pattern.factory.Participant participant = ParticipantFactory.buildParticipant(participantType);
                     PersonaBO persona = participant.createRequestParticipant(part, payloadConfig.getQuotationInformation(),
                             roleId);
-                    persona.setTipoPersona(applicationConfigurationService.getProperty(part.getInputParticipant().getParticipantType().getId()));
+                    persona.setRolName(applicationConfigurationService.getProperty(part.getInputParticipant().getParticipantType().getId()));
                     personaList.add(persona);
                     addTerceroByCompany.setPersona(personaList);
                 }else{
@@ -67,9 +66,8 @@ public class CrossProductBusinessImpl implements ICrossProductBusiness {
                             null);
                     OrganizacionBO organizacionBO = ValidateRimacLegalPerson.getDataOrganization(part.getLegalCustomer().getData().get(0), personaBO, payloadConfig.getQuotationInformation(), roleId,
                             part.getInputParticipant());
-                    organizacionBO.setTipoPersona(applicationConfigurationService.getProperty(part.getInputParticipant().getParticipantType().getId()));
+                    organizacionBO.setRolName(applicationConfigurationService.getProperty(part.getInputParticipant().getParticipantType().getId()));
                     organizacionList.add(organizacionBO);
-
                     addTerceroByCompany.setOrganizacion(organizacionList);
                 }
         }});

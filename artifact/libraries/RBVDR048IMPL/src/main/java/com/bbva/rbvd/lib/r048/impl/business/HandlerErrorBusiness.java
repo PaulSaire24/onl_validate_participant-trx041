@@ -44,11 +44,11 @@ public class HandlerErrorBusiness {
             LOGGER.info("** RBVDR048Impl - with reference {} **",err);
             ErrorResponseDTO responseErr = this.pisdR403.executeFindError(err);
                 if(Objects.nonNull(responseErr) && !StringUtils.isEmpty(responseErr.getCode()) && !StringUtils.isEmpty(responseErr.getMessage())){
-                LOGGER.info("** RBVDR048Impl - Error encontrado en base de datos");
-                groupMessagesByRole(payload,responseErr);
-                LOGGER.info("** RBVDR048Impl - dto error message {} **",responseErr.getMessage());
-                throw new BusinessException(responseErr.getCode(), false, responseErr.getMessage());
-            }else{
+                    LOGGER.info("** RBVDR048Impl - Error encontrado en base de datos");
+                    groupMessagesByRole(payload,responseErr);
+                    LOGGER.info("** RBVDR048Impl - dto error message {} **",responseErr.getMessage());
+                    throw new BusinessException(responseErr.getCode(), false, responseErr.getMessage());
+                }else{
                     propagateError(applicationConfigurationService,err);
                 }
         }
@@ -56,17 +56,17 @@ public class HandlerErrorBusiness {
     }
 
     private void propagateError(ApplicationConfigurationService applicationConfigurationService, ErrorRequestDTO err) {
-        if(applicationConfigurationService.getProperty("flag.error.not.found.in.data.base").equals("true")){
+        if(applicationConfigurationService.getProperty(Constants.Properties.FLAG_NOT_FOUND_ERROR_ON_DB).equals("true")){
             StringBuilder message = new StringBuilder();
             for (DetailsErrorDTO detail : err.getDetails()) {
                 LOGGER.info("** RBVDR048Impl - Error no encontrado en base de datos");
                 message.append(" | ").append(detail.getValue());
             }
             message.delete(0, 3);
-            message.insert(0, applicationConfigurationService.getProperty("marca.message.error.not.found.in.data.base"));
+            message.insert(0, applicationConfigurationService.getProperty(Constants.Properties.PREFIX_MESSAGE_ERROR_NOT_FOUND_ON_DB));
             throw new BusinessException("BBVA12345678", false, String.valueOf(message));
         }else{
-            throw new BusinessException(Constants.ERROR_NOT_FOUND_IN_DATA_BASE_CODE, false, applicationConfigurationService.getProperty("error.not.found.in.data.base.message"));
+            throw new BusinessException(Constants.ERROR_NOT_FOUND_IN_DATA_BASE_CODE, false, applicationConfigurationService.getProperty(Constants.Properties.ERROR_NOT_FOUND_MESSAGE));
         }
     }
 
@@ -121,13 +121,10 @@ public class HandlerErrorBusiness {
     private void groupMessagesByRole(PayloadAgregarTerceroBO payload,ErrorResponseDTO errorResponse) {
         Map<String, String> groupedMessages = new HashMap<>();
         String[] messageList = errorResponse.getMessage().toLowerCase().split("\\|");
-        if(messageList.length <= 1){
-            return;
-        }
         if(payload.getPersona() != null){
-            mapMessagesToRolesOfperson(payload.getPersona(), groupedMessages, messageList);
+            groupedMessages =  mapMessagesToRolesOfPerson(payload.getPersona(),messageList);
         } else if (payload.getOrganizacion() != null){
-            mapMessagesToRolesOfCompany(payload.getOrganizacion(), groupedMessages, messageList);
+            groupedMessages = mapMessagesToRolesOfCompany(payload.getOrganizacion(),messageList);
         }
 
         StringBuilder message = new StringBuilder();
@@ -138,7 +135,8 @@ public class HandlerErrorBusiness {
             errorResponse.setMessage(message.toString());
     }
 
-    private void mapMessagesToRolesOfperson(List<PersonaBO> personas, Map<String, String> groupedMessages, String[] messageList) {
+    private Map<String, String> mapMessagesToRolesOfPerson(List<PersonaBO> personas, String[] messageList) {
+        Map<String, String> groupedMessages = new HashMap<>();
         for (PersonaBO persona : personas) {
             // Obtener el número de documento de la persona
             String nroDocumento = persona.getNroDocumento();
@@ -148,15 +146,20 @@ public class HandlerErrorBusiness {
             // Verificar si tiene el numero de documento
             if(!groupedMessages.containsKey(nroDocumento)){
                 // Verificar si el mensaje contiene el rol actual
-                for (String part : messageList) {
+                for (String messageMapped : messageList) {
                     // Verificar si la parte actual contiene el rol buscado
-                    assignMessageForRole(part, rolName, groupedMessages, nroDocumento);
+                    String outputMessage = assignMessageForRole(messageMapped, rolName, groupedMessages.get(nroDocumento));
+                    if(!outputMessage.isEmpty()){
+                        groupedMessages.put(nroDocumento, outputMessage);
+                    }
                 }
             }
         }
+        return groupedMessages;
     }
 
-    private void mapMessagesToRolesOfCompany(List<OrganizacionBO> organizacionBO, Map<String, String> groupedMessages, String[] messageList) {
+    private Map<String, String> mapMessagesToRolesOfCompany(List<OrganizacionBO> organizacionBO, String[] messageList) {
+        Map<String, String> groupedMessages = new HashMap<>();
         for (OrganizacionBO organizacion : organizacionBO) {
             // Obtener el número de documento de la persona
             String nroDocumento = organizacion.getNroDocumento();
@@ -166,19 +169,28 @@ public class HandlerErrorBusiness {
             // Verificar si tiene el numero de documento
             if(!groupedMessages.containsKey(nroDocumento)){
                 // Verificar si el mensaje contiene el rol actual
-                for (String part : messageList) {
+                for (String messageMapped : messageList) {
                     // Verificar si la parte actual contiene el rol buscado
-                    assignMessageForRole(part, rolName, groupedMessages, nroDocumento);
+                    String outputMessage = assignMessageForRole(messageMapped, rolName, groupedMessages.get(nroDocumento));
+                    if(!outputMessage.isEmpty()){
+                        groupedMessages.put(nroDocumento, outputMessage);
+                    }
                 }
             }
         }
+        return groupedMessages;
     }
 
-    private void assignMessageForRole(String part, String rolName, Map<String, String> groupedMessages, String nroDocumento) {
-        if (part.contains(rolName)) {
+    private String assignMessageForRole(String messageMapped, String rolName, String messageByPersonDoc) {
+        String message = "";
+        if (messageMapped.contains(rolName)) {
             // Si se encuentra, devolver el mensaje correspondiente
-            String message = groupedMessages.get(nroDocumento)!=null? groupedMessages.get(nroDocumento) + " | " + part.trim() : part.trim();
-            groupedMessages.put(nroDocumento, message);
+            message = messageByPersonDoc!=null? messageByPersonDoc + " | " + messageMapped.trim() : messageMapped.trim();
+        }else if (messageMapped.contains(Constants.Flag.ROL_NAME)){
+            // Si se encuentra, devolver el mensaje correspondiente
+            messageMapped = messageMapped.replace(Constants.Flag.ROL_NAME,rolName.toUpperCase().equals("RESPONSABLE")?rolName.concat(" de pago"):rolName);
+            message = messageByPersonDoc!=null? messageByPersonDoc + " | " + messageMapped.trim() : messageMapped.trim();
         }
+        return message;
     }
 }

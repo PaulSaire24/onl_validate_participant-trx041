@@ -7,6 +7,6 @@ import com.bbva.rbvd.lib.r048.RBVDR048;
 
 public interface StrategyProductHandler {
 
-    AgregarTerceroBO addParticipantsToInsuranceCompany(PayloadConfig payloadConfig, RBVDR048 rbvdr048, ApplicationConfigurationService applicationConfigurationService);
+    AgregarTerceroBO prepareCompanyRequest(PayloadConfig payloadConfig, RBVDR048 rbvdr048, ApplicationConfigurationService applicationConfigurationService);
 
 }

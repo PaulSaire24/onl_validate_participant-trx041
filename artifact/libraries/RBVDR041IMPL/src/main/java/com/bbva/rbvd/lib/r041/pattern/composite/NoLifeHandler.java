@@ -8,6 +8,12 @@ public class NoLifeHandler extends AbstractCompositeParticipantHandler{
     private final RBVDR048 rbvdr048;
     private final ParticipantProperties participantProperties;
 
+    /**
+     * Configurar los manejadores de productos para la categoría de seguro royal no vida
+     * ej: addProductHandler(producType, ImplObject);
+     * @param producType Tipo de producto de seguro (ej: 834, 832, etc.)
+     * @param ImplObject Implementación de estrategia para construir request que viajará a entidad de seguros.
+     */
     static {
         // Not implemented
     }

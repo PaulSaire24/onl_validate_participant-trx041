@@ -1,6 +1,15 @@
 package com.bbva.rbvd.lib.r048.impl.util;
 
 public class Constants {
+    public static final class Properties {
+        public static final String FLAG_NOT_FOUND_ERROR_ON_DB = "flag.error.not.found.in.data.base";
+        public static final String PREFIX_MESSAGE_ERROR_NOT_FOUND_ON_DB = "marca.message.error.not.found.in.data.base";
+        public static final String ERROR_NOT_FOUND_MESSAGE = "error.not.found.in.data.base.message";
+
+        private Properties() {
+        }
+    }
+
 
     public static final class Headers {
         public static final String AUTHORIZATION_HEADER = "Authorization";
@@ -9,6 +18,14 @@ public class Constants {
         public static final String TRACE_ID_HEADER = "traceId";
 
         private Headers() {
+        }
+    }
+
+    public static final class Flag {
+
+        public static final String ROL_NAME = "{0}";
+        public static final String DOCUMENT_NUMBER = "{1}";
+        private Flag() {
         }
     }
 

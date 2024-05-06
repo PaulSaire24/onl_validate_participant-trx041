@@ -85,14 +85,7 @@ public class DynamicLifeProductBusinessImpl implements IDynamicLifeBusiness {
         aggregateTercero.setProducto(payloadConfig.getQuotationInformation().getInsuranceProduct().getInsuranceProductDesc());
         requestRimac.setPayload(aggregateTercero);
         LOGGER.info("** doDynamicLife - request Rimac -> {}",requestRimac);
-
-        ConsumerExternalService consumerService = new ConsumerExternalService(rbvdr048);
-
-        String quotationId = payloadConfig.getQuotationId();
-        String productId = payloadConfig.getQuotationInformation().getInsuranceProduct().getInsuranceProductType();
-        String traceId = payloadConfig.getInput().getTraceId();
-        String channelCode = payloadConfig.getInput().getChannelId();
-        return consumerService.executeValidateParticipantRimacService(requestRimac,quotationId,productId,traceId,channelCode);
+        return requestRimac;
     }
 
     private static void enrichPerson(boolean isRolPresent, PersonaBO personManager, List<PersonaBO> personList,ConstantsUtil.Rol rol,String rolName) {

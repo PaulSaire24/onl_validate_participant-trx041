@@ -4,14 +4,18 @@ import com.bbva.elara.configuration.manager.application.ApplicationConfiguration
 import com.bbva.elara.library.AbstractLibrary;
 import com.bbva.elara.utility.api.connector.APIConnector;
 import com.bbva.elara.utility.api.connector.APIConnectorBuilder;
+import com.bbva.ksmk.lib.r002.KSMKR002;
 import com.bbva.pbtq.lib.r002.PBTQR002;
 import com.bbva.pisd.lib.r014.PISDR014;
-import com.bbva.ksmk.lib.r002.KSMKR002;
-import com.bbva.pisd.lib.r350.PISDR350;
+import com.bbva.pisd.lib.r040.PISDR040;
 import com.bbva.pisd.lib.r403.PISDR403;
+import com.bbva.rbvd.dto.insrncsale.bo.emision.AgregarTerceroBO;
 import com.bbva.rbvd.lib.r048.RBVDR048;
 import com.bbva.rbvd.lib.r066.RBVDR066;
 
+/**
+ * This class automatically defines the libraries and utilities that it will use.
+ */
 public abstract class RBVDR048Abstract extends AbstractLibrary implements RBVDR048 {
 
 	protected ApplicationConfigurationService applicationConfigurationService;
@@ -24,13 +28,13 @@ public abstract class RBVDR048Abstract extends AbstractLibrary implements RBVDR0
 
 	protected PISDR403 pisdR403;
 
-    protected PBTQR002 pbtqR002;
+	protected PBTQR002 pbtqR002;
 
-    protected PISDR350 pisdR350;
+	protected KSMKR002 ksmkR002;
 
-    protected KSMKR002 ksmkR002;
+	protected RBVDR066 rbvdR066;
 
-    protected RBVDR066 rbvdR066;
+	protected PISDR040 pisdR040;
 
 
 	/**
@@ -68,32 +72,32 @@ public abstract class RBVDR048Abstract extends AbstractLibrary implements RBVDR0
 		this.pisdR403 = pisdR403;
 	}
 
-    /**
-     * @param pbtqR002 the this.pbtqR002 to set
-     */
-    public void setPbtqR002(PBTQR002 pbtqR002) {
-        this.pbtqR002 = pbtqR002;
-    }
+	/**
+	* @param pbtqR002 the this.pbtqR002 to set
+	*/
+	public void setPbtqR002(PBTQR002 pbtqR002) {
+		this.pbtqR002 = pbtqR002;
+	}
 
-    /**
-     * @param pisdR350 the this.pisdR350 to set
-     */
-    public void setPisdR350(PISDR350 pisdR350) {
-        this.pisdR350 = pisdR350;
-    }
+	/**
+	* @param ksmkR002 the this.ksmkR002 to set
+	*/
+	public void setKsmkR002(KSMKR002 ksmkR002) {
+		this.ksmkR002 = ksmkR002;
+	}
 
-    /**
-     * @param ksmkR002 the this.ksmkR002 to set
-     */
-    public void setKsmkR002(KSMKR002 ksmkR002) {
-        this.ksmkR002 = ksmkR002;
-    }
+	/**
+	* @param rbvdR066 the this.rbvdR066 to set
+	*/
+	public void setRbvdR066(RBVDR066 rbvdR066) {
+		this.rbvdR066 = rbvdR066;
+	}
 
-    /**
-     * @param rbvdR066 the this.rbvdR066 to set
-     */
-    public void setRbvdR066(RBVDR066 rbvdR066) {
-        this.rbvdR066 = rbvdR066;
-    }
+	/**
+	* @param pisdR040 the this.pisdR040 to set
+	*/
+	public void setPisdR040(PISDR040 pisdR040) {
+		this.pisdR040 = pisdR040;
+	}
 
 }

@@ -1,14 +1,15 @@
 package com.bbva.rbvd.lib.r041.transform.bean;
 
-import com.bbva.pisd.dto.insurancedao.join.QuotationCustomerDTO;
 import com.bbva.rbvd.dto.insrncsale.aso.CommonFieldsASO;
 import com.bbva.rbvd.dto.insrncsale.aso.FormationASO;
 import com.bbva.rbvd.dto.insrncsale.aso.listbusinesses.BusinessASO;
 import com.bbva.rbvd.dto.insrncsale.bo.emision.OrganizacionBO;
 import com.bbva.rbvd.dto.insrncsale.bo.emision.PersonaBO;
+import com.bbva.rbvd.dto.participant.dao.QuotationCustomerDAO;
 import com.bbva.rbvd.dto.participant.request.ContactDetailsDTO;
 import com.bbva.rbvd.dto.participant.request.ParticipantsDTO;
 import com.bbva.rbvd.lib.r041.util.FunctionUtils;
+import com.bbva.rbvd.lib.r041.validation.ValidationUtil;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
@@ -21,12 +22,12 @@ public class ValidateRimacLegalPerson {
     private static final String TAG_OTROS = "OTROS";
     private static final String COUNTRY_REQUIRED = "PERU";
 
-    public static OrganizacionBO getDataOrganization(final BusinessASO businesses, PersonaBO persona, QuotationCustomerDTO registerInsuranceQuotationDAO, Integer rolId, ParticipantsDTO requestBody) {
+    public static OrganizacionBO getDataOrganization(final BusinessASO businesses, PersonaBO persona, QuotationCustomerDAO registerInsuranceQuotationDAO, Integer rolId, ParticipantsDTO requestBody) {
         return mapOrganizations(businesses, persona, registerInsuranceQuotationDAO, rolId, requestBody);
 
     }
 
-    private static OrganizacionBO mapOrganizations(final BusinessASO business, PersonaBO persona, QuotationCustomerDTO quotation, Integer rolId, ParticipantsDTO requestBody) {
+    private static OrganizacionBO mapOrganizations(final BusinessASO business, PersonaBO persona, QuotationCustomerDAO quotation, Integer rolId, ParticipantsDTO requestBody) {
 
         List<ContactDetailsDTO> contactDetail = requestBody.getContactDetails().stream().filter(Objects::nonNull).collect(Collectors.toList());
 
@@ -38,12 +39,12 @@ public class ValidateRimacLegalPerson {
         celular = StringUtils.defaultString(quotation.getQuotationMod().getCustomerPhoneDesc(),celular);
 
         OrganizacionBO organizacion = new OrganizacionBO();
-        organizacion.setDireccion(validateSN(persona.getDireccion()));
+        organizacion.setDireccion(persona.getDireccion());
         organizacion.setRol(rolId);
         organizacion.setTipoDocumento(RUC_ID);
-        organizacion.setNroDocumento(FunctionUtils.isNotEmptyList(business.getBusinessDocuments()).map(businessDocument -> businessDocument.get(0).getDocumentNumber()).orElse(StringUtils.EMPTY));
-        organizacion.setRazonSocial(business.getLegalName());
-        organizacion.setNombreComercial(business.getLegalName());
+        organizacion.setNroDocumento(FunctionUtils.isNotEmptyList(requestBody.getIdentityDocuments()).map(identityDocument -> identityDocument.get(0).getValue()).orElse(StringUtils.EMPTY));
+        organizacion.setRazonSocial(validateSN(business.getLegalName()));
+        organizacion.setNombreComercial(validateSN(business.getLegalName()));
 
         if(Objects.nonNull(business.getFormation())) {
             organizacion.setPaisOrigen(Optional.ofNullable(business.getFormation()).map(ValidateRimacLegalPerson::mapPaisOrigen).orElse(StringUtils.EMPTY));
@@ -67,6 +68,7 @@ public class ValidateRimacLegalPerson {
         organizacion.setNombreVia(persona.getNombreVia());
         organizacion.setTipoVia(persona.getTipoVia());
         organizacion.setNumeroVia(persona.getNumeroVia());
+        organizacion.setTipoPersona(ValidationUtil.getPersonType(organizacion).getCode());
 
         return organizacion;
     }
@@ -85,5 +87,8 @@ public class ValidateRimacLegalPerson {
             return StringUtils.EMPTY;
         }
         return formationASO.getCountry().getName();
+    }
+
+    private ValidateRimacLegalPerson() {
     }
 }

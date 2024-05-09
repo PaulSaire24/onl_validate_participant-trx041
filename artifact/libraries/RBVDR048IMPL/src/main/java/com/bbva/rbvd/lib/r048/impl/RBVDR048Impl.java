@@ -9,44 +9,40 @@ import com.bbva.pbtq.dto.validatedocument.response.host.pewu.PEWUResponse;
 import com.bbva.pisd.dto.insurance.amazon.SignatureAWS;
 import com.bbva.rbvd.dto.insrncsale.aso.listbusinesses.ListBusinessesASO;
 import com.bbva.rbvd.dto.insrncsale.bo.emision.AgregarTerceroBO;
-import com.bbva.rbvd.dto.insuranceroyal.error.ErrorRequestDTO;
-import com.bbva.rbvd.dto.insuranceroyal.error.ErrorResponseDTO;
+import com.bbva.rbvd.dto.participant.dao.QuotationCustomerDAO;
+import com.bbva.rbvd.dto.participant.dao.QuotationLifeDAO;
+import com.bbva.rbvd.dto.participant.dao.RolDAO;
 import com.bbva.rbvd.dto.participant.utils.TypeErrorControllerEnum;
 import com.bbva.rbvd.dto.participant.utils.ValidateParticipantErrors;
-import com.bbva.rbvd.lib.r048.impl.util.Constans;
+import com.bbva.rbvd.lib.r048.impl.business.HandlerErrorBusiness;
+import com.bbva.rbvd.lib.r048.impl.util.Constants;
 import com.bbva.rbvd.lib.r048.impl.util.JsonHelper;
 import com.bbva.rbvd.lib.r048.impl.util.RimacUrlForker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.http.HttpMethod;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.client.RestClientException;
 
+import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Base64;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.Collections;
+import java.util.Base64;
 
-import static com.bbva.rbvd.lib.r048.impl.util.ErrorUtil.prepareRequestToHandlerError;
 import static java.util.Collections.singletonMap;
 
 public class RBVDR048Impl extends RBVDR048Abstract {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(RBVDR048Impl.class);
-    private static final String APP_NAME = "apx-pe";
-    private static final String OAUTH_TOKEN = "";
-    private static final String CRE_EXTRA_PARAMS = "user=KSMK;country=PE";
-    private static final String INPUT_TEXT_SECURITY = "operation=DO;type=fpextff1;origin=ASO;endpoint=ASO;securityLevel=5";
-    private static final String B64URL = "B64URL";
+
 	@Override
-	public AgregarTerceroBO executeAddParticipants(AgregarTerceroBO requestBody, String quotationId, String productId, String traceId) {
+	public AgregarTerceroBO executeAddParticipants(AgregarTerceroBO requestBody, String quotationId, String productId, String traceId,String channelId) {
 
 		LOGGER.info("***** RBVDR048Impl - executeAddParticipantsService START *****");
 
@@ -56,7 +52,7 @@ public class RBVDR048Impl extends RBVDR048Abstract {
 		String jsonString = getRequestJson(requestBody);
 		LOGGER.info("***** RBVDR048Impl - jsonString: {}", jsonString);
 
-		AgregarTerceroBO output = new AgregarTerceroBO();
+		AgregarTerceroBO output = null;
 
 		RimacUrlForker rimacUrlForker = new RimacUrlForker(this.applicationConfigurationService);
 
@@ -70,28 +66,24 @@ public class RBVDR048Impl extends RBVDR048Abstract {
 		LOGGER.info("***** RBVDR048Impl - executeAddParticipantsService ***** entity: {}", entity);
 
 		try {
-			ResponseEntity<AgregarTerceroBO> response = this.externalApiConnector.exchange(rimacUrlForker.generateKeyAddParticipants(productId),HttpMethod.PATCH, entity,
+			ResponseEntity<AgregarTerceroBO> response = this.externalApiConnector.exchange(rimacUrlForker.generateKeyAddParticipants(productId),HttpMethod.valueOf(httpMethodValue), entity,
 					AgregarTerceroBO.class, singletonMap("cotizacion",quotationId));
 			output = response.getBody();
 			output.setErrorRimacBO(null);
 			LOGGER.info("***** RBVDR048Impl - executeAddParticipantsService ***** Response: {}", output.getPayload().getMensaje());
 			LOGGER.info("***** RBVDR048Impl - executeAddParticipantsService END *****");
-			return output;
 		} catch (RestClientException ex) {
-			ErrorRequestDTO err =  prepareRequestToHandlerError(ex);
-            LOGGER.info("** RBVDR048Impl - executeAddParticipantsService catch {} **",err);
-			if(Objects.nonNull(err.getHttpCode()) && !CollectionUtils.isEmpty(err.getDetails())){
-				err.setTypeErrorScope("RIMAC");
-				ErrorResponseDTO responseErr = this.pisdR403.executeFindError(err);
-				throw new BusinessException(responseErr.getCode(), false, responseErr.getMessage());
-			}
-            throw new BusinessException(ValidateParticipantErrors.ERROR_NOT_FOUND.getAdviceCode(), false, ValidateParticipantErrors.ERROR_NOT_FOUND.getMessage());
-		}catch (TimeoutException toex) {
+            LOGGER.info("***** RBVDR048Impl - executeAddParticipantsService catch {} *****", ex.getStackTrace());
+            HandlerErrorBusiness handlerErrorBusiness = new HandlerErrorBusiness(this.pisdR403);
+            handlerErrorBusiness.startHandlerError(requestBody.getPayload(),channelId,ex,this.applicationConfigurationService);
+        }catch (TimeoutException toex) {
             throw new BusinessException(ValidateParticipantErrors.TIMEOUT_ADD_PARTICIPANTS_RIMAC_ERROR.getAdviceCode(), false, ValidateParticipantErrors.TIMEOUT_ADD_PARTICIPANTS_RIMAC_ERROR.getMessage());
         }
-	}
+        return output;
+    }
 
-	private String getRequestJson(Object o) {
+    
+    private String getRequestJson(Object o) {
 		return JsonHelper.getInstance().serialization(o);
 	}
 
@@ -111,32 +103,53 @@ public class RBVDR048Impl extends RBVDR048Abstract {
     }
 
     @Override
-    public Map<String, Object> executeGetDataInsuredBD(String quotationId, String productId, String planId) {
-        Map<String, Object> arguments = new HashMap<>();
-        arguments.put(Constans.POLICY_QUOTA_INTERNAL_ID,quotationId);
-        arguments.put(Constans.INSURANCE_PRODUCT_ID,productId);
-        arguments.put(Constans.INSURANCE_MODALITY_TYPE,planId);
-        LOGGER.info("***** RBVDR048Impl - getDataInsuredBD ***** arguments: {}", arguments);
-        Map<String, Object> dataInsured = this.pisdR350.executeGetASingleRow(Constans.QUERY_GET_DATA_INSURED_BY_QUOTATION,arguments);
-        LOGGER.info("***** RBVDR048Impl - getDataInsuredBD ***** result: {}", dataInsured);
-        return dataInsured;
+    public QuotationLifeDAO executeGetDataInsuredBD(String quotationId, String productId, String planId, String documentNumber, String documentType) {
+        LOGGER.info("***** RBVDR048Impl - getDataInsuredBD - START ****");
+        try{
+            QuotationLifeDAO dataInsured = this.pisdR040.executeGetInsuredQuotationLife(quotationId, productId, planId, documentNumber, documentType);
+            LOGGER.info("***** RBVDR048Impl - getDataInsuredBD ***** result: {}", dataInsured);
+            return dataInsured;
+        }catch (BusinessException be){
+            throw new BusinessException(be.getAdviceCode(), false, ValidateParticipantErrors.SELECT_DB_ORACLE_ERROR.getMessage().
+                    concat(TypeErrorControllerEnum.ERROR_OBTAIN_QUOTATION_FROM_DB.getValue()));
+        }
     }
 
     @Override
-    public Map<String, Object> executeGetProducAndPlanByQuotation(String quotationId) {
-        Map<String, Object> arguments = new HashMap<>();
-        arguments.put(Constans.POLICY_QUOTA_INTERNAL_ID,quotationId);
-        LOGGER.info("***** RBVDR048Impl - getProducAndPlanByQuotation ***** arguments: {}", arguments);
-        Map<String, Object> result = this.pisdR350.executeGetASingleRow(Constans.QUERY_GET_PRODUCT_AND_MODALITY_TYPE_BY_QUOTATION,arguments);
-        LOGGER.info("***** RBVDR048Impl - getDataInsuredBD ***** result: {}", result);
-        return result;
+    public QuotationCustomerDAO executeGetCustomerInformationFromQuotation(String quotationId) {
+        try{
+            LOGGER.info("***** RBVDR048Impl - getCustomerBasicInformation START *****");
+            QuotationCustomerDAO responseQueryCustomerProductInformation = pisdR040.executeFindQuotationJoinByPolicyQuotaInternalId(quotationId);
+            LOGGER.info("***** RBVDR048Impl - getCustomerBasicInformation | responseQueryCustomerProductInformation {} *****",responseQueryCustomerProductInformation);
+            return responseQueryCustomerProductInformation;
+        }catch (BusinessException be){
+            throw new BusinessException(be.getAdviceCode(), false, ValidateParticipantErrors.SELECT_DB_ORACLE_ERROR.getMessage().
+                    concat(TypeErrorControllerEnum.ERROR_OBTAIN_QUOTATION_FROM_DB.getValue()));
+        }
+    }
+
+    @Override
+    public List<RolDAO> executeGetRolesByCompany(BigDecimal insuranceCompanyId) {
+        try{
+            LOGGER.info("***** RBVDR048Impl - executeGetRolesByCompany START *****");
+            List<RolDAO> responseCompanyRoleList = pisdR040.executeListParticipantRolesByCompanyId(insuranceCompanyId);
+            LOGGER.info("***** RBVDR048Impl - executeGetRolesByCompany | responseCompanyRoleList {} *****",responseCompanyRoleList);
+            return responseCompanyRoleList;
+        }catch (BusinessException be){
+            throw new BusinessException(be.getAdviceCode(), false,  ValidateParticipantErrors.SELECT_DB_ORACLE_ERROR.getMessage().
+                    concat(TypeErrorControllerEnum.ERROR_OBTAIN_COMPANY_ROLES_FROM_DB.getValue()));
+        }
     }
 
     @Override
     public String executeKsmkCryptography(String customerId) {
         LOGGER.info("***** RBVDR048Impl - executeKsmkCryptographyService Start *****");
         String b64CustomerId =  Base64.getUrlEncoder().withoutPadding().encodeToString(customerId.getBytes(StandardCharsets.UTF_8));
-        List<OutputDTO> output = ksmkR002.executeKSMKR002(Collections.singletonList(new InputDTO(b64CustomerId, B64URL)), OAUTH_TOKEN, INPUT_TEXT_SECURITY, new CredentialsDTO(APP_NAME, OAUTH_TOKEN, CRE_EXTRA_PARAMS));
+        List<OutputDTO> output = ksmkR002.executeKSMKR002(
+                Collections.singletonList(new InputDTO(b64CustomerId, Constants.ConfigurationValues.B64URL)),
+                Constants.ConfigurationValues.OAUTH_TOKEN, Constants.ConfigurationValues.INPUT_TEXT_SECURITY,
+                new CredentialsDTO(Constants.ConfigurationValues.APP_NAME, Constants.ConfigurationValues.OAUTH_TOKEN,
+                        Constants.ConfigurationValues.CRE_EXTRA_PARAMS));
         LOGGER.info("***** RBVDR048Impl - executeKsmkCryptographyService  ***** Response: {}", output);
         if (CollectionUtils.isEmpty(output)){
             throw new BusinessException(ValidateParticipantErrors.ERROR_INTERNAL_SERVICE_INVOKATION.getAdviceCode(), false,
@@ -165,10 +178,10 @@ public class RBVDR048Impl extends RBVDR048Abstract {
 		HttpHeaders headers = new HttpHeaders();
 		MediaType mediaType = new MediaType("application","json", StandardCharsets.UTF_8);
 		headers.setContentType(mediaType);
-		headers.set(Constans.Headers.AUTHORIZATION_HEADER, signature.getAuthorization());
-		headers.set(Constans.Headers.X_AMZ_DATE_HEADER, signature.getxAmzDate());
-		headers.set(Constans.Headers.X_API_KEY_HEADER, signature.getxApiKey());
-		headers.set(Constans.Headers.TRACE_ID_HEADER, signature.getTraceId());
+		headers.set(Constants.Headers.AUTHORIZATION_HEADER, signature.getAuthorization());
+		headers.set(Constants.Headers.X_AMZ_DATE_HEADER, signature.getxAmzDate());
+		headers.set(Constants.Headers.X_API_KEY_HEADER, signature.getxApiKey());
+		headers.set(Constants.Headers.TRACE_ID_HEADER, signature.getTraceId());
 
 		LOGGER.info("createHttpHeadersAWS END *****");
 		return headers;

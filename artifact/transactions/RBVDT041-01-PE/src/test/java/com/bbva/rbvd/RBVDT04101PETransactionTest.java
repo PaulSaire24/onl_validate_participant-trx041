@@ -79,7 +79,7 @@ public class RBVDT04101PETransactionTest {
 	public void executeTestOk(){
 		AgregarTerceroBO res = new AgregarTerceroBO();
 		res.setPayload(new PayloadAgregarTerceroBO());
-		Mockito.when(rbvdr041.executeValidateAddParticipant(Mockito.anyObject())).thenReturn(res);
+		Mockito.when(rbvdr041.executeValidateParticipants(Mockito.anyObject())).thenReturn(res);
 		this.transaction.execute();
 		Assert.assertEquals(Severity.OK.getValue(),this.transaction.getContext().getSeverity().getValue());
 		Assert.assertNotNull(this.transaction);
@@ -87,7 +87,7 @@ public class RBVDT04101PETransactionTest {
 
 	@Test
 	public void executeTestError(){
-		Mockito.when(rbvdr041.executeValidateAddParticipant(Mockito.anyObject())).thenReturn(null);
+		Mockito.when(rbvdr041.executeValidateParticipants(Mockito.anyObject())).thenReturn(null);
 		this.transaction.execute();
 		assertEquals(Severity.ENR.getValue(), this.transaction.getSeverity().getValue());
 	}

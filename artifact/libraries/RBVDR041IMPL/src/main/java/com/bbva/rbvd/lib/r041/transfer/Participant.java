@@ -2,33 +2,24 @@ package com.bbva.rbvd.lib.r041.transfer;
 
 import com.bbva.pbtq.dto.validatedocument.response.host.pewu.PEWUResponse;
 import com.bbva.rbvd.dto.insrncsale.aso.listbusinesses.ListBusinessesASO;
+import com.bbva.rbvd.dto.participant.request.ParticipantsDTO;
 
-import java.util.Map;
-
-public class Participant {
-
-    private String customerId;
+public class Participant implements Cloneable{
     private String documentType;
     private String documentNumber;
     private String rolCode;
+    private ParticipantsDTO inputParticipant;
     private PEWUResponse customer;
-    private Map<String,Object> nonCustomer;
     private ListBusinessesASO legalCustomer;
+    private InputNonCustomer inputNonCustomer;
+    private NonCustomerFromDB nonCustomerFromDB;
 
-    public String getCustomerId() {
-        return customerId;
+    public NonCustomerFromDB getNonCustomerFromDB() {
+        return nonCustomerFromDB;
     }
 
-    public void setCustomerId(String customerId) {
-        this.customerId = customerId;
-    }
-
-    public Map<String, Object> getNonCustomer() {
-        return nonCustomer;
-    }
-
-    public void setNonCustomer(Map<String, Object> nonCustomer) {
-        this.nonCustomer = nonCustomer;
+    public void setNonCustomerFromDB(NonCustomerFromDB nonCustomerFromDB) {
+        this.nonCustomerFromDB = nonCustomerFromDB;
     }
 
     public String getRolCode() {
@@ -71,16 +62,37 @@ public class Participant {
         this.legalCustomer = legalCustomer;
     }
 
+    public ParticipantsDTO getInputParticipant() {
+        return inputParticipant;
+    }
+
+    public void setInputParticipant(ParticipantsDTO inputParticipant) {
+        this.inputParticipant = inputParticipant;
+    }
+
+    public InputNonCustomer getInputNonCustomer() {
+        return inputNonCustomer;
+    }
+
+    public void setInputNonCustomer(InputNonCustomer inputNonCustomer) {
+        this.inputNonCustomer = inputNonCustomer;
+    }
+
+    public Participant(String documentType, String documentNumber, String rolCode, ParticipantsDTO inputParticipant, PEWUResponse customer, NonCustomerFromDB nonCustomerFromDB, ListBusinessesASO legalCustomer, InputNonCustomer inputNonCustomer) {
+        this.documentType = documentType;
+        this.documentNumber = documentNumber;
+        this.rolCode = rolCode;
+        this.inputParticipant = inputParticipant;
+        this.customer = customer;
+        this.nonCustomerFromDB = nonCustomerFromDB;
+        this.inputNonCustomer = inputNonCustomer;
+        this.legalCustomer = legalCustomer;
+    }
+
+    public Participant(){}
+
     @Override
-    public String toString() {
-        return "Participant{" +
-                "customerId='" + customerId + '\'' +
-                ", documentType='" + documentType + '\'' +
-                ", documentNumber='" + documentNumber + '\'' +
-                ", rolId='" + rolCode + '\'' +
-                ", customer=" + customer +
-                ", nonCustomer=" + nonCustomer +
-                ", legalCustomer=" + legalCustomer +
-                '}';
+    public Participant clone() {
+        return new Participant(this.documentType, this.documentNumber, this.rolCode, this.inputParticipant, this.customer, this.nonCustomerFromDB, this.legalCustomer, this.inputNonCustomer);
     }
 }

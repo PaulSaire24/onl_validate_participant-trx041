@@ -23,14 +23,14 @@ public class RBVDT04101PETransaction extends AbstractRBVDT04101PETransaction {
 		RBVDR041 rbvdR041 = this.getServiceLibrary(RBVDR041.class);
 		LOGGER.info(" :: executeValidateAddParticipant :: [ START ] ");
 		LOGGER.info(" :: executeValidateAddParticipant :: Request [ QuotationId :: {} , Participants :: {} ] ",this.getQuotationId(),this.getParticipants());
-		InputParticipantsDTO validateParticipant = new InputParticipantsDTO();
-		validateParticipant.setParticipants(this.getParticipants());
-		validateParticipant.setQuotationId(this.getQuotationId());
+		InputParticipantsDTO inputParticipant = new InputParticipantsDTO();
+		inputParticipant.setParticipants(this.getParticipants());
+		inputParticipant.setQuotationId(this.getQuotationId());
 		String traceId = (String) this.getRequestHeader().getHeaderParameter(RequestHeaderParamsName.REQUESTID);
 		String channelCode = (String) this.getRequestHeader().getHeaderParameter(RequestHeaderParamsName.CHANNELCODE);
-		validateParticipant.setTraceId(traceId);
-		validateParticipant.setChannelId(channelCode);
-		AgregarTerceroBO result = rbvdR041.executeValidateAddParticipant(validateParticipant);
+		inputParticipant.setTraceId(traceId);
+		inputParticipant.setChannelId(channelCode);
+		AgregarTerceroBO result = rbvdR041.executeValidateParticipants(inputParticipant);
 		LOGGER.info(" :: executeValidateAddParticipant :: response rimac -> {}", result);
 		if(Objects.nonNull(result) && CollectionUtils.isEmpty(this.getAdviceList())){
 			LOGGER.info(" :: execute trx -> OK");

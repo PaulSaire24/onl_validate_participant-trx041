@@ -1,22 +1,19 @@
 package com.bbva.rbvd.lib.r041.transfer;
 
+import com.bbva.rbvd.dto.participant.dao.QuotationCustomerDAO;
+import com.bbva.rbvd.dto.participant.dao.RolDAO;
 import com.bbva.rbvd.dto.participant.request.InputParticipantsDTO;
-import com.bbva.pisd.dto.insurancedao.join.QuotationCustomerDTO;
 import com.bbva.rbvd.lib.r041.properties.ParticipantProperties;
-import com.bbva.rbvd.dto.participant.mapper.RolDTO;
 
 import java.util.List;
-import java.util.Map;
 
 public class PayloadConfig {
 
     private InputParticipantsDTO input;
     private List<Participant> participants;
     private String quotationId;
-    private Map<String,Object> dataInsuredBD;
-    private String personType;
-    private List<RolDTO> registeredRolesDB;
-    private QuotationCustomerDTO quotationInformation;
+    private List<RolDAO> registeredRolesDB;
+    private QuotationCustomerDAO quotationInformation;
     private ParticipantProperties participantProperties;
 
     public InputParticipantsDTO getInput() {
@@ -43,35 +40,19 @@ public class PayloadConfig {
         this.quotationId = quotationId;
     }
 
-    public Map<String,Object> getDataInsuredBD() {
-        return dataInsuredBD;
-    }
 
-    public void setDataInsuredBD(Map<String,Object> dataInsuredBD) {
-        this.dataInsuredBD = dataInsuredBD;
-    }
-
-    public List<RolDTO> getRegisteredRolesDB() {
+    public List<RolDAO> getRegisteredRolesDB() {
         return registeredRolesDB;
     }
 
-    public void setRegisteredRolesDB(List<RolDTO> registeredRolesDB) {
+    public void setRegisteredRolesDB(List<RolDAO> registeredRolesDB) {
         this.registeredRolesDB = registeredRolesDB;
     }
-
-    public String getPersonType() {
-        return personType;
-    }
-
-    public void setPersonType(String personType) {
-        this.personType = personType;
-    }
-
-    public QuotationCustomerDTO getQuotationInformation() {
+    public QuotationCustomerDAO getQuotationInformation() {
         return quotationInformation;
     }
 
-    public void setQuotationInformation(QuotationCustomerDTO quotationInformation) {
+    public void setQuotationInformation(QuotationCustomerDAO quotationInformation) {
         this.quotationInformation = quotationInformation;
     }
 
@@ -81,19 +62,5 @@ public class PayloadConfig {
 
     public void setParticipantProperties(ParticipantProperties participantProperties) {
         this.participantProperties = participantProperties;
-    }
-
-    @Override
-    public String toString() {
-        return "PayloadConfig{" +
-                "input=" + input +
-                ", properties=" + participants +
-                ", quotationId='" + quotationId + '\'' +
-                ", dataInsuredBD=" + dataInsuredBD +
-                ", personType='" + personType + '\'' +
-                ", registeredRolesDB=" + registeredRolesDB +
-                ", quotationInformation=" + quotationInformation +
-                ", participantProperties=" + participantProperties +
-                '}';
     }
 }

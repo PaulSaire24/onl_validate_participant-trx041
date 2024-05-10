@@ -872,6 +872,24 @@ InputParticipantsDTO requestBody = new InputParticipantsDTO();
         return requestBody;
     }
 
+    public static InputParticipantsDTO getVehicleMockRequestBodyValidateLegalParticipants(){
+        InputParticipantsDTO requestBody = new InputParticipantsDTO();
+        requestBody.setQuotationId("0123489304");
+        requestBody.setChannelId("PC");
+        requestBody.setTraceId("c05ed2bd-1a7c-47ca-b7c9-fc639f47790a");
+        List<ParticipantsDTO> participantsList = new ArrayList<>();
+        ParticipantsDTO participant1 = buildParticipant("PAYMENT_MANAGER","RUC", "201928394221","LEGAL", true);
+        ParticipantsDTO participant2 = buildParticipant("CONTRACTOR","RUC", "201928394221","LEGAL", true);
+        ParticipantsDTO participant3 = buildParticipant("INSURED","RUC", "201928394221","NATURAL",true);
+        ParticipantsDTO participant4 = buildParticipant("LEGAL_REPRESENTATIVE","DNI", "77889900","NATURAL",false);
+        participantsList.add(participant1);
+        participantsList.add(participant2);
+        participantsList.add(participant3);
+        participantsList.add(participant4);
+        requestBody.setParticipants(participantsList);
+        return requestBody;
+    }
+
     public static InputParticipantsDTO getMockRequestBodyValidateNaturalParticipantWithBusiness(){
         InputParticipantsDTO requestBody = new InputParticipantsDTO();
         requestBody.setQuotationId("0123489304");

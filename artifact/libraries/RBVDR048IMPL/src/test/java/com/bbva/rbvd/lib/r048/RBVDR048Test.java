@@ -37,6 +37,7 @@ import com.bbva.rbvd.dto.participant.dao.QuotationDAO;
 import com.bbva.rbvd.dto.participant.utils.ValidateParticipantErrors;
 import com.bbva.rbvd.lib.r048.factory.ApiConnectorFactoryTest;
 import com.bbva.rbvd.lib.r048.impl.RBVDR048Impl;
+import com.bbva.rbvd.lib.r048.impl.util.Constants;
 import com.bbva.rbvd.mock.MockBundleContext;
 import com.bbva.rbvd.dto.insuranceroyal.error.ErrorResponseDTO;
 import com.bbva.rbvd.lib.r066.RBVDR066;
@@ -138,6 +139,8 @@ public class RBVDR048Test {
 		apiConnectorFactoryMock.getAPIConnector(mockBundleContext);
 
 		when(applicationConfigurationService.getDefaultProperty(anyString(),anyString())).thenReturn("PATCH");
+		when(applicationConfigurationService.getProperty(Constants.Properties.RIMAC_FUNCTIONAL_MAPPPING_VALUES)).
+				thenReturn("nombre|CO000027,paterno|CO000028,materno|CO000029,fecha|CO000031,sexo|CO000030");
 		when(pisdr014.executeSignatureConstruction(anyString(), anyString(), anyString(), anyString(), anyString()))
 				.thenReturn(new SignatureAWS("", "", "", ""));
 	}
@@ -864,6 +867,51 @@ public class RBVDR048Test {
 		res.setMessage("La dirección del Contratante debe ser enviado como parte de los datos del alta  y no debe estar vacío. Verificar y corregir en Nacar o PIC, si el error persiste contactar al Network Support | La dirección del Asegurado debe ser enviado como parte de los datos del alta  y no debe estar vacío. Verificar y corregir en Nacar o PIC, si el error persiste contactar al Network Support | La dirección del Responsable de Pago debe ser enviado como parte de los datos del alta  y no debe estar vacío. Verificar y corregir en Nacar o PIC, si el error persiste contactar al Network Support | El provincia del Responsable de Pago debe ser enviado como parte de los datos del alta  y no debe estar vacío. Verificar y corregir en Nacar o PIC, si el error persiste contactar al Network Support | El provincia del Contratante debe ser enviado como parte de los datos del alta  y no debe estar vacío. Verificar y corregir en Nacar o PIC, si el error persiste contactar al Network Support | El provincia del Asegurado debe ser enviado como parte de los datos del alta  y no debe estar vacío. Verificar y corregir en Nacar o PIC, si el error persiste contactar al Network Support");
 		res.setCode("ERRD0001");
 		when(this.applicationConfigurationService.getProperty(anyString())).thenReturn("https://apitest.rimac.com/api-vida/V1/cotizaciones/{cotizacion}/persona-agregar");
+		when(this.externalApiConnector.exchange(anyString(), anyObject(),anyObject(), (Class<AgregarTerceroBO>) any(), anyMap()))
+				.thenThrow(new HttpClientErrorException(HttpStatus.BAD_REQUEST, "", responseBody.getBytes(), StandardCharsets.UTF_8));
+		when(pisdr403.executeFindError(anyObject())).thenReturn(res);
+		AgregarTerceroBO validation = this.rbvdR048.executeAddParticipants(agregarTerceroBO,"quotationId","productId","traceId", "PC");
+
+		assertNotNull(validation);
+	}
+
+	@Test(expected = BusinessException.class)
+	public void testExecuteAddParticipantsServiceWithFunctionalError() {
+		String responseBody = "{\n" +
+				"    \"error\": {\n" +
+				"        \"code\": \"ERRF0004\",\n" +
+				"        \"message\": \"Error funcional\",\n" +
+				"        \"details\": {\n" +
+				"            \"CO000027\": \"Se recomienda corregir nombres: PIERO para DNI: 04040005 del responsable.\",\n" +
+				"            \"CO000029\": \"Se recomienda corregir apemat: ALVARADO para DNI: 04040005 del responsable.\",\n" +
+				"            \"CO000030\": \"Se recomienda corregir sexo: M para DNI: 04040005 del responsable.\",\n" +
+				"            \"CO000028\": \"Se recomienda corregir apepat: CÀRDENAS para DNI: 71998180 del asegurado.\",\n" +
+				"            \"CO000031\": \"Se recomienda corregir fecnac: 1995-02-02 para DNI: 71998180 del asegurado.\"\n" +
+				"        },\n" +
+				"        \"httpStatus\": 400\n" +
+				"    }\n" +
+				"}";
+		AgregarTerceroBO agregarTerceroBO = new AgregarTerceroBO();
+		agregarTerceroBO.setPayload(new PayloadAgregarTerceroBO());
+		PersonaBO personaManager = new PersonaBO();
+		personaManager.setRolName("responsable");
+		personaManager.setNroDocumento("04040005");
+		PersonaBO personaContractor = new PersonaBO();
+		personaContractor.setRolName("contratante");
+		personaContractor.setNroDocumento("04040005");
+		PersonaBO personaInsured = new PersonaBO();
+		personaInsured.setRolName("asegurado");
+		personaInsured.setNroDocumento("71998180");
+		List<PersonaBO> personas = new ArrayList<>();
+		personas.add(personaManager);
+		personas.add(personaInsured);
+		personas.add(personaContractor);
+		agregarTerceroBO.getPayload().setPersona(personas);
+
+		ErrorResponseDTO res = new ErrorResponseDTO();
+		res.setMessage("El nombre del {0} no corresponde al documento ingresado. Verificar la información brindada por el cliente  y actualizar de ser necesario. | El apellido paterno del {0} no corresponde al documento ingresado. Verificar la información brindada por el cliente  y actualizar de ser necesario. | El apellido materno del {0} no corresponde al documento ingresado. Verificar la información brindada por el cliente  y actualizar de ser necesario. | La fecha de nacimiento del {0} no corresponde al documento ingresado. Verificar la información brindada por el cliente  y actualizar de ser necesario. | El sexo del {0} no corresponde al documento ingresado. Verificar la información brindada por el cliente  y actualizar de ser necesario.");
+		res.setCode("ERRF0004");
+		when(this.applicationConfigurationService.getProperty("api.connector.add.participants.rimac.productId.url")).thenReturn("https://apitest.rimac.com/api-vida/V1/cotizaciones/{cotizacion}/persona-agregar");
 		when(this.externalApiConnector.exchange(anyString(), anyObject(),anyObject(), (Class<AgregarTerceroBO>) any(), anyMap()))
 				.thenThrow(new HttpClientErrorException(HttpStatus.BAD_REQUEST, "", responseBody.getBytes(), StandardCharsets.UTF_8));
 		when(pisdr403.executeFindError(anyObject())).thenReturn(res);

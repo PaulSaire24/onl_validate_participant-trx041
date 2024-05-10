@@ -21,7 +21,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -52,7 +51,7 @@ public class ParticipantsBusiness {
             Participant myParticipantByDocument = findParticipant(input, quotationInformation, inputParticipant);
             fillTotalParticipantsPerGroup(participants, inputParticipant.getParticipantList(), myParticipantByDocument);
         });
-        return participants;
+        return orderParticipantByType(participants);
     }
 
     private static boolean isCompanyCustomer(ParticipantGroupDTO part) {
@@ -85,6 +84,18 @@ public class ParticipantsBusiness {
         });
         LOGGER.info("groupByDocumentNumberAndDocumentType end ***** {}",groupParticipants);
         return groupParticipants;
+    }
+
+    private static List<Participant> orderParticipantByType(List<Participant> groupParticipants) {
+        ConstantsUtil.Rol[] orderedRoles = ConstantsUtil.Rol.values();
+        List<Participant> orderedParticipants = new ArrayList<>();
+        for (int i = 0; i < orderedRoles.length; i++) {
+            String orderRole = orderedRoles[i].getName();
+            orderedParticipants.add(groupParticipants.stream().filter(participant -> participant.
+                    getInputParticipant().getParticipantType().getId().equals(orderRole)).findFirst().
+                    orElse(groupParticipants.get(i)));
+        }
+        return orderedParticipants;
     }
 
     public void fillTotalParticipantsPerGroup(List<Participant> participantOutList, List<ParticipantsDTO> inputParticipant, Participant participant){

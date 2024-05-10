@@ -1,23 +1,34 @@
 package com.bbva.rbvd.lib.r041.business.impl;
 
 import com.bbva.elara.configuration.manager.application.ApplicationConfigurationService;
+
 import com.bbva.rbvd.dto.insrncsale.bo.emision.AgregarTerceroBO;
-import com.bbva.rbvd.dto.insrncsale.bo.emision.OrganizacionBO;
 import com.bbva.rbvd.dto.insrncsale.bo.emision.PayloadAgregarTerceroBO;
 import com.bbva.rbvd.dto.insrncsale.bo.emision.PersonaBO;
+import com.bbva.rbvd.dto.insrncsale.bo.emision.OrganizacionBO;
+import com.bbva.rbvd.dto.insrncsale.bo.emision.RepresentanteLegalBO;
+
 import com.bbva.rbvd.dto.participant.dao.QuotationCustomerDAO;
 import com.bbva.rbvd.dto.participant.dao.RolDAO;
+
 import com.bbva.rbvd.dto.participant.constants.RBVDInternalConstants.ParticipantType;
 
 import com.bbva.rbvd.dto.participant.constants.RBVDInternalConstants;
+
 import com.bbva.rbvd.lib.r041.business.IGeneralProductBusiness;
+
 import com.bbva.rbvd.lib.r041.pattern.factory.ParticipantFactory;
+
 import com.bbva.rbvd.lib.r041.transfer.PayloadConfig;
 import com.bbva.rbvd.lib.r041.transfer.Participant;
+
 import com.bbva.rbvd.lib.r041.transform.bean.ValidateRimacLegalPerson;
 import com.bbva.rbvd.lib.r041.transform.bean.ValidateRimacNaturalPerson;
+
 import com.bbva.rbvd.lib.r041.validation.ValidationUtil;
+
 import com.bbva.rbvd.lib.r048.RBVDR048;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,11 +41,9 @@ public class GeneralProductBusinessImpl implements IGeneralProductBusiness {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GeneralProductBusinessImpl.class);
 
-    private RBVDR048 rbvdr048;
     private ApplicationConfigurationService applicationConfigurationService;
 
-    public GeneralProductBusinessImpl(RBVDR048 rbvdr048, ApplicationConfigurationService applicationConfigurationService) {
-        this.rbvdr048 = rbvdr048;
+    public GeneralProductBusinessImpl(ApplicationConfigurationService applicationConfigurationService) {
         this.applicationConfigurationService = applicationConfigurationService;
     }
 
@@ -50,6 +59,7 @@ public class GeneralProductBusinessImpl implements IGeneralProductBusiness {
         List<OrganizacionBO> organizacionList = new ArrayList<>();
 
         participantList.forEach(part-> {
+            validateLegalRepresentative(addTerceroByCompany, part);
             Integer roleId = ValidationUtil.obtainExistingCompanyRole(part.getInputParticipant(),
                     payloadConfig.getParticipantProperties(),selectedRoles);
             if(roleId != null){
@@ -79,6 +89,23 @@ public class GeneralProductBusinessImpl implements IGeneralProductBusiness {
         LOGGER.info("** createRequestByCompany - request Company -> {}",requestCompany);
 
         return requestCompany;
+    }
+
+    private void validateLegalRepresentative(final PayloadAgregarTerceroBO addTerceroByCompany, final Participant participant) {
+        String legalRepresentativeCode = this.applicationConfigurationService.getProperty("legal-representative-code");
+        if(legalRepresentativeCode.equals(participant.getInputParticipant().getParticipantType().getId())) {
+            RepresentanteLegalBO representanteLegal = this.createRepresentsanteLegal(participant);
+            addTerceroByCompany.setRepresentanteLegal(representanteLegal);
+        }
+    }
+
+    private RepresentanteLegalBO createRepresentsanteLegal(final Participant participant) {
+        RepresentanteLegalBO representanteLegal = new RepresentanteLegalBO();
+        representanteLegal.setTipoDocumento(participant.getDocumentType());
+        representanteLegal.setNroDocumento(participant.getDocumentNumber());
+        representanteLegal.setNombreCompleto(participant.getInputNonCustomer().getPerson().getFirstName() + " " +
+                participant.getInputNonCustomer().getPerson().getLastName() + " " + participant.getInputNonCustomer().getPerson().getSecondLastName());
+        return representanteLegal;
     }
 
     public static void enrichPayloadByProduct(PayloadAgregarTerceroBO payloadAgregarTerceroBO, QuotationCustomerDAO quotationInformation) {

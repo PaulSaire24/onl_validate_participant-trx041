@@ -99,12 +99,14 @@ public class RBVDR041Test {
 				.thenReturn("841");
 		when(this.applicationConfigurationService.getProperty(ConstantsUtil.ENABLED_NON_LIFE_PRODUCTS))
 				.thenReturn("830");
+		when(this.applicationConfigurationService.getProperty("legal-representative-code"))
+				.thenReturn("LEGAL_REPRESENTATIVE");
 
 		when(this.participantProperties.obtainRoleCodeByEnum("PAYMENT_MANAGER.bank.role")).thenReturn("7");
 		when(this.participantProperties.obtainRoleCodeByEnum("INSURED.bank.role")).thenReturn("2");
 		when(this.participantProperties.obtainRoleCodeByEnum("CONTRACTOR.bank.role")).thenReturn("1");
 		when(this.participantProperties.obtainRoleCodeByEnum("LEGAL_REPRESENTATIVE.bank.role")).thenReturn("");
-
+		when(this.participantProperties.obtainRoleCodeByEnum("EXAMPLE_ROL.bank.role")).thenReturn("");
 	}
 	
 	private Object getObjectIntrospection() throws Exception{
@@ -145,7 +147,7 @@ public class RBVDR041Test {
 	@Test
 	public void executeNaturalPersonTestOkNonLifeProductInvalidCompanyRole(){
 		InputParticipantsDTO request = ParticipantsUtil.getMockRequestBodyValidateNaturalParticipants();
-		request.getParticipants().get(2).getParticipantType().setId("LEGAL_REPRESENTATIVE");
+		request.getParticipants().get(2).getParticipantType().setId("EXAMPLE_ROL");
 		when(rbvdr048.executeGetCustomerInformationFromQuotation(anyString())).thenReturn(ParticipantsUtil.buildFindQuotationJoinByPolicyQuotaInternalId("789956435","VEHICULAR","830"));
 		when(rbvdr048.executeGetRolesByCompany(anyObject())).thenReturn(ParticipantsUtil.buildRolByParticipantTypeResponse());
 		when(rbvdr048.executeGetCustomerByDocType(anyString(),anyString())).thenReturn(ParticipantsUtil.buildPersonHostDataResponseCase3());
@@ -345,8 +347,27 @@ public class RBVDR041Test {
 		AgregarTerceroBO response = rbvdR041.executeValidateParticipants(request);
 		Assert.assertNotNull(response);
 		Assert.assertEquals(0,this.context.getAdviceList().size());
-
 	}
+	@Test
+	public void executeVehicleLegalPersonTestOk() throws IOException {
+		InputParticipantsDTO request = ParticipantsUtil.getVehicleMockRequestBodyValidateLegalParticipants();
+		when(rbvdr048.executeGetCustomerInformationFromQuotation(anyString())).thenReturn(ParticipantsUtil.buildFindQuotationJoinByPolicyQuotaInternalId("20123453922","VEHICULAR","830"));
+		when(rbvdr048.executeGetRolesByCompany(anyObject())).thenReturn(ParticipantsUtil.buildRolByParticipantTypeResponse());
+		Mockito.when(rbvdr048.executeKsmkCryptography(Mockito.anyString())).thenReturn("getKSMKResponseOkMock");
+		Mockito.when(rbvdr048.executeListBusiness(Mockito.anyString())).thenReturn(MockDTO.getInstance().getListBusinessesOkMock());
+		AgregarTerceroBO agregarTerceroBO = new AgregarTerceroBO();
+		PayloadAgregarTerceroBO payloadAgregarTerceroBO = new PayloadAgregarTerceroBO();
+		payloadAgregarTerceroBO.setCotizacion("cotizacion");
+		agregarTerceroBO.setPayload(payloadAgregarTerceroBO);
+		when(rbvdr048.executeAddParticipants(anyObject(),anyString(),anyString(),anyString(),anyString())).thenReturn(agregarTerceroBO);
+		when(rbvdr048.executeGetCustomerByDocType(anyString(),anyString())).thenReturn(ParticipantsUtil.buildPersonHostDataResponseCase3());
+
+		AgregarTerceroBO response = rbvdR041.executeValidateParticipants(request);
+		Assert.assertNotNull(response);
+		Assert.assertEquals(0,this.context.getAdviceList().size());
+	}
+
+
 
 	@Test
 	public void executeValidationWithNaturalPersonDataWrongPewuResponse(){

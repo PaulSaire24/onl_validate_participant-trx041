@@ -11,7 +11,7 @@ public class GeneralProductStrategy implements StrategyProductHandler {
 
     @Override
     public AgregarTerceroBO prepareCompanyRequest(PayloadConfig payloadConfig, RBVDR048 rbvdr048, ApplicationConfigurationService applicationConfigurationService) {
-        GeneralProductBusinessImpl crossProductBusiness = new GeneralProductBusinessImpl(rbvdr048,applicationConfigurationService);
+        GeneralProductBusinessImpl crossProductBusiness = new GeneralProductBusinessImpl(applicationConfigurationService);
         return crossProductBusiness.createRequestByCompany(payloadConfig);
     }
 }

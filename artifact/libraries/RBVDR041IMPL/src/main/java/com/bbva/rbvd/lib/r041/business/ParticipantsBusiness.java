@@ -91,9 +91,11 @@ public class ParticipantsBusiness {
         List<Participant> orderedParticipants = new ArrayList<>();
         for (int i = 0; i < orderedRoles.length; i++) {
             String orderRole = orderedRoles[i].getName();
-            orderedParticipants.add(groupParticipants.stream().filter(participant -> participant.
-                    getInputParticipant().getParticipantType().getId().equals(orderRole)).findFirst().
-                    orElse(groupParticipants.get(i)));
+           Optional<Participant> orderedPar = groupParticipants.stream().filter(participant -> participant.
+                    getInputParticipant().getParticipantType().getId().equals(orderRole)).findFirst();
+           if (orderedPar.isPresent()){
+               orderedParticipants.add(orderedPar.get());
+           }
         }
         return orderedParticipants;
     }

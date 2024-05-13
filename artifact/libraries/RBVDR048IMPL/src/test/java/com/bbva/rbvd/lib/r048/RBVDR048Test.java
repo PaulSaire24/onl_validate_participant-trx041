@@ -469,14 +469,13 @@ public class RBVDR048Test {
 
 		String responseBody = "{\n" +
 				"    \"error\": {\n" +
-				"        \"code\": \"VIDACOT005\",\n" +
+				"        \"code\": \"ERRD0001\",\n" +
 				"        \"message\": \"Validacion de Datos\",\n" +
 				"        \"details\": {\n" +
-				"            \"PE008002\": \"El campo apePaterno de persona en su elemento 3 es requerido\",\n" +
-				"            \"PE009002\": \"El campo apeMaterno de persona en su elemento 3 es requerido\",\n" +
-				"            \"PE011002\": \"El campo fechaNacimiento de persona en su elemento 3 es requerido\"\n" +
+				"            \"PR016001\": \"El campo celular de persona responsable no puede estar vacÃ\u00ADo\",\n" +
+				"            \"PA013010\": \"El campo correoElectronico de persona asegurado debe ser un correo con formato vÃ¡lido\"\n" +
 				"        },\n" +
-				"        \"httpStatus\": 403\n" +
+				"        \"httpStatus\": 400\n" +
 				"    }\n" +
 				"}";
 
@@ -502,7 +501,7 @@ public class RBVDR048Test {
 
 		ErrorResponseDTO res = new ErrorResponseDTO();
 		res.setCode("Bbva41255");
-		res.setMessage("La dirección del Contratante debe ser enviado como parte de los datos del alta  y no debe estar vacío. Verificar y corregir en Nacar o PIC, si el error persiste contactar al Network Support | La dirección del Asegurado debe ser enviado como parte de los datos del alta  y no debe estar vacío. Verificar y corregir en Nacar o PIC, si el error persiste contactar al Network Support | La dirección del Responsable de Pago debe ser enviado como parte de los datos del alta  y no debe estar vacío. Verificar y corregir en Nacar o PIC, si el error persiste contactar al Network Support | El provincia del Responsable de Pago debe ser enviado como parte de los datos del alta  y no debe estar vacío. Verificar y corregir en Nacar o PIC, si el error persiste contactar al Network Support | El provincia del Contratante debe ser enviado como parte de los datos del alta  y no debe estar vacío. Verificar y corregir en Nacar o PIC, si el error persiste contactar al Network Support | El provincia del Asegurado debe ser enviado como parte de los datos del alta  y no debe estar vacío. Verificar y corregir en Nacar o PIC, si el error persiste contactar al Network Support");
+		res.setMessage("La dirección de correo del Asegurado debe tener un correo formato válido. Por favor actualizar la información en Nacar o PIC. | El celular del Responsable de Pago debe ser enviado como parte de los datos del alta  y no debe estar vacío. Verificar y corregir en Nacar o PIC, si el error persiste contactar al Network Support");
 		when(this.applicationConfigurationService.getProperty(anyString())).thenReturn("https://apitest.rimac.com/api-vida/V1/cotizaciones/{cotizacion}/persona-agregar");
 		when(this.externalApiConnector.exchange(anyString(), anyObject(),anyObject(), (Class<AgregarTerceroBO>) any(), anyMap()))
 				.thenThrow(new HttpClientErrorException(HttpStatus.BAD_REQUEST, "", responseBody.getBytes(), StandardCharsets.UTF_8));

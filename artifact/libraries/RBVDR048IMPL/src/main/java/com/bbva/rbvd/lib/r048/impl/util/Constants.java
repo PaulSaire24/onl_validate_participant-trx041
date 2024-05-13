@@ -5,7 +5,6 @@ public class Constants {
         public static final String FLAG_NOT_FOUND_ERROR_ON_DB = "flag.error.not.found.in.data.base";
         public static final String PREFIX_MESSAGE_ERROR_NOT_FOUND_ON_DB = "marca.message.error.not.found.in.data.base";
         public static final String ERROR_NOT_FOUND_MESSAGE = "error.not.found.in.data.base.message";
-        public static final String RIMAC_FUNCTIONAL_ERROR_CODE = "rimac.functional.error.code";
         public static final String RIMAC_FUNCTIONAL_MAPPPING_VALUES = "functional.mapping.values";
         public static final String SEPARATOR_SIGN = " | ";
 

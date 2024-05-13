@@ -21,7 +21,13 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClientException;
 
-import java.util.*;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Arrays;
 import java.util.stream.Collectors;
 
 public class HandlerErrorBusiness {
@@ -185,10 +191,11 @@ public class HandlerErrorBusiness {
 
     private String assignMessageForRole(String messageMapped, String rolName, String messageByPersonDoc, String nroDocumento, ErrorRequestDTO rimacError) {
         String message = "";
-        if (messageMapped.contains(rolName)) {
+        String comparerMessageLowCase = messageMapped.toLowerCase();
+        if (comparerMessageLowCase.contains(rolName)) {
             // Si se encuentra, devolver el mensaje correspondiente
             message = messageByPersonDoc!=null? messageByPersonDoc + Constants.Properties.SEPARATOR_SIGN + messageMapped.trim() : messageMapped.trim();
-        }else if (messageMapped.contains(Constants.Flag.ROL_NAME)){
+        }else if (comparerMessageLowCase.contains(Constants.Flag.ROL_NAME)){
             // Si se encuentra, devolver el mensaje correspondiente
             // Condición de igualdad con el mensaje funcional respectivo
             if(functionalErrCodes == null) {
@@ -198,7 +205,7 @@ public class HandlerErrorBusiness {
                         .filter(kvArray -> kvArray.length == 2)
                         .collect(Collectors.toMap(kv -> kv[0], kv -> kv[1]));
             }
-            Optional<String> errorCodeKey = functionalErrCodes.keySet().stream().filter(messageMapped::contains).findFirst();
+            Optional<String> errorCodeKey = functionalErrCodes.keySet().stream().filter(comparerMessageLowCase::contains).findFirst();
             Optional<DetailsErrorDTO> errorObject = errorCodeKey.isPresent() ? rimacError.getDetails().stream().filter(rErr -> rErr.getCode().equals(functionalErrCodes.get(errorCodeKey.get()))).findFirst() : Optional.empty();
 
             if(errorObject.isPresent()){

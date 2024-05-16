@@ -36,7 +36,7 @@ public class ValidateRimacNaturalPerson {
     private static final String EMAIL_VALUE = "EMAIL";
     private static final String MOBILE_VALUE = "MOBILE_NUMBER";
     private static final Integer MAX_CHARACTER = 1;
-    private static final String SIN_ESPECIFICAR = "NA";
+    private static final String SIN_ESPECIFICAR = "SN";
     private static final String NO_EXIST = "NotExist";
 
     private static final String INTERIOR_NUMBER_ID = "DPTO.";
@@ -98,18 +98,17 @@ public class ValidateRimacNaturalPerson {
             rimacPersonObject.setNombreVia(SIN_ESPECIFICAR);
             rimacPersonObject.setNumeroVia(SIN_ESPECIFICAR);
             rimacPersonObject.setDireccion(SIN_ESPECIFICAR);
+        }else{
+            String addressNumberVia = fillAddressNumberVia(persona, rimacPersonObject);
+
+            String fullNameOther = fillAddressOther(persona, stringAddress);
+
+            if (NO_EXIST.equals(addressNumberVia) || NO_EXIST.equals(fullNameOther)){
+                fillAddressAditional(persona, stringAddress);
+            }
+
+            getFullDirectionFrom(addressViaList, addressGroupList, addressNumberVia, stringAddress, rimacPersonObject);
         }
-
-        String addressNumberVia = fillAddressNumberVia(persona, rimacPersonObject);
-
-        String fullNameOther = fillAddressOther(persona, stringAddress);
-
-        if (NO_EXIST.equals(addressNumberVia) || NO_EXIST.equals(fullNameOther)){
-            fillAddressAditional(persona, stringAddress);
-        }
-
-        getFullDirectionFrom(addressViaList, addressGroupList, addressNumberVia, stringAddress, rimacPersonObject);
-
     }
 
     private static void fillAddressUbigeo(final PEWUResponse geographicGroups, final PersonaBO persona) {

@@ -26,17 +26,28 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Objects;
+import java.util.Optional;
+import java.util.Arrays;
+import java.util.stream.Collectors;
 
 public class HandlerErrorBusiness {
 
     private PISDR403 pisdR403;
+    private ApplicationConfigurationService applicationConfigurationService;
+    private Map<String,String> functionalErrCodes;
     private static final Logger LOGGER = LoggerFactory.getLogger(HandlerErrorBusiness.class);
 
-    public HandlerErrorBusiness(PISDR403 pisdR403) {
+    public HandlerErrorBusiness(PISDR403 pisdR403, ApplicationConfigurationService applicationConfigurationService) {
         this.pisdR403 = pisdR403;
+        this.applicationConfigurationService = applicationConfigurationService;
+        functionalErrCodes = Arrays.stream(applicationConfigurationService.getProperty
+                                (Constants.Properties.RIMAC_FUNCTIONAL_MAPPPING_VALUES).
+                        split(",")).map(kv -> kv.split("\\|"))
+                .filter(kvArray -> kvArray.length == 2)
+                .collect(Collectors.toMap(kv -> kv[0], kv -> kv[1]));
     }
 
-    public void startHandlerError(PayloadAgregarTerceroBO payload, String channelId, RestClientException ex, ApplicationConfigurationService applicationConfigurationService) throws BusinessException {
+    public void startHandlerError(PayloadAgregarTerceroBO payload, String channelId, RestClientException ex) throws BusinessException {
 
         ErrorRequestDTO err =  getErrorRequestFromException(ex,Constants.OriginError.RIMAC,channelId);
         LOGGER.info("** RBVDR048Impl - executeAddParticipantsService catch {} **",err);
@@ -45,9 +56,10 @@ public class HandlerErrorBusiness {
             ErrorResponseDTO responseErr = this.pisdR403.executeFindError(err);
                 if(Objects.nonNull(responseErr) && !StringUtils.isEmpty(responseErr.getCode()) && !StringUtils.isEmpty(responseErr.getMessage())){
                     LOGGER.info("** RBVDR048Impl - Error encontrado en base de datos");
-                    groupMessagesByRole(payload,responseErr);
-                    LOGGER.info("** RBVDR048Impl - dto error message {} **",responseErr.getMessage());
-                    throw new BusinessException(responseErr.getCode(), false, responseErr.getMessage());
+                    String[] messageList = responseErr.getMessage().split("\\|");
+                    String errorMessage = groupMessagesByRole(payload,messageList,err);
+                    LOGGER.info("** RBVDR048Impl - dto error message {} **",errorMessage);
+                    throw new BusinessException(responseErr.getCode(), false, errorMessage);
                 }else{
                     propagateError(applicationConfigurationService,err);
                 }
@@ -60,7 +72,7 @@ public class HandlerErrorBusiness {
             StringBuilder message = new StringBuilder();
             for (DetailsErrorDTO detail : err.getDetails()) {
                 LOGGER.info("** RBVDR048Impl - Error no encontrado en base de datos");
-                message.append(" | ").append(detail.getValue());
+                message.append(Constants.Properties.SEPARATOR_SIGN).append(detail.getValue());
             }
             message.delete(0, 3);
             message.insert(0, applicationConfigurationService.getProperty(Constants.Properties.PREFIX_MESSAGE_ERROR_NOT_FOUND_ON_DB));
@@ -118,24 +130,25 @@ public class HandlerErrorBusiness {
         return errorRequest;
     }
 
-    private void groupMessagesByRole(PayloadAgregarTerceroBO payload,ErrorResponseDTO errorResponse) {
+    private String groupMessagesByRole(PayloadAgregarTerceroBO payload, String[] messageList, ErrorRequestDTO rimacError){
         Map<String, String> groupedMessages = new HashMap<>();
-        String[] messageList = errorResponse.getMessage().toLowerCase().split("\\|");
+
         if(payload.getPersona() != null){
-            groupedMessages =  mapMessagesToRolesOfPerson(payload.getPersona(),messageList);
+            groupedMessages = mapMessagesToRolesOfPerson(payload.getPersona(),messageList, rimacError);
         } else if (payload.getOrganizacion() != null){
-            groupedMessages = mapMessagesToRolesOfCompany(payload.getOrganizacion(),messageList);
+            groupedMessages = mapMessagesToRolesOfCompany(payload.getOrganizacion(),messageList, rimacError);
         }
 
         StringBuilder message = new StringBuilder();
             for (Map.Entry<String, String> entry : groupedMessages.entrySet()) {
-                message.append(" | ").append(entry.getValue());
+                message.append(Constants.Properties.SEPARATOR_SIGN).append(entry.getValue());
             }
-            message.delete(0, 3);
-            errorResponse.setMessage(message.toString());
+
+            message = message.delete(0, 3);
+            return message.toString();
     }
 
-    private Map<String, String> mapMessagesToRolesOfPerson(List<PersonaBO> personas, String[] messageList) {
+    private Map<String, String> mapMessagesToRolesOfPerson(List<PersonaBO> personas, String[] messageList, ErrorRequestDTO rimacError) {
         Map<String, String> groupedMessages = new HashMap<>();
         for (PersonaBO persona : personas) {
             // Obtener el número de documento de la persona
@@ -143,12 +156,12 @@ public class HandlerErrorBusiness {
             // Obtener el rol de la persona
             String rolName = persona.getRolName();
 
-            // Verificar si tiene el numero de documento
+            // Verificar si tiene el numero de documento //
             if(!groupedMessages.containsKey(nroDocumento)){
                 // Verificar si el mensaje contiene el rol actual
                 for (String messageMapped : messageList) {
                     // Verificar si la parte actual contiene el rol buscado
-                    String outputMessage = assignMessageForRole(messageMapped, rolName, groupedMessages.get(nroDocumento));
+                    String outputMessage = assignMessageForRole(messageMapped, rolName, groupedMessages.get(nroDocumento), nroDocumento, rimacError);
                     if(!outputMessage.isEmpty()){
                         groupedMessages.put(nroDocumento, outputMessage);
                     }
@@ -158,7 +171,7 @@ public class HandlerErrorBusiness {
         return groupedMessages;
     }
 
-    private Map<String, String> mapMessagesToRolesOfCompany(List<OrganizacionBO> organizacionBO, String[] messageList) {
+    private Map<String, String> mapMessagesToRolesOfCompany(List<OrganizacionBO> organizacionBO, String[] messageList, ErrorRequestDTO rimacError) {
         Map<String, String> groupedMessages = new HashMap<>();
         for (OrganizacionBO organizacion : organizacionBO) {
             // Obtener el número de documento de la persona
@@ -171,9 +184,9 @@ public class HandlerErrorBusiness {
                 // Verificar si el mensaje contiene el rol actual
                 for (String messageMapped : messageList) {
                     // Verificar si la parte actual contiene el rol buscado
-                    String outputMessage = assignMessageForRole(messageMapped, rolName, groupedMessages.get(nroDocumento));
+                    String outputMessage = assignMessageForRole(messageMapped, rolName, groupedMessages.get(nroDocumento), nroDocumento, rimacError);
                     if(!outputMessage.isEmpty()){
-                        groupedMessages.put(nroDocumento, outputMessage);
+                            groupedMessages.put(nroDocumento, outputMessage);
                     }
                 }
             }
@@ -181,15 +194,25 @@ public class HandlerErrorBusiness {
         return groupedMessages;
     }
 
-    private String assignMessageForRole(String messageMapped, String rolName, String messageByPersonDoc) {
+    private String assignMessageForRole(String messageMapped, String rolName, String messageByPersonDoc, String nroDocumento, ErrorRequestDTO rimacError) {
         String message = "";
-        if (messageMapped.contains(rolName)) {
+        String comparerMessageLowCase = messageMapped.toLowerCase();
+        if (comparerMessageLowCase.contains(rolName)) {
             // Si se encuentra, devolver el mensaje correspondiente
-            message = messageByPersonDoc!=null? messageByPersonDoc + " | " + messageMapped.trim() : messageMapped.trim();
-        }else if (messageMapped.contains(Constants.Flag.ROL_NAME)){
+            message = messageByPersonDoc!=null? messageByPersonDoc + Constants.Properties.SEPARATOR_SIGN + messageMapped.trim() : messageMapped.trim();
+        }else if (comparerMessageLowCase.contains(Constants.Flag.ROL_NAME)){
             // Si se encuentra, devolver el mensaje correspondiente
-            messageMapped = messageMapped.replace(Constants.Flag.ROL_NAME,rolName.toUpperCase().equals("RESPONSABLE")?rolName.concat(" de pago"):rolName);
-            message = messageByPersonDoc!=null? messageByPersonDoc + " | " + messageMapped.trim() : messageMapped.trim();
+            // Condición de igualdad con el mensaje funcional respectivo
+            Optional<String> errorCodeKey = functionalErrCodes.keySet().stream().filter(comparerMessageLowCase::contains).findFirst();
+            Optional<DetailsErrorDTO> errorObject = errorCodeKey.isPresent() ? rimacError.getDetails().stream().filter(rErr -> rErr.getCode().equals(functionalErrCodes.get(errorCodeKey.get()))).findFirst() : Optional.empty();
+
+            if(errorObject.isPresent()){
+                if (errorObject.get().getValue().contains(nroDocumento)){
+                    messageMapped = messageMapped.replace(Constants.Flag.ROL_NAME, rolName.equalsIgnoreCase("RESPONSABLE") ? rolName.concat(" de pago") : rolName);
+                    message = messageByPersonDoc != null ? messageByPersonDoc + Constants.Properties.SEPARATOR_SIGN + messageMapped.trim() : messageMapped.trim();
+                    rimacError.getDetails().remove(errorObject.get());
+                }
+            }
         }
         return message;
     }

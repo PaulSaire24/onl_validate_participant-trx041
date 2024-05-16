@@ -6,13 +6,10 @@ import com.bbva.rbvd.dto.insrncsale.bo.emision.AgregarTerceroBO;
 import com.bbva.rbvd.dto.insrncsale.bo.emision.PayloadAgregarTerceroBO;
 import com.bbva.rbvd.dto.insrncsale.bo.emision.PersonaBO;
 import com.bbva.rbvd.dto.insrncsale.bo.emision.OrganizacionBO;
-import com.bbva.rbvd.dto.insrncsale.bo.emision.RepresentanteLegalBO;
 
-import com.bbva.rbvd.dto.participant.dao.QuotationCustomerDAO;
 import com.bbva.rbvd.dto.participant.dao.RolDAO;
 
 import com.bbva.rbvd.dto.participant.constants.RBVDInternalConstants.ParticipantType;
-
 import com.bbva.rbvd.dto.participant.constants.RBVDInternalConstants;
 
 import com.bbva.rbvd.lib.r041.business.IGeneralProductBusiness;
@@ -27,15 +24,12 @@ import com.bbva.rbvd.lib.r041.transform.bean.ValidateRimacNaturalPerson;
 
 import com.bbva.rbvd.lib.r041.validation.ValidationUtil;
 
-import com.bbva.rbvd.lib.r048.RBVDR048;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 public class GeneralProductBusinessImpl implements IGeneralProductBusiness {
 
@@ -59,7 +53,6 @@ public class GeneralProductBusinessImpl implements IGeneralProductBusiness {
         List<OrganizacionBO> organizacionList = new ArrayList<>();
 
         participantList.forEach(part-> {
-            validateLegalRepresentative(addTerceroByCompany, part);
             Integer roleId = ValidationUtil.obtainExistingCompanyRole(part.getInputParticipant(),
                     payloadConfig.getParticipantProperties(),selectedRoles);
             if(roleId != null){
@@ -83,69 +76,10 @@ public class GeneralProductBusinessImpl implements IGeneralProductBusiness {
         }});
 
         addTerceroByCompany.setProducto(payloadConfig.getQuotationInformation().getInsuranceProduct().getInsuranceProductDesc());
-        enrichPayloadByProduct(addTerceroByCompany,payloadConfig.getQuotationInformation());
         requestCompany.setPayload(addTerceroByCompany);
 
         LOGGER.info("** createRequestByCompany - request Company -> {}",requestCompany);
 
         return requestCompany;
-    }
-
-    private void validateLegalRepresentative(final PayloadAgregarTerceroBO addTerceroByCompany, final Participant participant) {
-        String legalRepresentativeCode = this.applicationConfigurationService.getProperty("legal-representative-code");
-        if(legalRepresentativeCode.equals(participant.getInputParticipant().getParticipantType().getId())) {
-            RepresentanteLegalBO representanteLegal = this.createRepresentsanteLegal(participant);
-            addTerceroByCompany.setRepresentanteLegal(representanteLegal);
-        }
-    }
-
-    private RepresentanteLegalBO createRepresentsanteLegal(final Participant participant) {
-        RepresentanteLegalBO representanteLegal = new RepresentanteLegalBO();
-        representanteLegal.setTipoDocumento(participant.getDocumentType());
-        representanteLegal.setNroDocumento(participant.getDocumentNumber());
-        representanteLegal.setNombreCompleto(participant.getInputNonCustomer().getPerson().getFirstName() + " " +
-                participant.getInputNonCustomer().getPerson().getLastName() + " " + participant.getInputNonCustomer().getPerson().getSecondLastName());
-        return representanteLegal;
-    }
-
-    public static void enrichPayloadByProduct(PayloadAgregarTerceroBO payloadAgregarTerceroBO, QuotationCustomerDAO quotationInformation) {
-        String insuranceProductType = quotationInformation.getInsuranceProduct().getInsuranceProductType();
-
-        List<PersonaBO> listPeople = payloadAgregarTerceroBO.getPersona();
-        if (listPeople != null) {
-            enrichRimacPersonObject(payloadAgregarTerceroBO, listPeople, insuranceProductType);
-        }
-
-        List<OrganizacionBO> listOrganization = payloadAgregarTerceroBO.getOrganizacion();
-        if (listOrganization != null) {
-            enrichRimacOrganizationObject(payloadAgregarTerceroBO, listOrganization, insuranceProductType);
-        }
-
-        payloadAgregarTerceroBO.setCotizacion(quotationInformation.getQuotation().getInsuranceCompanyQuotaId());
-
-    }
-
-    private static void enrichRimacOrganizationObject(PayloadAgregarTerceroBO payloadAgregarTerceroBO, List<OrganizacionBO> listOrganization, String insuranceProductType) {
-        if ("830".equals(insuranceProductType)) {
-            listOrganization = listOrganization.stream()
-                    .map(organization -> {
-                        organization.setProteccionDatosPersonales("S");
-                        organization.setEnvioComunicacionesComerciales("N");
-                        return organization;
-                    }).collect(Collectors.toList());
-            payloadAgregarTerceroBO.setOrganizacion(listOrganization);
-        }
-    }
-
-    private static void enrichRimacPersonObject(PayloadAgregarTerceroBO payloadAgregarTerceroBO, List<PersonaBO> listPeople, String insuranceProductType) {
-        if ("830".equals(insuranceProductType)) {
-            listPeople = listPeople.stream()
-                    .map(people -> {
-                        people.setProteccionDatosPersonales("S");
-                        people.setEnvioComunicacionesComerciales("N");
-                        return people;
-                    }).collect(Collectors.toList());
-            payloadAgregarTerceroBO.setPersona(listPeople);
-        }
     }
 }

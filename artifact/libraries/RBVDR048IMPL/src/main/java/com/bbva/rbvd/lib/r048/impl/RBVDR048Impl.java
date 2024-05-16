@@ -74,8 +74,8 @@ public class RBVDR048Impl extends RBVDR048Abstract {
 			LOGGER.info("***** RBVDR048Impl - executeAddParticipantsService END *****");
 		} catch (RestClientException ex) {
             LOGGER.info("***** RBVDR048Impl - executeAddParticipantsService catch {} *****", ex.getStackTrace());
-            HandlerErrorBusiness handlerErrorBusiness = new HandlerErrorBusiness(this.pisdR403);
-            handlerErrorBusiness.startHandlerError(requestBody.getPayload(),channelId,ex,this.applicationConfigurationService);
+            HandlerErrorBusiness handlerErrorBusiness = new HandlerErrorBusiness(this.pisdR403,this.applicationConfigurationService);
+            handlerErrorBusiness.startHandlerError(requestBody.getPayload(),channelId,ex);
         }catch (TimeoutException toex) {
             throw new BusinessException(ValidateParticipantErrors.TIMEOUT_ADD_PARTICIPANTS_RIMAC_ERROR.getAdviceCode(), false, ValidateParticipantErrors.TIMEOUT_ADD_PARTICIPANTS_RIMAC_ERROR.getMessage());
         }

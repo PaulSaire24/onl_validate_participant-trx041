@@ -11,9 +11,10 @@ import com.bbva.rbvd.dto.participant.request.InputParticipantsDTO;
 import com.bbva.rbvd.dto.participant.request.ParticipantsDTO;
 import com.bbva.rbvd.dto.participant.request.PersonDTO;
 import com.bbva.rbvd.lib.r041.service.api.ConsumerInternalService;
+import com.bbva.rbvd.lib.r041.transfer.Participant;
+import com.bbva.rbvd.lib.r041.transfer.LegalRepresentative;
 import com.bbva.rbvd.lib.r041.transfer.InputNonCustomer;
 import com.bbva.rbvd.lib.r041.transfer.NonCustomerFromDB;
-import com.bbva.rbvd.lib.r041.transfer.Participant;
 import com.bbva.rbvd.lib.r041.util.ConstantsUtil;
 import com.bbva.rbvd.lib.r041.validation.ValidationUtil;
 import com.bbva.rbvd.lib.r048.RBVDR048;
@@ -21,12 +22,11 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.Optional;
+import java.util.Set;
 
 import java.util.stream.IntStream;
 
@@ -52,7 +52,7 @@ public class ParticipantsBusiness {
             Participant myParticipantByDocument = findParticipant(input, quotationInformation, inputParticipant);
             fillTotalParticipantsPerGroup(participants, inputParticipant.getParticipantList(), myParticipantByDocument);
         });
-        return participants;
+        return orderParticipantByType(participants);
     }
 
     private static boolean isCompanyCustomer(ParticipantGroupDTO part) {
@@ -87,6 +87,20 @@ public class ParticipantsBusiness {
         return groupParticipants;
     }
 
+    private static List<Participant> orderParticipantByType(List<Participant> outputParticipants) {
+        ConstantsUtil.Rol[] orderedRoles = ConstantsUtil.Rol.values();
+        List<Participant> orderedParticipants = new ArrayList<>();
+        for (int i = 0; i < orderedRoles.length; i++) {
+            String orderRole = orderedRoles[i].getName();
+            outputParticipants.forEach(participant -> {
+                if (participant.getRolCode().equals(orderRole)) {
+                    orderedParticipants.add(participant);
+                }
+            });
+        }
+        return orderedParticipants;
+    }
+
     public void fillTotalParticipantsPerGroup(List<Participant> participantOutList, List<ParticipantsDTO> inputParticipant, Participant participant){
         Set<Participant> participantSetStructure = new HashSet<>();
         for (int i = 0; i < inputParticipant.size(); i++) {
@@ -102,6 +116,7 @@ public class ParticipantsBusiness {
 
     private Participant findParticipant(InputParticipantsDTO input, QuotationCustomerDAO quotationInformation, ParticipantGroupDTO inputParticipant) {
         String documentType = applicationConfigurationService.getProperty(inputParticipant.getDocumentType());
+        String documentNumber = inputParticipant.getDocumentNumber();
         Optional<ParticipantsDTO> optInputPerson = inputParticipant.getParticipantList().stream().findFirst();
         Participant myParticipantByDocument = new Participant();
         if (optInputPerson.isPresent()) {
@@ -109,16 +124,19 @@ public class ParticipantsBusiness {
             if (ValidationUtil.isBBVAClient(inputPerson.getCustomerId())) {
 
                 myParticipantByDocument.setDocumentType(documentType);
-                myParticipantByDocument.setDocumentNumber(inputParticipant.getDocumentNumber());
-                myParticipantByDocument.setCustomer(executeGetCustomer(inputParticipant.getDocumentNumber(), documentType));
+                myParticipantByDocument.setDocumentNumber(documentNumber);
+                myParticipantByDocument.setCustomer(executeGetCustomer(documentNumber, documentType));
 
                 if (isCompanyCustomer(inputParticipant)) {
                     myParticipantByDocument.setLegalCustomer(executeGetBusinessAgentASOInformation(inputPerson.getCustomerId()));
                 }
 
+                LegalRepresentative legalRepresentative = getLegalRepresentative(documentType, documentNumber, optInputPerson.get(), myParticipantByDocument.getCustomer());
+                myParticipantByDocument.setLegalRepresentative(legalRepresentative);
+
             } else {
                 myParticipantByDocument.setDocumentType(documentType);
-                myParticipantByDocument.setDocumentNumber(inputParticipant.getDocumentNumber());
+                myParticipantByDocument.setDocumentNumber(documentNumber);
 
                 if (inputPerson.getFirstName() != null && inputPerson.getLastName() != null) {
                     InputNonCustomer inputNonCustomer = InputNonCustomer.Builder.an()
@@ -129,9 +147,11 @@ public class ParticipantsBusiness {
                             .build();
 
                     myParticipantByDocument.setInputNonCustomer(inputNonCustomer);
+                    LegalRepresentative legalRepresentative = getLegalRepresentative(documentType, documentNumber, optInputPerson.get(), myParticipantByDocument.getCustomer());
+                    myParticipantByDocument.setLegalRepresentative(legalRepresentative);
 
                 } else {
-                    NonCustomerFromDB nonCustomerFromDB = nonCustomerFromDB(input.getQuotationId(), quotationInformation, myParticipantByDocument.getDocumentNumber(),myParticipantByDocument.getDocumentType());
+                    NonCustomerFromDB nonCustomerFromDB = nonCustomerFromDB(input.getQuotationId(), quotationInformation, documentNumber,documentType);
                     myParticipantByDocument.setNonCustomerFromDB(nonCustomerFromDB);
                 }
 
@@ -150,6 +170,28 @@ public class ParticipantsBusiness {
             LOGGER.info("** findParticipant nonCustomerFromQuotation -> {}",nonCustomerFromDB);
         }
         return nonCustomerFromDB;
+    }
+
+    public LegalRepresentative getLegalRepresentative(String documentType, String documentNumber, ParticipantsDTO participant, PEWUResponse customerInformation){
+        if(participant.getParticipantType().getId().equals(ConstantsUtil.Rol.LEGAL_REPRESENTATIVE.getName())){
+            LegalRepresentative legalRepresentative = new LegalRepresentative();
+            if(customerInformation==null){
+                legalRepresentative.setDocumentType(documentType);
+                legalRepresentative.setDocumentNumber(documentNumber);
+                legalRepresentative.setFirstName(participant.getPerson().getFirstName());
+                legalRepresentative.setLastName(participant.getPerson().getLastName());
+                legalRepresentative.setSecondLastName(participant.getPerson().getSecondLastName());
+            }else{
+                legalRepresentative.setDocumentType(customerInformation.getPemsalwu().getTdoi());
+                legalRepresentative.setDocumentNumber(customerInformation.getPemsalwu().getNdoi());
+                legalRepresentative.setFirstName(participant.getPerson().getFirstName());
+                legalRepresentative.setLastName(participant.getPerson().getLastName());
+                legalRepresentative.setSecondLastName(participant.getPerson().getSecondLastName());
+            }
+
+            return legalRepresentative;
+        }
+        return null;
     }
 
     private PEWUResponse executeGetCustomer(String documentNumber,String documentType){

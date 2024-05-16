@@ -4,6 +4,8 @@ import com.bbva.pbtq.dto.validatedocument.response.host.pewu.PEWUResponse;
 import com.bbva.rbvd.dto.insrncsale.aso.listbusinesses.ListBusinessesASO;
 import com.bbva.rbvd.dto.participant.request.ParticipantsDTO;
 
+import java.util.List;
+
 public class Participant implements Cloneable{
     private String documentType;
     private String documentNumber;
@@ -13,6 +15,7 @@ public class Participant implements Cloneable{
     private ListBusinessesASO legalCustomer;
     private InputNonCustomer inputNonCustomer;
     private NonCustomerFromDB nonCustomerFromDB;
+    private LegalRepresentative legalRepresentative;
 
     public NonCustomerFromDB getNonCustomerFromDB() {
         return nonCustomerFromDB;
@@ -78,7 +81,15 @@ public class Participant implements Cloneable{
         this.inputNonCustomer = inputNonCustomer;
     }
 
-    public Participant(String documentType, String documentNumber, String rolCode, ParticipantsDTO inputParticipant, PEWUResponse customer, NonCustomerFromDB nonCustomerFromDB, ListBusinessesASO legalCustomer, InputNonCustomer inputNonCustomer) {
+    public LegalRepresentative getLegalRepresentative() {
+        return legalRepresentative;
+    }
+
+    public void setLegalRepresentative(LegalRepresentative legalRepresentative) {
+        this.legalRepresentative = legalRepresentative;
+    }
+
+    public Participant(String documentType, String documentNumber, String rolCode, ParticipantsDTO inputParticipant, PEWUResponse customer, NonCustomerFromDB nonCustomerFromDB, ListBusinessesASO legalCustomer, InputNonCustomer inputNonCustomer, LegalRepresentative legalRepresentative) {
         this.documentType = documentType;
         this.documentNumber = documentNumber;
         this.rolCode = rolCode;
@@ -87,12 +98,13 @@ public class Participant implements Cloneable{
         this.nonCustomerFromDB = nonCustomerFromDB;
         this.inputNonCustomer = inputNonCustomer;
         this.legalCustomer = legalCustomer;
+        this.legalRepresentative = legalRepresentative;
     }
 
     public Participant(){}
 
     @Override
     public Participant clone() {
-        return new Participant(this.documentType, this.documentNumber, this.rolCode, this.inputParticipant, this.customer, this.nonCustomerFromDB, this.legalCustomer, this.inputNonCustomer);
+        return new Participant(this.documentType, this.documentNumber, this.rolCode, this.inputParticipant, this.customer, this.nonCustomerFromDB, this.legalCustomer, this.inputNonCustomer, this.legalRepresentative);
     }
 }

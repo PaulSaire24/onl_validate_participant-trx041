@@ -37,7 +37,7 @@ public class ConstantsUtil {
         private RegularExpression() {   }
         public static final String CONTAIN_ONLY_LETTERS=".*[a-zA-Z].*";
         public static final String CONTAIN_ONLY_NUMBERS=".*[0-9].*";
-        public static final String UNSPECIFIED = "N/A";
+        public static final String UNSPECIFIED = "SN";
     }
 
     public static final class Delimeter{
@@ -60,7 +60,9 @@ public class ConstantsUtil {
     public enum Rol{
         PAYMENT_MANAGER("PAYMENT_MANAGER",23),
         CONTRACTOR("CONTRACTOR",8),
-        INSURED("INSURED",9);
+        INSURED("INSURED",9),
+        LEGAL_REPRESENTATIVE("LEGAL_REPRESENTATIVE",8),
+        BENEFICIARY("BENEFICIARY",9);
         private final String name;
         private final int value;
 

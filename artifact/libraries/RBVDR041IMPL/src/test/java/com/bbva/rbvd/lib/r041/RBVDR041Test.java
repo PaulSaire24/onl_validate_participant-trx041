@@ -330,6 +330,23 @@ public class RBVDR041Test {
 
 	}
 
+	@Test
+	public void executeValidationWithNaturalPersonDataTypeOkCase7(){
+		AgregarTerceroBO agregarTerceroBO = new AgregarTerceroBO();
+		PayloadAgregarTerceroBO payloadAgregarTerceroBO = new PayloadAgregarTerceroBO();
+		payloadAgregarTerceroBO.setCotizacion("cotizacion");
+		agregarTerceroBO.setPayload(payloadAgregarTerceroBO);
+		when(rbvdr048.executeAddParticipants(anyObject(),anyString(),anyString(),anyString(),anyString())).thenReturn(agregarTerceroBO);
+		Mockito.when(rbvdr048.executeGetCustomerInformationFromQuotation(Mockito.eq("0123489304"))).thenReturn(ParticipantsUtil.buildFindQuotationJoinByPolicyQuotaInternalId("71998384","VEHICULAR","830"));
+		Mockito.when(rbvdr048.executeGetRolesByCompany(anyObject())).thenReturn(ParticipantsUtil.buildRolByParticipantTypeResponse());
+		Mockito.when(rbvdr048.executeGetCustomerByDocType(Mockito.anyString(),Mockito.anyString())).thenReturn(ParticipantsUtil.buildPersonHostDataResponseCase7());
+
+		AgregarTerceroBO response =  rbvdR041.executeValidateParticipants(ParticipantsUtil.getMockRequestBodyValidateNaturalParticipants());
+		Assert.assertNotNull(response);
+		Assert.assertEquals(0, context.getAdviceList().size());
+
+	}
+
 
 	@Test
 	public void executeLegalPersonTestOk() throws IOException {

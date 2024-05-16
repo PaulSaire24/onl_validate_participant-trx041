@@ -46,7 +46,6 @@ public class HandlerErrorBusiness {
                 if(Objects.nonNull(responseErr) && !StringUtils.isEmpty(responseErr.getCode()) && !StringUtils.isEmpty(responseErr.getMessage())){
                 LOGGER.info("** RBVDR048Impl - Error encontrado en base de datos");
                 groupMessagesByRole(payload,responseErr);
-                    System.out.println(responseErr.getMessage());
                 throw new BusinessException(responseErr.getCode(), false, responseErr.getMessage());
             }else{
                     propagateError(applicationConfigurationService,err);
@@ -125,7 +124,7 @@ public class HandlerErrorBusiness {
             return;
         }
         if(payload.getPersona() != null){
-            mapMessagesToRolesOfperson(payload.getPersona(), groupedMessages, messageList);
+            mapMessagesToRolesOfPerson(payload.getPersona(), groupedMessages, messageList);
         } else if (payload.getOrganizacion() != null){
             mapMessagesToRolesOfCompany(payload.getOrganizacion(), groupedMessages, messageList);
         }
@@ -138,7 +137,7 @@ public class HandlerErrorBusiness {
             errorResponse.setMessage(message.toString());
     }
 
-    private void mapMessagesToRolesOfperson(List<PersonaBO> personas, Map<String, String> groupedMessages, String[] messageList) {
+    private void mapMessagesToRolesOfPerson(List<PersonaBO> personas, Map<String, String> groupedMessages, String[] messageList) {
         for (PersonaBO persona : personas) {
             // Obtener el número de documento de la persona
             String nroDocumento = persona.getNroDocumento();

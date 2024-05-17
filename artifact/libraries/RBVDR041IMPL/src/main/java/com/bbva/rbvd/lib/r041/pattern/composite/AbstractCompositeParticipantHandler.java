@@ -30,10 +30,10 @@ public abstract class AbstractCompositeParticipantHandler implements Participant
 
         AgregarTerceroBO rimacRequest;
         if (Objects.nonNull(productHandler)) {
-             rimacRequest =  productHandler.prepareCompanyRequest(payloadConfig,rbvdr048,applicationConfigurationService);
+             rimacRequest =  productHandler.prepareCompanyRequest(payloadConfig,applicationConfigurationService);
         } else {
             StrategyProductHandler strategyProductHandler = new GeneralProductStrategy();
-            rimacRequest = strategyProductHandler.prepareCompanyRequest(payloadConfig,rbvdr048,applicationConfigurationService);
+            rimacRequest = strategyProductHandler.prepareCompanyRequest(payloadConfig,applicationConfigurationService);
         }
 
         rimacRequest = enrichPayloadProduct.enrichRimacPayloadByProductAndParticipantType(rimacRequest, payloadConfig.getQuotationInformation(), payloadConfig.getParticipants());

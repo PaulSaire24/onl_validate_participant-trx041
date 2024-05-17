@@ -34,13 +34,11 @@ public class ParticipantsBusiness {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ParticipantsBusiness.class);
     private  ApplicationConfigurationService applicationConfigurationService;
-    private RBVDR048 rbvdr048;
 
     private ConsumerInternalService consumerInternalService;
 
     public ParticipantsBusiness(ApplicationConfigurationService applicationConfigurationService,RBVDR048 rbvdr048) {
         this.applicationConfigurationService = applicationConfigurationService;
-        this.rbvdr048 = rbvdr048;
         consumerInternalService = new ConsumerInternalService(rbvdr048);
     }
 

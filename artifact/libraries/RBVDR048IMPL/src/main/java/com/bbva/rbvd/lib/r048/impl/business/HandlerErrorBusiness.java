@@ -133,7 +133,9 @@ public class HandlerErrorBusiness {
                     .filter(kvArray -> kvArray.length == 2)
                     .collect(Collectors.toMap(kv -> kv[0], kv -> kv[1]));
         }
+
         MessagesByRoleMap messagesByRoleMap = new MessagesByRoleMap(rimacError, functionalErrCodes);
+
         if(payload.getPersona() != null){
             groupedMessages = messagesByRoleMap.mapMessagesToRolesOfPerson(payload.getPersona(),messageList);
         } else if (payload.getOrganizacion() != null){

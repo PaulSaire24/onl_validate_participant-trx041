@@ -46,9 +46,7 @@ public class EnrichPayloadProductImpl implements IEnrichPayloadProduct {
 
             List<PersonaBO> listPeople = rimacRequest.getPayload().getPersona();
             if (listPeople != null) {
-                listPeople.forEach(person ->{
-                    enrichPersonByProduct(person, quotationInformation);
-                });
+                listPeople.forEach(person -> enrichPersonByProduct(person, quotationInformation));
             }
 
             List<OrganizacionBO> listOrganization = rimacRequest.getPayload().getOrganizacion();

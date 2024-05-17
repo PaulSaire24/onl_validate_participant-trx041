@@ -5,12 +5,10 @@ import com.bbva.rbvd.dto.insrncsale.bo.emision.AgregarTerceroBO;
 import com.bbva.rbvd.dto.insrncsale.bo.emision.PayloadAgregarTerceroBO;
 import com.bbva.rbvd.dto.insrncsale.bo.emision.PersonaBO;
 import com.bbva.rbvd.lib.r041.business.IDynamicLifeBusiness;
-import com.bbva.rbvd.lib.r041.service.api.ConsumerExternalService;
 import com.bbva.rbvd.lib.r041.transfer.Participant;
 import com.bbva.rbvd.lib.r041.transfer.PayloadConfig;
 import com.bbva.rbvd.lib.r041.transform.bean.PersonBean;
 import com.bbva.rbvd.lib.r041.util.ConstantsUtil;
-import com.bbva.rbvd.lib.r048.RBVDR048;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,11 +20,9 @@ import java.util.Optional;
 public class DynamicLifeProductBusinessImpl implements IDynamicLifeBusiness {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DynamicLifeProductBusinessImpl.class);
-    private RBVDR048 rbvdr048;
     private ApplicationConfigurationService applicationConfigurationService;
 
-    public DynamicLifeProductBusinessImpl(RBVDR048 rbvdr048, ApplicationConfigurationService applicationConfigurationService) {
-        this.rbvdr048 = rbvdr048;
+    public DynamicLifeProductBusinessImpl(ApplicationConfigurationService applicationConfigurationService) {
         this.applicationConfigurationService = applicationConfigurationService;
     }
 

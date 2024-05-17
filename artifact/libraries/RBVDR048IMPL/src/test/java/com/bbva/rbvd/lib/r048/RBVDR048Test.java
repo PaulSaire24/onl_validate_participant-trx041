@@ -141,6 +141,8 @@ public class RBVDR048Test {
 		when(applicationConfigurationService.getDefaultProperty(anyString(),anyString())).thenReturn("PATCH");
 		when(applicationConfigurationService.getProperty(Constants.Properties.RIMAC_FUNCTIONAL_MAPPPING_VALUES)).
 				thenReturn("nombre|CO000027,paterno|CO000028,materno|CO000029,fecha|CO000031,sexo|CO000030");
+		when(applicationConfigurationService.getProperty(Constants.Properties.RIMAC_FUNCTIONAL_ERROR_CODE)).
+				thenReturn("ERRF");
 		when(pisdr014.executeSignatureConstruction(anyString(), anyString(), anyString(), anyString(), anyString()))
 				.thenReturn(new SignatureAWS("", "", "", ""));
 	}

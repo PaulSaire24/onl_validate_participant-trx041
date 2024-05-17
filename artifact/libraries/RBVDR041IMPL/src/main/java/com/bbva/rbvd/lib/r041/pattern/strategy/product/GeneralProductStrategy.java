@@ -5,12 +5,11 @@ import com.bbva.rbvd.dto.insrncsale.bo.emision.AgregarTerceroBO;
 import com.bbva.rbvd.lib.r041.business.impl.GeneralProductBusinessImpl;
 import com.bbva.rbvd.lib.r041.pattern.strategy.StrategyProductHandler;
 import com.bbva.rbvd.lib.r041.transfer.PayloadConfig;
-import com.bbva.rbvd.lib.r048.RBVDR048;
 
 public class GeneralProductStrategy implements StrategyProductHandler {
 
     @Override
-    public AgregarTerceroBO prepareCompanyRequest(PayloadConfig payloadConfig, RBVDR048 rbvdr048, ApplicationConfigurationService applicationConfigurationService) {
+    public AgregarTerceroBO prepareCompanyRequest(PayloadConfig payloadConfig, ApplicationConfigurationService applicationConfigurationService) {
         GeneralProductBusinessImpl crossProductBusiness = new GeneralProductBusinessImpl(applicationConfigurationService);
         return crossProductBusiness.createRequestByCompany(payloadConfig);
     }

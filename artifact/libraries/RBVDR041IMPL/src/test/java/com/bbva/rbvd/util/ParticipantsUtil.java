@@ -883,11 +883,13 @@ InputParticipantsDTO requestBody = new InputParticipantsDTO();
         ParticipantsDTO participant3 = buildParticipant("INSURED","RUC", "201928394221","LEGAL",true);
         ParticipantsDTO participant4 = buildParticipant("LEGAL_REPRESENTATIVE","DNI", "77889900","NATURAL",false);
         ParticipantsDTO participant5 = buildParticipant("LEGAL_REPRESENTATIVE","DNI", "77889900","NATURAL",false);
+        ParticipantsDTO participant6 = buildParticipant("LEGAL_REPRESENTATIVE","DNI", "71938182","NATURAL",true);
         participantsList.add(participant1);
         participantsList.add(participant2);
         participantsList.add(participant3);
         participantsList.add(participant4);
         participantsList.add(participant5);
+        participantsList.add(participant6);
         requestBody.setParticipants(participantsList);
         return requestBody;
     }

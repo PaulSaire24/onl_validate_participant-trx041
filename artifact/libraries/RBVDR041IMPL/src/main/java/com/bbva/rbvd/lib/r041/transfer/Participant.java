@@ -3,9 +3,6 @@ package com.bbva.rbvd.lib.r041.transfer;
 import com.bbva.pbtq.dto.validatedocument.response.host.pewu.PEWUResponse;
 import com.bbva.rbvd.dto.insrncsale.aso.listbusinesses.ListBusinessesASO;
 import com.bbva.rbvd.dto.participant.request.ParticipantsDTO;
-
-import java.util.List;
-
 public class Participant implements Cloneable{
     private String documentType;
     private String documentNumber;

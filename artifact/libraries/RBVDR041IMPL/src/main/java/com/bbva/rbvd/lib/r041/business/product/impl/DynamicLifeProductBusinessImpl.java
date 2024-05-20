@@ -1,10 +1,10 @@
-package com.bbva.rbvd.lib.r041.business.impl;
+package com.bbva.rbvd.lib.r041.business.product.impl;
 
 import com.bbva.elara.configuration.manager.application.ApplicationConfigurationService;
 import com.bbva.rbvd.dto.insrncsale.bo.emision.AgregarTerceroBO;
 import com.bbva.rbvd.dto.insrncsale.bo.emision.PayloadAgregarTerceroBO;
 import com.bbva.rbvd.dto.insrncsale.bo.emision.PersonaBO;
-import com.bbva.rbvd.lib.r041.business.IDynamicLifeBusiness;
+import com.bbva.rbvd.lib.r041.business.product.IDynamicLifeBusiness;
 import com.bbva.rbvd.lib.r041.transfer.Participant;
 import com.bbva.rbvd.lib.r041.transfer.PayloadConfig;
 import com.bbva.rbvd.lib.r041.transform.bean.PersonBean;

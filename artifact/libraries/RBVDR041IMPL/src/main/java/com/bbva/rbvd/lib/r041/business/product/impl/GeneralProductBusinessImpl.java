@@ -1,4 +1,4 @@
-package com.bbva.rbvd.lib.r041.business.impl;
+package com.bbva.rbvd.lib.r041.business.product.impl;
 
 import com.bbva.elara.configuration.manager.application.ApplicationConfigurationService;
 
@@ -12,15 +12,14 @@ import com.bbva.rbvd.dto.participant.dao.RolDAO;
 import com.bbva.rbvd.dto.participant.constants.RBVDInternalConstants.ParticipantType;
 import com.bbva.rbvd.dto.participant.constants.RBVDInternalConstants;
 
-import com.bbva.rbvd.lib.r041.business.IGeneralProductBusiness;
+import com.bbva.rbvd.lib.r041.business.product.IGeneralProductBusiness;
 
+import com.bbva.rbvd.lib.r041.business.customer.CustomerBusiness;
+import com.bbva.rbvd.lib.r041.business.organization.OrganizationBusiness;
 import com.bbva.rbvd.lib.r041.pattern.factory.ParticipantFactory;
 
 import com.bbva.rbvd.lib.r041.transfer.PayloadConfig;
 import com.bbva.rbvd.lib.r041.transfer.Participant;
-
-import com.bbva.rbvd.lib.r041.transform.bean.ValidateRimacLegalPerson;
-import com.bbva.rbvd.lib.r041.transform.bean.ValidateRimacNaturalPerson;
 
 import com.bbva.rbvd.lib.r041.validation.ValidationUtil;
 
@@ -50,7 +49,7 @@ public class GeneralProductBusinessImpl implements IGeneralProductBusiness {
         List<RolDAO> selectedRoles = payloadConfig.getRegisteredRolesDB();
 
         List<PersonaBO> personaList = new ArrayList<>();
-        List<OrganizacionBO> organizacionList = new ArrayList<>();
+        List<OrganizacionBO> organizations = new ArrayList<>();
 
         participantList.forEach(part-> {
             Integer roleId = ValidationUtil.obtainExistingCompanyRole(part.getInputParticipant(),
@@ -65,13 +64,14 @@ public class GeneralProductBusinessImpl implements IGeneralProductBusiness {
                     personaList.add(persona);
                     addTerceroByCompany.setPersona(personaList);
                 }else{
-                    PersonaBO personaBO = ValidateRimacNaturalPerson.mapCustomerRequestData(part, payloadConfig.getQuotationInformation(),
+                    // debe ir por participant.?
+                    PersonaBO personaBO = CustomerBusiness.mapCustomerRequestData(part, payloadConfig.getQuotationInformation(),
                             null);
-                    OrganizacionBO organizacionBO = ValidateRimacLegalPerson.getDataOrganization(part.getLegalCustomer().getData().get(0), personaBO, payloadConfig.getQuotationInformation(), roleId,
+                    OrganizacionBO organizacionBO = OrganizationBusiness.mapOrganizations(part.getLegalCustomer().getData().get(0), personaBO, payloadConfig.getQuotationInformation(), roleId,
                             part.getInputParticipant());
                     organizacionBO.setRolName(applicationConfigurationService.getProperty(part.getInputParticipant().getParticipantType().getId()));
-                    organizacionList.add(organizacionBO);
-                    addTerceroByCompany.setOrganizacion(organizacionList);
+                    organizations.add(organizacionBO);
+                    addTerceroByCompany.setOrganizacion(organizations);
                 }
         }});
 

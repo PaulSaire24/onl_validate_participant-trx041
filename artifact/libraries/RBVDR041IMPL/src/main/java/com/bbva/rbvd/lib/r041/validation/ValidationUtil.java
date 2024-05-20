@@ -9,9 +9,12 @@ import com.bbva.rbvd.lib.r041.util.ConstantsUtil;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
+import java.util.Objects;
 
 public class ValidationUtil {
 
+    private ValidationUtil() {
+    }
     private static final String RUC_ID = "R";
 
     public static boolean isBBVAClient(String clientId){
@@ -39,6 +42,15 @@ public class ValidationUtil {
         return PersonTypeEnum.NATURAL;
     }
 
-    private ValidationUtil() {
+
+    public static String validateSN(String name) {
+        if(Objects.isNull(name) || "null".equals(name) || " ".equals(name)){
+            return "";
+        }else{
+            name = name.replace("#","Ñ");
+            return name;
+        }
     }
+
+
 }

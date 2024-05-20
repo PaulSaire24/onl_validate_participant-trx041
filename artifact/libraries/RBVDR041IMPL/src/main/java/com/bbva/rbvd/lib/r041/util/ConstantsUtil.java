@@ -33,6 +33,54 @@ public class ConstantsUtil {
     }
 
 
+
+    public static final class PERSONAL_ADDRESS {
+        private PERSONAL_ADDRESS() {
+        }
+
+        public static final String SIN_ESPECIFICAR = "SN";
+        public static final String NO_EXIST = "NotExist";
+
+        public static final String INTERIOR_NUMBER_ID = "DPTO.";
+    }
+    public static final class PERSONAL_DATA {
+        private PERSONAL_DATA() {
+        }
+
+        public static final String RUC_ID = "R";
+        public static final String EMAIL_VALUE = "EMAIL";
+        public static final String MOBILE_VALUE = "MOBILE_NUMBER";
+        public static final int MAX_CHARACTER = 1;
+    }
+    public static final class ADDRESS_LABEL {
+        private ADDRESS_LABEL() {
+        }
+
+        public static final String DISTRICT = "DISTRICT";
+        public static final String PROVINCE = "PROVINCE";
+        public static final String DEPARTMENT = "DEPARTMENT";
+        public static final String UBIGEO = "UBIGEO";
+        public static final String EXTERIOR_NUMBER = "EXTERIOR_NUMBER";
+        public static final String STREET = "STREET";
+    }
+
+    public static final class Organization {
+        private Organization() {
+        }
+        public static final String RUC_ID = "R";
+        public static final String TAG_OTROS = "OTROS";
+        public static final String COUNTRY_REQUIRED = "PERU";
+    }
+
+    public static final class ContactType {
+        private ContactType() {
+        }
+        public static final String PHONE_NUMBER = "PHONE_NUMBER";
+        public static final String MOBILE_NUMBER = "MOBILE_NUMBER";
+        public static final String EMAIL = "EMAIL";
+
+    }
+
     public static final class RegularExpression{
         private RegularExpression() {   }
         public static final String CONTAIN_ONLY_LETTERS=".*[a-zA-Z].*";

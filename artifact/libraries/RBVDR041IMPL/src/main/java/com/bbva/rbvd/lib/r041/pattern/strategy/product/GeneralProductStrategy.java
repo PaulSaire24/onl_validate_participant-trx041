@@ -9,7 +9,7 @@ public class GeneralProductStrategy implements StrategyProductHandler {
 
     @Override
     public AgregarTerceroBO prepareCompanyRequest(PayloadConfig payloadConfig, AgregarTerceroBO rimacRequestData) {
-        GeneralProductBusinessImpl crossProductBusiness = new GeneralProductBusinessImpl(applicationConfigurationService);
+        GeneralProductBusinessImpl crossProductBusiness = new GeneralProductBusinessImpl();
         return crossProductBusiness.createRequestByCompany(payloadConfig);
     }
 }

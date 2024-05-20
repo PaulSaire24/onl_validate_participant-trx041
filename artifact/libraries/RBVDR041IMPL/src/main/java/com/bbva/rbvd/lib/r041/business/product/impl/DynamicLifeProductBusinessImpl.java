@@ -20,10 +20,7 @@ import java.util.Optional;
 public class DynamicLifeProductBusinessImpl implements IDynamicLifeBusiness {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DynamicLifeProductBusinessImpl.class);
-    private ApplicationConfigurationService applicationConfigurationService;
-
-    public DynamicLifeProductBusinessImpl(ApplicationConfigurationService applicationConfigurationService) {
-        this.applicationConfigurationService = applicationConfigurationService;
+    public DynamicLifeProductBusinessImpl() {
     }
 
     @Override
@@ -42,12 +39,12 @@ public class DynamicLifeProductBusinessImpl implements IDynamicLifeBusiness {
             PersonaBO person = new PersonaBO();
             if(ConstantsUtil.Rol.PAYMENT_MANAGER.getName().equalsIgnoreCase(participant.getRolCode())){
                person = PersonBean.buildPersonFromCustomer(participant.getCustomer(),participant.getRolCode());
-                person.setRolName(applicationConfigurationService.getProperty(ConstantsUtil.Rol.PAYMENT_MANAGER.getName()));
+                person.setRolName(payloadConfig.getParticipantProperties().obtainRoleCodeByEnum(ConstantsUtil.Rol.PAYMENT_MANAGER.getName()));
             } else if (ConstantsUtil.Rol.CONTRACTOR.getName().equalsIgnoreCase(participant.getRolCode()) &&
                     Objects.nonNull(participant.getCustomer())) {
                 isParticipantsWithRolContractor = true;
                 person = PersonBean.buildPersonFromCustomer(participant.getCustomer(),participant.getRolCode());
-                person.setRolName(applicationConfigurationService.getProperty(ConstantsUtil.Rol.CONTRACTOR.getName()));
+                person.setRolName(payloadConfig.getParticipantProperties().obtainRoleCodeByEnum(ConstantsUtil.Rol.CONTRACTOR.getName()));
             } else if (ConstantsUtil.Rol.INSURED.getName().equalsIgnoreCase(participant.getRolCode())) {
                 isParticipantsWithRolInsured = true;
                 if(Objects.nonNull(participant.getCustomer())){
@@ -61,7 +58,7 @@ public class DynamicLifeProductBusinessImpl implements IDynamicLifeBusiness {
                         person = PersonBean.buildPersonFromNonCustomer(participant.getNonCustomerFromDB(),personManager);
                     }
                 }
-                person.setRolName(applicationConfigurationService.getProperty(ConstantsUtil.Rol.INSURED.getName()));
+                person.setRolName(payloadConfig.getParticipantProperties().obtainRoleCodeByEnum(ConstantsUtil.Rol.INSURED.getName()));
             }
             personList.add(person);
         }
@@ -70,8 +67,8 @@ public class DynamicLifeProductBusinessImpl implements IDynamicLifeBusiness {
         Optional<PersonaBO> personManager = personList.stream().filter(person -> person.getRol() == ConstantsUtil.Rol.PAYMENT_MANAGER.getValue())
                 .findFirst();
         if(personManager.isPresent()) {
-            String rolContractor = applicationConfigurationService.getProperty(ConstantsUtil.Rol.CONTRACTOR.getName());
-            String rolInsured = applicationConfigurationService.getProperty(ConstantsUtil.Rol.INSURED.getName());
+            String rolContractor = payloadConfig.getParticipantProperties().obtainRoleCodeByEnum(ConstantsUtil.Rol.CONTRACTOR.getName());
+            String rolInsured = payloadConfig.getParticipantProperties().obtainRoleCodeByEnum(ConstantsUtil.Rol.INSURED.getName());
             enrichPerson(isParticipantsWithRolContractor, personManager.get(), personList, ConstantsUtil.Rol.CONTRACTOR,rolContractor);
             enrichPerson(isParticipantsWithRolInsured, personManager.get(), personList, ConstantsUtil.Rol.INSURED,rolInsured);
         }

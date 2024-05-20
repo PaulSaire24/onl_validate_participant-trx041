@@ -31,10 +31,7 @@ import java.util.List;
 import java.util.Objects;
 
 public class GeneralProductBusinessImpl implements IGeneralProductBusiness {
-
     private static final Logger LOGGER = LoggerFactory.getLogger(GeneralProductBusinessImpl.class);
-
-
     public GeneralProductBusinessImpl() {
 
     }

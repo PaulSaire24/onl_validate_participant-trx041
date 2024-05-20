@@ -10,6 +10,6 @@ public class DynamicLifeStrategy implements StrategyProductHandler {
     @Override
     public AgregarTerceroBO prepareCompanyRequest(PayloadConfig payloadConfig, AgregarTerceroBO rimacRequestData) {
         DynamicLifeProductBusinessImpl dynamicLifeParticipantBusiness = new DynamicLifeProductBusinessImpl();
-        return dynamicLifeParticipantBusiness.doDynamicLife(payloadConfig);
+        return dynamicLifeParticipantBusiness.doDynamicLife(payloadConfig, rimacRequestData );
     }
 }

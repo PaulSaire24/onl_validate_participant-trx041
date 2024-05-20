@@ -55,7 +55,7 @@ public class EnrichPayloadProductImpl implements IEnrichPayloadProduct {
                     enrichOrganizationByProduct(organization, quotationInformation);
 
                     if(ConstantsUtil.Rol.CONTRACTOR.getValue()==organization.getRol()){
-                        enrichOrgnizationByParticipantType(organization,participants);
+                        enrichOrganizationByParticipantType(organization,participants);
                     }
                 });
             }
@@ -84,11 +84,11 @@ public class EnrichPayloadProductImpl implements IEnrichPayloadProduct {
         }
     }
 
-    private void enrichOrgnizationByParticipantType(OrganizacionBO organizacionBO, List<Participant> participantList){
+    private void enrichOrganizationByParticipantType(OrganizacionBO organizacionBO, List<Participant> participantList){
         List<RepresentanteLegalBO> representanteLegalBOList = new ArrayList<>();
         participantList.forEach(participant -> {
             if(participant.getLegalRepresentative()!=null){
-                representanteLegalBOList.add(this.createRepresentsanteLegal(participant.getLegalRepresentative()));
+                representanteLegalBOList.add(this.createRepresentanteLegal(participant.getLegalRepresentative()));
             }
         });
 
@@ -97,7 +97,7 @@ public class EnrichPayloadProductImpl implements IEnrichPayloadProduct {
         }
     }
 
-    private RepresentanteLegalBO createRepresentsanteLegal(final LegalRepresentative legalRepresentative) {
+    private RepresentanteLegalBO createRepresentanteLegal(final LegalRepresentative legalRepresentative) {
         RepresentanteLegalBO representanteLegalBO = new RepresentanteLegalBO();
         representanteLegalBO.setTipoDocumento(legalRepresentative.getDocumentType());
         representanteLegalBO.setNroDocumento(legalRepresentative.getDocumentNumber());

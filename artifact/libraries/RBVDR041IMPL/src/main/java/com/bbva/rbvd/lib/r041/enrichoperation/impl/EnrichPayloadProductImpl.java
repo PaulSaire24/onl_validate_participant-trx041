@@ -90,14 +90,14 @@ public class EnrichPayloadProductImpl implements IEnrichPayloadProduct {
         RBVDInternalConstants.ParticipantType participantType = Objects.nonNull(part.getCustomer()) ? RBVDInternalConstants.ParticipantType.CUSTOMER : RBVDInternalConstants.ParticipantType.NON_CUSTOMER;
         com.bbva.rbvd.lib.r041.pattern.factory.Participant participant = ParticipantFactory.buildParticipant(participantType);
         PersonaBO persona = participant.createRequestParticipant(part, payloadConfig.getQuotationInformation(), roleId);
-        persona.setRolName(payloadConfig.getParticipantProperties().obtainRoleCodeByEnum(part.getInputParticipant().getParticipantType().getId()));
+        persona.setRolName(payloadConfig.getParticipantProperties().obtainPropertyFromConsole(part.getInputParticipant().getParticipantType().getId()));
         return persona;
     }
 
     private OrganizacionBO createOrganizacionBO(Participant part, PayloadConfig payloadConfig, Integer roleId) {
         PersonaBO personaBO = CustomerBusiness.mapCustomerRequestData(part, payloadConfig.getQuotationInformation(), null);
         OrganizacionBO organizacionBO = OrganizationBusiness.mapOrganizations(part.getLegalCustomer().getData().get(0), personaBO, payloadConfig.getQuotationInformation(), roleId, part.getInputParticipant());
-        organizacionBO.setRolName(payloadConfig.getParticipantProperties().obtainRoleCodeByEnum(part.getInputParticipant().getParticipantType().getId()));
+        organizacionBO.setRolName(payloadConfig.getParticipantProperties().obtainPropertyFromConsole(part.getInputParticipant().getParticipantType().getId()));
         return organizacionBO;
     }
 

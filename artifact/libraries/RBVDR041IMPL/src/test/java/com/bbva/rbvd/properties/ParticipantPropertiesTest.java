@@ -50,7 +50,7 @@ public class ParticipantPropertiesTest {
 
     @Test
     public void executeparticipantPropertiesNull() {
-        String result = participantProperties.obtainRoleCodeByEnum(null);
+        String result = participantProperties.obtainPropertyFromConsole(null);
         Assert.assertNull(result);
     }
 

@@ -8,10 +8,10 @@ public class ParticipantProperties extends Properties{
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ParticipantProperties.class);
 
-    public String obtainRoleCodeByEnum(String roleEnum){
-        String codeRole = this.getProperty(roleEnum, StringUtils.EMPTY);
-        LOGGER.info(" :: ParticipantProperties[ obtainRoleCodeByEnum :: {} ]",codeRole);
-        return codeRole;
+    public String obtainPropertyFromConsole(String key){
+        String value = this.getProperty(key, StringUtils.EMPTY);
+        LOGGER.info(" :: ParticipantProperties[ obtainPropertyFromConsole :: {} ]",value);
+        return value;
     }
 
 }

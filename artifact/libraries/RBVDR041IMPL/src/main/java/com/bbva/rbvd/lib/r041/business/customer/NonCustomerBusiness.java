@@ -14,13 +14,16 @@ import java.util.List;
 
 public class NonCustomerBusiness {
 
-    public  static PersonaBO mapNonCustomerRequestData(InputNonCustomer participantsDTO, Integer rolId){
+    public  static PersonaBO mapNonCustomerRequestData(InputNonCustomer participantNonCustomer, Integer rolId){
+        PersonaBO personaBO = new PersonaBO();
+        if(participantNonCustomer != null){
+            ContactBO contactBO = getContactBO(participantNonCustomer.getContactDetails());
+            AddressBO addressBO = new NonCustomerAddressBusiness().getAddressBO(participantNonCustomer.getAddresses());
+            IdentityDocumentDTO identityDocumentDTO = participantNonCustomer.getIdentityDocuments().get(0);
 
-        ContactBO contactBO = getContactBO(participantsDTO.getContactDetails());
-        AddressBO addressBO = new NonCustomerAddressBusiness().getAddressBO(participantsDTO.getAddresses());
-        IdentityDocumentDTO identityDocumentDTO = participantsDTO.getIdentityDocuments().get(0);
-
-        PersonaBO personaBO = PersonBean.getPersonWithInputData(rolId, contactBO, addressBO, participantsDTO.getPerson(), identityDocumentDTO);
+            return PersonBean.getPersonWithInputData(rolId, contactBO, addressBO, participantNonCustomer.getPerson(), identityDocumentDTO);
+        }
+        personaBO.setRol(rolId);
         return personaBO;
     }
 

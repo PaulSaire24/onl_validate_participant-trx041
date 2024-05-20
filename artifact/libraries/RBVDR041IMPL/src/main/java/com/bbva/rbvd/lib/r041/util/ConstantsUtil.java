@@ -89,17 +89,7 @@ public class ConstantsUtil {
         public static final String UNSPECIFIED = "SN";
     }
 
-    public static final class Delimeter{
-        public static final String VERTICAL_BAR = "|";
-
-        private Delimeter() {
-        }
-    }
     public final class Number{
-        public static final int UNO = 1;
-        public static final int CERO = 0;
-        public static final int DIEZ = 10;
-
         public static final int CLIENT_BANK_LENGHT =8;
 
         private Number() {
@@ -111,7 +101,7 @@ public class ConstantsUtil {
         CONTRACTOR("CONTRACTOR",8),
         INSURED("INSURED",9),
         LEGAL_REPRESENTATIVE("LEGAL_REPRESENTATIVE",8),
-        BENEFICIARY("BENEFICIARY",19);
+        BENEFICIARY("BENEFICIARY",9);
         private final String name;
         private final int value;
 
@@ -127,15 +117,5 @@ public class ConstantsUtil {
         public int getValue() {
             return value;
         }
-    }
-
-    public static int getValueByName(String name){
-        Rol[] val = Rol.values();
-        for (Rol er: val) {
-            if(er.getName().equalsIgnoreCase(name)){
-                return er.getValue();
-            }
-        }
-        return 0;
     }
 }

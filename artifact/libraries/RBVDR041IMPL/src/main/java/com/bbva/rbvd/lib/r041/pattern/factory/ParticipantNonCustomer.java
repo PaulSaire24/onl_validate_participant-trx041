@@ -8,7 +8,6 @@ public class ParticipantNonCustomer implements Participant{
 
     @Override
     public PersonaBO createRequestParticipant(com.bbva.rbvd.lib.r041.transfer.Participant participant, QuotationCustomerDAO customerInformationDb, Integer roleId) {
-        //return ValidateRimacNaturalPerson.mapNonCustomerRequestData(participant.getInputNonCustomer(), roleId);
         return NonCustomerBusiness.mapNonCustomerRequestData(participant.getInputNonCustomer(), roleId);
     }
 }

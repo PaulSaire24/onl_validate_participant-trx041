@@ -84,22 +84,6 @@ public class AddressBO {
         this.tipoPersona = tipoPersona;
     }
 
-    @Override
-    public String toString() {
-        return "AddressBO{" +
-                "direccion='" + direccion + '\'' +
-                ", distrito='" + distrito + '\'' +
-                ", provincia='" + provincia + '\'' +
-                ", departamento='" + departamento + '\'' +
-                ", ubigeo='" + ubigeo + '\'' +
-                ", nombreVia='" + nombreVia + '\'' +
-                ", tipoVia='" + tipoVia + '\'' +
-                ", numeroVia='" + numeroVia + '\'' +
-                ", tipoPersona='" + tipoPersona + '\'' +
-                '}';
-    }
-
-
     public static final class Builder {
         private String direccion;
         private String distrito;

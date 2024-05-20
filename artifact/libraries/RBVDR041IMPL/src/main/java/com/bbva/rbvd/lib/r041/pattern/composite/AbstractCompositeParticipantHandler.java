@@ -35,7 +35,6 @@ public abstract class AbstractCompositeParticipantHandler implements Participant
             rimacRequest = strategyProductHandler.prepareCompanyRequest(payloadConfig, rimacRequest);
         }
 
-        rimacRequest = enrichPayloadProduct.enrichRimacPayloadByProductAndParticipantType(rimacRequest, payloadConfig.getQuotationInformation(), payloadConfig.getParticipants());
         return new ConsumerExternalService(rbvdr048).sendToApiAndValidateResponseError(payloadConfig, rimacRequest);
     }
 

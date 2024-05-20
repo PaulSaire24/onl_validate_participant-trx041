@@ -67,13 +67,19 @@ public class EnrichPayloadProductImpl implements IEnrichPayloadProduct {
                     addTerceroByCompany.setOrganizacion(organizations);
                 }
             }
-
-            // if(ReplesentanteLeagar){
-            // add(meteodo extiste) }
-            // mapear los RL en un arrayList
         });
 
-        // organizations.stream().Filter(Contratante). add ( RL)
+        //Enrich additional participants
+        //Legal representative
+        if (addTerceroByCompany.getOrganizacion() != null) {
+            organizations.stream()
+                    .filter(organization -> ConstantsUtil.Rol.CONTRACTOR.getValue()==organization.getRol())
+                    .forEach(organization -> enrichOrganizationByParticipantType(organization, participantList));
+        }
+
+        //Beneficiaries
+        //logic to enrich beneficiaries
+
         addTerceroByCompany.setProducto(payloadConfig.getQuotationInformation().getInsuranceProduct().getInsuranceProductDesc());
         requestCompany.setPayload(addTerceroByCompany);
 
@@ -95,48 +101,9 @@ public class EnrichPayloadProductImpl implements IEnrichPayloadProduct {
         return organizacionBO;
     }
 
-    @Override
-    public AgregarTerceroBO enrichRimacPayloadByProductAndParticipantType(AgregarTerceroBO rimacRequest, QuotationCustomerDAO quotationInformation,List<Participant> participants) {
-
-        // Propio de Vehicular
-            List<PersonaBO> listPeople = rimacRequest.getPayload().getPersona();
-            if (listPeople != null) {
-                listPeople.forEach(person -> enrichPersonByProduct(person, quotationInformation));
-            }
-    // Para todos
-            List<OrganizacionBO> listOrganization = rimacRequest.getPayload().getOrganizacion();
-            if (listOrganization != null) {
-                listOrganization.forEach(organization ->{
-                    enrichOrganizationByProduct(organization, quotationInformation);
-
-                    if(ConstantsUtil.Rol.CONTRACTOR.getValue()==organization.getRol()){
-                        enrichOrganizationByParticipantType(organization,participants);
-                    }
-                });
-            }
-
-            rimacRequest.getPayload().setCotizacion(quotationInformation.getQuotation().getInsuranceCompanyQuotaId());
-
-        return rimacRequest;
-    }
-
     public List<RolDAO> getCompanyRoles(BigDecimal insuranceCompanyId) {
         ConsumerInternalService consumerInternalService = new ConsumerInternalService(rbvdr048);
         return consumerInternalService.getRolesByCompanyDB(insuranceCompanyId);
-    }
-
-    private void enrichOrganizationByProduct(OrganizacionBO organizacionBO, QuotationCustomerDAO quotationInformation) {
-        if("830".equals(quotationInformation.getInsuranceProduct().getInsuranceProductType())){
-            organizacionBO.setProteccionDatosPersonales("S");
-            organizacionBO.setEnvioComunicacionesComerciales("N");
-        }
-    }
-
-    private void enrichPersonByProduct(PersonaBO personaBO, QuotationCustomerDAO quotationInformation) {
-        if("830".equals(quotationInformation.getInsuranceProduct().getInsuranceProductType())){
-            personaBO.setProteccionDatosPersonales("S");
-            personaBO.setEnvioComunicacionesComerciales("N");
-        }
     }
 
     private void enrichOrganizationByParticipantType(OrganizacionBO organizacionBO, List<Participant> participantList){

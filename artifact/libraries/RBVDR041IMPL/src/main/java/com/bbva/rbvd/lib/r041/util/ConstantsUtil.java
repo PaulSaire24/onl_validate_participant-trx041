@@ -14,7 +14,8 @@ public class ConstantsUtil {
     public enum Product {
 
         BUSINESS_LIFE("BUSINESS_LIFE","VIDA"),
-        DYNAMIC_LIFE("VIDADINAMICO","841");
+        DYNAMIC_LIFE("VIDADINAMICO","841"),
+        VEHICLE("VEHICULAR","830");
         private final String name;
         private final String code;
 

@@ -34,10 +34,9 @@ public class GeneralProductBusinessImpl implements IGeneralProductBusiness {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GeneralProductBusinessImpl.class);
 
-    private ApplicationConfigurationService applicationConfigurationService;
 
-    public GeneralProductBusinessImpl(ApplicationConfigurationService applicationConfigurationService) {
-        this.applicationConfigurationService = applicationConfigurationService;
+    public GeneralProductBusinessImpl() {
+
     }
 
     @Override
@@ -60,7 +59,7 @@ public class GeneralProductBusinessImpl implements IGeneralProductBusiness {
                     com.bbva.rbvd.lib.r041.pattern.factory.Participant participant = ParticipantFactory.buildParticipant(participantType);
                     PersonaBO persona = participant.createRequestParticipant(part, payloadConfig.getQuotationInformation(),
                             roleId);
-                    persona.setRolName(applicationConfigurationService.getProperty(part.getInputParticipant().getParticipantType().getId()));
+                    persona.setRolName(payloadConfig.getParticipantProperties().obtainRoleCodeByEnum(part.getInputParticipant().getParticipantType().getId()));
                     personaList.add(persona);
                     addTerceroByCompany.setPersona(personaList);
                 }else{
@@ -69,7 +68,7 @@ public class GeneralProductBusinessImpl implements IGeneralProductBusiness {
                             null);
                     OrganizacionBO organizacionBO = OrganizationBusiness.mapOrganizations(part.getLegalCustomer().getData().get(0), personaBO, payloadConfig.getQuotationInformation(), roleId,
                             part.getInputParticipant());
-                    organizacionBO.setRolName(applicationConfigurationService.getProperty(part.getInputParticipant().getParticipantType().getId()));
+                    organizacionBO.setRolName(payloadConfig.getParticipantProperties().obtainRoleCodeByEnum(part.getInputParticipant().getParticipantType().getId()));
                     organizations.add(organizacionBO);
                     addTerceroByCompany.setOrganizacion(organizations);
                 }

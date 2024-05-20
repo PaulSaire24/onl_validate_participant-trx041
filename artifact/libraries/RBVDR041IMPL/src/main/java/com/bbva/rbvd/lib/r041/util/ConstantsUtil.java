@@ -110,7 +110,7 @@ public class ConstantsUtil {
         CONTRACTOR("CONTRACTOR",8),
         INSURED("INSURED",9),
         LEGAL_REPRESENTATIVE("LEGAL_REPRESENTATIVE",8),
-        BENEFICIARY("BENEFICIARY",9);
+        BENEFICIARY("BENEFICIARY",19);
         private final String name;
         private final int value;
 

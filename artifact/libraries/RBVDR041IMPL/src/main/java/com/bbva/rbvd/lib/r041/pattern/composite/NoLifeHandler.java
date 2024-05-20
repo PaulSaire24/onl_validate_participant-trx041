@@ -1,6 +1,8 @@
 package com.bbva.rbvd.lib.r041.pattern.composite;
 
+import com.bbva.rbvd.lib.r041.pattern.strategy.product.DynamicLifeStrategy;
 import com.bbva.rbvd.lib.r041.properties.ParticipantProperties;
+import com.bbva.rbvd.lib.r041.util.ConstantsUtil;
 import com.bbva.rbvd.lib.r048.RBVDR048;
 
 public class NoLifeHandler extends AbstractCompositeParticipantHandler{
@@ -15,7 +17,7 @@ public class NoLifeHandler extends AbstractCompositeParticipantHandler{
      * @param ImplObject Implementación de estrategia para construir request que viajará a entidad de seguros.
      */
     static {
-        // Not implemented
+        addProductHandler(ConstantsUtil.Product.DYNAMIC_LIFE.getCode(), new DynamicLifeStrategy());
     }
 
     public NoLifeHandler(RBVDR048 rbvdr048, ParticipantProperties participantProperties){

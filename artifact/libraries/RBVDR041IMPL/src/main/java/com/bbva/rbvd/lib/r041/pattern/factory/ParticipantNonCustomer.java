@@ -2,7 +2,7 @@ package com.bbva.rbvd.lib.r041.pattern.factory;
 
 import com.bbva.rbvd.dto.insrncsale.bo.emision.PersonaBO;
 import com.bbva.rbvd.dto.participant.dao.QuotationCustomerDAO;
-import com.bbva.rbvd.lib.r041.business.customer.NonCustomerBusiness;
+import com.bbva.rbvd.lib.r041.business.addThird.customer.NonCustomerBusiness;
 
 public class ParticipantNonCustomer implements Participant{
 

@@ -5,6 +5,7 @@ import com.bbva.rbvd.dto.insrncsale.utils.PersonTypeEnum;
 import com.bbva.rbvd.dto.participant.dao.RolDAO;
 import com.bbva.rbvd.lib.r041.properties.ParticipantProperties;
 import com.bbva.rbvd.dto.participant.request.ParticipantsDTO;
+import com.bbva.rbvd.lib.r041.transfer.PayloadConfig;
 import com.bbva.rbvd.lib.r041.util.ConstantsUtil;
 import org.apache.commons.lang3.StringUtils;
 
@@ -20,15 +21,6 @@ public class ValidationUtil {
     public static boolean isBBVAClient(String clientId){
         return StringUtils.isNotEmpty(clientId) && !(clientId.matches(ConstantsUtil.RegularExpression.CONTAIN_ONLY_LETTERS) && clientId.matches(ConstantsUtil.RegularExpression.CONTAIN_ONLY_NUMBERS) && clientId.length()>ConstantsUtil.Number.CLIENT_BANK_LENGHT);
     }
-    public static Integer obtainExistingCompanyRole(ParticipantsDTO participantDTO, ParticipantProperties participantProperties, List<RolDAO> roles) {
-        String roleCodeBank = participantProperties.obtainPropertyFromConsole(participantDTO.getParticipantType().getId().concat(".bank.role"));
-        return roles.stream()
-                .filter(rolDTO -> roleCodeBank.equalsIgnoreCase(rolDTO.getParticipantRoleId().toString()))
-                .map(RolDAO::getInsuranceCompanyRoleId)
-                .map(Integer::parseInt)
-                .findFirst()
-                .orElse(null);
-    }
 
     public static PersonTypeEnum getPersonType(EntidadBO person) {
         if (RUC_ID.equalsIgnoreCase(person.getTipoDocumento())){
@@ -37,7 +29,9 @@ public class ValidationUtil {
         }
         return PersonTypeEnum.NATURAL;
     }
-
+    public static String validateAllVia(String via){
+        return !StringUtils.isEmpty(via)?via:ConstantsUtil.RegularExpression.UNSPECIFIED;
+    }
 
     public static String validateSN(String name) {
         if(Objects.isNull(name) || "null".equals(name) || " ".equals(name)){
@@ -46,6 +40,16 @@ public class ValidationUtil {
             name = name.replace("#","Ñ");
             return name;
         }
+    }
+
+    public static int getValueByName(String name){
+        ConstantsUtil.Rol[] val = ConstantsUtil.Rol.values();
+        for (ConstantsUtil.Rol er: val) {
+            if(er.getName().equalsIgnoreCase(name)){
+                return er.getValue();
+            }
+        }
+        return 0;
     }
 
 

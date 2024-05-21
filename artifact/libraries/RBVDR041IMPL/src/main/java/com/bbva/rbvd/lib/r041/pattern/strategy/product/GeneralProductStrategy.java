@@ -8,10 +8,10 @@ import com.bbva.rbvd.lib.r041.transfer.PayloadConfig;
 public class GeneralProductStrategy implements StrategyProductHandler {
 
     @Override
-    public AgregarTerceroBO prepareCompanyRequest(PayloadConfig payloadConfig, AgregarTerceroBO rimacRequestData) {
+    public AgregarTerceroBO customRequestByProduct(PayloadConfig payloadConfig, AgregarTerceroBO rimacRequestData) {
         GeneralProductBusinessImpl crossProductBusiness = new GeneralProductBusinessImpl();
         //Not implemented
-        crossProductBusiness.createRequestByCompany(payloadConfig);
+        crossProductBusiness.doGeneralProduct(payloadConfig, rimacRequestData);
         return rimacRequestData;
     }
 }

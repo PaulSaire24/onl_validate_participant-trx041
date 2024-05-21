@@ -1,4 +1,4 @@
-package com.bbva.rbvd.lib.r041.business.customer;
+package com.bbva.rbvd.lib.r041.business.addThird.customer;
 
 import com.bbva.pbtq.dto.validatedocument.response.host.pewu.PEWUResponse;
 import com.bbva.rbvd.lib.r041.model.AddressBO;

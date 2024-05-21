@@ -10,7 +10,7 @@ import com.bbva.rbvd.dto.participant.group.ParticipantGroupDTO;
 import com.bbva.rbvd.dto.participant.request.InputParticipantsDTO;
 import com.bbva.rbvd.dto.participant.request.ParticipantsDTO;
 import com.bbva.rbvd.dto.participant.request.PersonDTO;
-import com.bbva.rbvd.lib.r041.service.api.ConsumerInternalService;
+import com.bbva.rbvd.lib.r041.service.dao.ConsumerInternalService;
 import com.bbva.rbvd.lib.r041.transfer.Participant;
 import com.bbva.rbvd.lib.r041.transfer.LegalRepresentative;
 import com.bbva.rbvd.lib.r041.transfer.InputNonCustomer;
@@ -164,7 +164,7 @@ public class ParticipantsBusiness {
 
             String productId = quotationInformation.getInsuranceProduct().getInsuranceProductId().toString();
             String planId = quotationInformation.getQuotationMod().getInsuranceModalityType();
-            nonCustomerFromDB.setQuotationLife(getInsuredFromQuotation(internalQuotationId,productId,planId,documentNumber,documentType));
+            nonCustomerFromDB.setQuotationLife(getNonCustomerInsuredFromQuotation(internalQuotationId,productId,planId,documentNumber,documentType));
             LOGGER.info("** findParticipant nonCustomerFromQuotation -> {}",nonCustomerFromDB);
         }
         return nonCustomerFromDB;
@@ -201,7 +201,7 @@ public class ParticipantsBusiness {
         return consumerInternalService.executeListBusinessService(encryptedCustomerId);
     }
 
-    private QuotationLifeDAO getInsuredFromQuotation(String quotationId, String productId, String planId,String documentNumber,String documentType){
+    private QuotationLifeDAO getNonCustomerInsuredFromQuotation(String quotationId, String productId, String planId, String documentNumber, String documentType){
         return consumerInternalService.getDataInsuredBD(quotationId,productId,planId,documentNumber,documentType);
     }
 

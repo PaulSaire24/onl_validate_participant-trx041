@@ -19,6 +19,9 @@ public class NoLifeHandler extends AbstractCompositeParticipantHandler{
      */
     static {
         addProductHandler(ConstantsUtil.Product.VEHICLE.getCode(), new VehicleStrategy());
+        //addProductHandler(ConstantsUtil.Product.HOGAR.getCode(), new HOGARStrategy());
+        //addProductHandler(ConstantsUtil.Product.PT.getCode(), new PTStrategy());
+
     }
 
     public NoLifeHandler(RBVDR048 rbvdr048, ParticipantProperties participantProperties){

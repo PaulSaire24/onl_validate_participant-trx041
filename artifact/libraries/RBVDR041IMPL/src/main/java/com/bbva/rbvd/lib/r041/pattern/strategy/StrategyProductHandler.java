@@ -5,6 +5,6 @@ import com.bbva.rbvd.lib.r041.transfer.PayloadConfig;
 
 public interface StrategyProductHandler {
 
-    AgregarTerceroBO prepareCompanyRequest(PayloadConfig payloadConfig, AgregarTerceroBO rimacRequestData);
+    AgregarTerceroBO customRequestByProduct(PayloadConfig payloadConfig, AgregarTerceroBO rimacRequestData);
 
 }

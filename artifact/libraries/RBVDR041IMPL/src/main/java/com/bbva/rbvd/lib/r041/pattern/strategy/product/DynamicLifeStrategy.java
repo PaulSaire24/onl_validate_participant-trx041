@@ -8,7 +8,7 @@ import com.bbva.rbvd.lib.r041.transfer.PayloadConfig;
 public class DynamicLifeStrategy implements StrategyProductHandler {
 
     @Override
-    public AgregarTerceroBO prepareCompanyRequest(PayloadConfig payloadConfig, AgregarTerceroBO rimacRequestData) {
+    public AgregarTerceroBO customRequestByProduct(PayloadConfig payloadConfig, AgregarTerceroBO rimacRequestData) {
         DynamicLifeProductBusinessImpl dynamicLifeParticipantBusiness = new DynamicLifeProductBusinessImpl();
         return dynamicLifeParticipantBusiness.doDynamicLife(payloadConfig, rimacRequestData );
     }

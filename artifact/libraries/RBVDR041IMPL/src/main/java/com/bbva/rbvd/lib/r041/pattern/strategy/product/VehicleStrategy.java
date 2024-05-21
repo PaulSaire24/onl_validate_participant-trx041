@@ -7,7 +7,7 @@ import com.bbva.rbvd.lib.r041.transfer.PayloadConfig;
 
 public class VehicleStrategy implements StrategyProductHandler {
     @Override
-    public AgregarTerceroBO prepareCompanyRequest(PayloadConfig payloadConfig, AgregarTerceroBO rimacRequestData) {
+    public AgregarTerceroBO customRequestByProduct(PayloadConfig payloadConfig, AgregarTerceroBO rimacRequestData) {
         VehicleProductBusinessImpl vehicleProductBusiness = new VehicleProductBusinessImpl();
         return vehicleProductBusiness.doVehicleProduct(payloadConfig, rimacRequestData);
     }

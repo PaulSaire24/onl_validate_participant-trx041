@@ -25,15 +25,13 @@ public abstract class AbstractCompositeParticipantHandler implements Participant
 
         EnrichPayloadProductImpl enrichPayloadProduct = new EnrichPayloadProductImpl(participantProperties,rbvdr048);
         PayloadConfig payloadConfig = enrichPayloadProduct.enrichParticipantData(input,applicationConfigurationService,quotationInformation);
-        AgregarTerceroBO rimacRequest = enrichPayloadProduct.enrichToSendRimac(payloadConfig);
+        AgregarTerceroBO rimacRequest = enrichPayloadProduct.enrichRequestToCompany(payloadConfig);
 
         StrategyProductHandler productHandler = productHandlers.get(quotationInformation.getInsuranceProduct().getInsuranceProductType());
-        if (Objects.nonNull(productHandler)) {
-             rimacRequest =  productHandler.prepareCompanyRequest(payloadConfig, rimacRequest);
-        } else {
-            StrategyProductHandler strategyProductHandler = new GeneralProductStrategy();
-            rimacRequest = strategyProductHandler.prepareCompanyRequest(payloadConfig, rimacRequest);
+        if (Objects.isNull(productHandler)) {
+            productHandler = new GeneralProductStrategy();
         }
+        rimacRequest = productHandler.customRequestByProduct(payloadConfig, rimacRequest);
 
         return new ConsumerExternalService(rbvdr048).sendToApiAndValidateResponseError(payloadConfig, rimacRequest);
     }

@@ -88,8 +88,16 @@ public class ConstantsUtil {
         public static final String CONTAIN_ONLY_NUMBERS=".*[0-9].*";
         public static final String UNSPECIFIED = "SN";
     }
+    public static final class Delimeter{
+        public static final String VERTICAL_BAR = "|";
 
+        private Delimeter() {
+        }
+    }
     public final class Number{
+        public static final int UNO = 1;
+        public static final int CERO = 0;
+        public static final int DIEZ = 10;
         public static final int CLIENT_BANK_LENGHT =8;
 
         private Number() {

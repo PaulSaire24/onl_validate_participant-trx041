@@ -1,4 +1,4 @@
-package com.bbva.rbvd.lib.r041.business.organization;
+package com.bbva.rbvd.lib.r041.business.addThird.organization;
 
 import com.bbva.rbvd.dto.insrncsale.aso.CommonFieldsASO;
 import com.bbva.rbvd.dto.insrncsale.aso.FormationASO;

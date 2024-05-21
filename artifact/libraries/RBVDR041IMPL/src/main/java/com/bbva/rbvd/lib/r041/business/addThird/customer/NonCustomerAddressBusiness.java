@@ -1,4 +1,4 @@
-package com.bbva.rbvd.lib.r041.business.customer;
+package com.bbva.rbvd.lib.r041.business.addThird.customer;
 
 import com.bbva.rbvd.dto.participant.request.AddressComponentsDTO;
 import com.bbva.rbvd.dto.participant.request.AddressesDTO;

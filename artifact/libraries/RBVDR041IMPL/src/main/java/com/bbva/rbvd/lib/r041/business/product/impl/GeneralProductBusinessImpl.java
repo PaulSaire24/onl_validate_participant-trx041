@@ -13,8 +13,7 @@ public class GeneralProductBusinessImpl implements IGeneralProductBusiness {
     }
 
     @Override
-    public AgregarTerceroBO createRequestByCompany(PayloadConfig payloadConfig) {
-        //Not implemented
-        return null;
+    public AgregarTerceroBO doGeneralProduct(PayloadConfig payloadConfig, AgregarTerceroBO rimacRequestData) {
+        return rimacRequestData;
     }
 }

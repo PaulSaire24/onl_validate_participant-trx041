@@ -197,7 +197,7 @@ public class RBVDR041Test {
 		quotationLifeDAOResponseDB.setCustomerDocumentType("L");
 		quotationLifeDAOResponseDB.setUserEmailPersonalDesc("huhuh@gmail.com");
 
-        InputParticipantsDTO request = ParticipantsUtil.getMockRequestBodyValidateLegalParticipants();
+        InputParticipantsDTO request = ParticipantsUtil.getMockRequestBodyValidateNaturalParticipantsLifeCase3();
         when(rbvdr048.executeGetCustomerInformationFromQuotation(anyString())).thenReturn(quotationJoinCustomerInformation);
         when(rbvdr048.executeAddParticipants(anyObject(),anyString(),anyString(),anyString(),anyString())).thenReturn(new AgregarTerceroBO());
         when(rbvdr048.executeGetCustomerByDocType(anyString(),anyString())).thenReturn(ParticipantsUtil.buildPersonHostDataResponseCase3());

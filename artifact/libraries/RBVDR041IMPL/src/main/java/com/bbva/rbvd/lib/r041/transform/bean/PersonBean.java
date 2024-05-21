@@ -8,6 +8,7 @@ import com.bbva.rbvd.dto.participant.request.ContactDetailsDTO;
 import com.bbva.rbvd.dto.participant.request.IdentityDocumentDTO;
 import com.bbva.rbvd.dto.participant.request.ParticipantsDTO;
 import com.bbva.rbvd.dto.participant.request.PersonDTO;
+import com.bbva.rbvd.lib.r041.business.addThird.customer.CustomerContactBusiness;
 import com.bbva.rbvd.lib.r041.model.AddressBO;
 import com.bbva.rbvd.lib.r041.model.ContactBO;
 import com.bbva.rbvd.lib.r041.transfer.NonCustomerFromDB;
@@ -17,6 +18,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.CollectionUtils;
 
 import java.util.Objects;
+import java.util.Optional;
 
 import static com.bbva.rbvd.lib.r041.util.ConvertUtil.toLocalDate;
 
@@ -111,14 +113,10 @@ public class PersonBean {
 
     public static PersonaBO getPersonFromPEWU(ParticipantsDTO participant, PEWUResponse customer, QuotationCustomerDAO customerInformationDb, Integer roleId, AddressBO addressBO){
         PersonaBO persona = new PersonaBO();
-        ContactDetailsDTO correoSelect = new ContactDetailsDTO();
-        ContactDetailsDTO celularSelect = new ContactDetailsDTO();
-        if(!CollectionUtils.isEmpty(participant.getContactDetails()) && Objects.nonNull(participant.getContactDetails())){
-            correoSelect= participant.getContactDetails().stream().
-                    filter(contactDetail -> contactDetail.getContactType().equals(ConstantsUtil.PERSONAL_DATA.EMAIL_VALUE)).findFirst().orElse(null);
-            celularSelect= participant.getContactDetails().stream().
-                    filter(contactDetail -> contactDetail.getContactType().equals(ConstantsUtil.PERSONAL_DATA.MOBILE_VALUE)).findFirst().orElse(null);
-        }
+
+        ContactBO customerContact = CustomerContactBusiness.getContactToCustomerBO(participant, customer, customerInformationDb);
+        persona.setCorreoElectronico(customerContact.getEmail());
+        persona.setCelular(customerContact.getMobile());
 
         persona.setTipoDocumento(participant.getIdentityDocuments().get(0).getDocumentType().getId());
         persona.setNroDocumento((ConstantsUtil.PERSONAL_DATA.RUC_ID.equalsIgnoreCase(persona.getTipoDocumento())?participant.getIdentityDocuments().get(0).getValue():customer.getPemsalwu().getNdoi()));
@@ -130,9 +128,6 @@ public class PersonBean {
         persona.setFechaNacimiento(customer.getPemsalwu().getFechan());
         persona.setSexo(customer.getPemsalwu().getSexo());
 
-        persona.setCorreoElectronico(Objects.isNull(correoSelect) ? customerInformationDb.getQuotationMod().getContactEmailDesc() : correoSelect.getContact());
-
-        persona.setCelular(Objects.isNull(celularSelect) ? customerInformationDb.getQuotationMod().getCustomerPhoneDesc() : celularSelect.getContact());
         persona.setTipoPersona(ValidationUtil.getPersonType(persona).getCode());
         persona.setRol(Objects.isNull(roleId)?null:roleId);
 

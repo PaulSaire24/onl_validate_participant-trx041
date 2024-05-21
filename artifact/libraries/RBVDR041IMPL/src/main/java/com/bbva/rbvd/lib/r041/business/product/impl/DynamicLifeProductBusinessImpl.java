@@ -33,9 +33,36 @@ public class DynamicLifeProductBusinessImpl implements IDynamicLifeBusiness {
         List<PersonaBO> personList = new ArrayList<>();*/
         boolean isParticipantsWithRolContractor = false;
         boolean isParticipantsWithRolInsured = false;
+/* for(Participant participant : participants) {
+            PersonaBO person = new PersonaBO();
+            if(ConstantsUtil.Rol.PAYMENT_MANAGER.getName().equalsIgnoreCase(participant.getRolCode())){
+               person = PersonBean.buildPersonFromCustomer(participant.getCustomer(),participant.getRolCode());
+                person.setRolName(payloadConfig.getParticipantProperties().obtainRoleCodeByEnum(ConstantsUtil.Rol.PAYMENT_MANAGER.getName()));
+            } else if (ConstantsUtil.Rol.CONTRACTOR.getName().equalsIgnoreCase(participant.getRolCode()) &&
+                    Objects.nonNull(participant.getCustomer())) {
+                isParticipantsWithRolContractor = true;
+                person = PersonBean.buildPersonFromCustomer(participant.getCustomer(),participant.getRolCode());
+                person.setRolName(payloadConfig.getParticipantProperties().obtainRoleCodeByEnum(ConstantsUtil.Rol.CONTRACTOR.getName()));
+            } else if (ConstantsUtil.Rol.INSURED.getName().equalsIgnoreCase(participant.getRolCode())) {
+                isParticipantsWithRolInsured = true;
+                if(Objects.nonNull(participant.getCustomer())){
+                    person = PersonBean.buildPersonFromCustomer(participant.getCustomer(),participant.getRolCode());
+                }else if (Objects.nonNull(participant.getNonCustomerFromDB())){
+                     Optional<Participant> managerParticipant = participants.stream()
+                                .filter(part -> part.getRolCode().equalsIgnoreCase(ConstantsUtil.Rol.PAYMENT_MANAGER.getName()))
+                                .findFirst();
+                    if(managerParticipant.isPresent()){
+                        PersonaBO personManager = PersonBean.buildPersonFromCustomer(managerParticipant.get().getCustomer(),managerParticipant.get().getRolCode());
+                        person = PersonBean.buildPersonFromNonCustomer(participant.getNonCustomerFromDB(),personManager);
+                    }
+                }
+                person.setRolName(payloadConfig.getParticipantProperties().obtainRoleCodeByEnum(ConstantsUtil.Rol.INSURED.getName()));
+            }
+            personList.add(person);
+        }*/
+
 
         List<PersonaBO> personas = rimacRequestData.getPayload().getPersona();
-
 
         List<Participant> participants = payloadConfig.getParticipants();
         participants.stream()
@@ -56,9 +83,9 @@ public class DynamicLifeProductBusinessImpl implements IDynamicLifeBusiness {
         // Check if there is a participant with the role of contractor
 
         for (PersonaBO personaBo : personas){
-            if (personaBo.getRol() == ConstantsUtil.Rol.CONTRACTOR.getValue()){
+            if (personaBo.getRol() == ConstantsUtil.Rol.CONTRACTOR.getValue() && Objects.nonNull(personaBo.getNroDocumento())){
                 isParticipantsWithRolContractor = true;
-            } else if (personaBo.getRol() == ConstantsUtil.Rol.INSURED.getValue()){
+            } else if (personaBo.getRol() == ConstantsUtil.Rol.INSURED.getValue() && Objects.nonNull(personaBo.getNroDocumento())){
                 isParticipantsWithRolInsured = true;
             }
         }
@@ -73,6 +100,7 @@ public class DynamicLifeProductBusinessImpl implements IDynamicLifeBusiness {
             enrichPerson(isParticipantsWithRolInsured, personManager1, personas, ConstantsUtil.Rol.INSURED,rolInsured);
         }
 
+        personas.removeIf(person -> Objects.isNull(person.getNroDocumento()));
         rimacRequestData.getPayload().setPersona(personas);
         rimacRequestData.getPayload().setProducto(payloadConfig.getQuotationInformation().getInsuranceProduct().getInsuranceProductDesc());
         LOGGER.info("** doDynamicLife - rimacRequestData after enrich -> {}",rimacRequestData);

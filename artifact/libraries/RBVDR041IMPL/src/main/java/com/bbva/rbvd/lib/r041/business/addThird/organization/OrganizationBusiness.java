@@ -78,6 +78,6 @@ public class OrganizationBusiness {
                 .filter(contact -> contactType.equals(contact.getContactType()))
                 .map(ContactDetailsDTO::getContact)
                 .findFirst()
-                .orElse(StringUtils.EMPTY);
+                .orElse(null);
     }
 }

@@ -56,8 +56,8 @@ public class AddThirdBusiness {
 
         PayloadAgregarTerceroBO addTerceroByCompany = new PayloadAgregarTerceroBO();
 
-        addTerceroByCompany.setPersona(personas);
-        addTerceroByCompany.setOrganizacion(organizations);
+        addTerceroByCompany.setPersona(personas.isEmpty()?null:personas);
+        addTerceroByCompany.setOrganizacion(organizations.isEmpty()?null:organizations);
         addTerceroByCompany.setProducto(payloadConfig.getQuotationInformation().getInsuranceProduct().getInsuranceProductDesc());
         return addTerceroByCompany;
     }

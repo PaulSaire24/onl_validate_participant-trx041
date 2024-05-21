@@ -13,10 +13,6 @@
 	<packaging>bundle</packaging>
 	<description>Library to manage businessLogic to validate participants information</description>
 	<properties>
-		<sonar.coverage.exclusions>
-			/src/main/java/com/bbva/rbvd/lib/r041/util/constants/**.java,
-			/src/main/java/com/bbva/rbvd/lib/r041/model/**.java
-		</sonar.coverage.exclusions>
 		<osgi.version.manifest>0.0</osgi.version.manifest>
 	</properties>
 	<dependencies>

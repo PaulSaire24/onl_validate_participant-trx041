@@ -17,6 +17,7 @@ public class NonCustomerAddressBusiness {
         AddressBO addressBO = new AddressBO();
         if(addresses.size()>0) {
             List<AddressComponentsDTO> addressComponents= addresses.get(0).getLocation().getAddressComponent();
+            addressBO.setDireccion(addresses.get(0).getFormattedAddress());
             addressBO.setDistrito(getAddressComponentValue(addressComponents, ConstantsUtil.ADDRESS_LABEL.DISTRICT));
             addressBO.setProvincia(getAddressComponentValue(addressComponents, ConstantsUtil.ADDRESS_LABEL.PROVINCE));
             addressBO.setDepartamento(getAddressComponentValue(addressComponents, ConstantsUtil.ADDRESS_LABEL.DEPARTMENT));

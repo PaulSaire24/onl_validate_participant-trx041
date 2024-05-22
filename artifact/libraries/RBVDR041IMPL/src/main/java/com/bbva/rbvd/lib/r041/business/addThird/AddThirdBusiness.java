@@ -48,7 +48,7 @@ public class AddThirdBusiness {
         if (organizations.size()>0) {
             organizations.stream()
                     .filter(organization -> ConstantsUtil.Rol.CONTRACTOR.getValue()==organization.getRol())
-                    .forEach(organization -> organization.setRepresentanteLegal(legalsRepresentatives));
+                    .forEach(organization -> organization.setRepresentanteLegal(legalsRepresentatives.isEmpty()?null:legalsRepresentatives));
         }
 
         //Beneficiaries

@@ -133,9 +133,9 @@ public class ParticipantsUtil {
         requestBody.setChannelId("PC");
         requestBody.setTraceId("c05ed2bd-1a7c-47ca-b7c9-fc639f47790a");
         List<ParticipantsDTO> participantsList = new ArrayList<>();
-        ParticipantsDTO participant1 = buildParticipant("PAYMENT_MANAGER","DNI", "78392872","NATURAL",true);
-        ParticipantsDTO participant2 = buildParticipant("INSURED","DNI", "78392172","NATURAL",true);
-        ParticipantsDTO participant3 = buildParticipant("CONTRACTOR","DNI", "78394872","NATURAL",true);
+        ParticipantsDTO participant1 = buildParticipant("PAYMENT_MANAGER","DNI", "20392872","NATURAL",true);
+        ParticipantsDTO participant2 = buildParticipant("INSURED","DNI", "20392372","NATURAL",true);
+        ParticipantsDTO participant3 = buildParticipant("CONTRACTOR","DNI", "20391872","NATURAL",true);
         participantsList.add(participant1);
         participantsList.add(participant2);
         participantsList.add(participant3);

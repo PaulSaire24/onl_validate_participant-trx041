@@ -53,8 +53,8 @@ public class ParticipantsBusiness {
         return orderParticipantByType(participants);
     }
 
-    private static boolean isCompanyCustomer(ParticipantGroupDTO part) {
-        return StringUtils.startsWith(part.getDocumentNumber(), RBVDInternalConstants.Number.VEINTE) && part.getDocumentNumber().length()>=ConstantsUtil.Number.DIEZ;
+    private static boolean isCompanyCustomer(String documentNumber, String documentType) {
+        return StringUtils.startsWith(documentNumber, RBVDInternalConstants.Number.VEINTE) && documentType.equals(ConstantsUtil.Organization.RUC_ID);
     }
 
     public List<ParticipantGroupDTO> groupByDocumentNumberAndDocumentType(InputParticipantsDTO participant){
@@ -125,7 +125,7 @@ public class ParticipantsBusiness {
                 myParticipantByDocument.setDocumentNumber(documentNumber);
                 myParticipantByDocument.setCustomer(executeGetCustomer(documentNumber, documentType));
 
-                if (isCompanyCustomer(inputParticipant)) {
+                if (isCompanyCustomer(documentNumber, documentType)) {
                     myParticipantByDocument.setLegalCustomer(executeGetBusinessAgentASOInformation(inputPerson.getCustomerId()));
                 }
 
@@ -180,11 +180,11 @@ public class ParticipantsBusiness {
                 legalRepresentative.setLastName(participant.getPerson().getLastName());
                 legalRepresentative.setSecondLastName(participant.getPerson().getSecondLastName());
             }else{
-                legalRepresentative.setDocumentType(customerInformation.getPemsalwu().getTdoi());
-                legalRepresentative.setDocumentNumber(customerInformation.getPemsalwu().getNdoi());
-                legalRepresentative.setFirstName(participant.getPerson().getFirstName());
-                legalRepresentative.setLastName(participant.getPerson().getLastName());
-                legalRepresentative.setSecondLastName(participant.getPerson().getSecondLastName());
+                legalRepresentative.setDocumentType(documentType);
+                legalRepresentative.setDocumentNumber(documentNumber);
+                legalRepresentative.setFirstName(customerInformation.getPemsalwu().getNombres());
+                legalRepresentative.setLastName(customerInformation.getPemsalwu().getApellip());
+                legalRepresentative.setSecondLastName(customerInformation.getPemsalwu().getApellim());
             }
 
             return legalRepresentative;

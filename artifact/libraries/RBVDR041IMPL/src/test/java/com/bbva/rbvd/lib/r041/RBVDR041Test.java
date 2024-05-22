@@ -422,9 +422,11 @@ public class RBVDR041Test {
 		Assert.assertNotNull(response);
 		Assert.assertEquals(0,this.context.getAdviceList().size());
 
+
+		InputParticipantsDTO request2 = ParticipantsUtil.getMockRequestBodyValidateLegalParticipants();
 		listBusinessesASO.getData().get(0).setLegalName("Ñandú");
 		Mockito.when(rbvdr048.executeListBusiness(Mockito.anyString())).thenReturn(listBusinessesASO);
-		AgregarTerceroBO response2 = rbvdR041.executeValidateParticipants(request);
+		AgregarTerceroBO response2 = rbvdR041.executeValidateParticipants(request2);
 		Assert.assertNotNull(response2);
 		Assert.assertEquals(0,this.context.getAdviceList().size());
 	}
@@ -455,9 +457,10 @@ public class RBVDR041Test {
 		Assert.assertNotNull(response);
 		Assert.assertEquals(0,this.context.getAdviceList().size());
 
+		InputParticipantsDTO request2 = ParticipantsUtil.getMockRequestBodyValidateLegalParticipants();
 		listBusinessesASO.getData().get(0).setLegalName(" ");
 		Mockito.when(rbvdr048.executeListBusiness(Mockito.anyString())).thenReturn(listBusinessesASO);
-		AgregarTerceroBO response2 = rbvdR041.executeValidateParticipants(request);
+		AgregarTerceroBO response2 = rbvdR041.executeValidateParticipants(request2);
 		Assert.assertNotNull(response2);
 		Assert.assertEquals(0,this.context.getAdviceList().size());
 	}

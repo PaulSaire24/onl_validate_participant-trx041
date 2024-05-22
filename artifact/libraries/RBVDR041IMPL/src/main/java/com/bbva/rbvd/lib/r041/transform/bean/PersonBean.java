@@ -46,30 +46,7 @@ public class PersonBean {
         personContractor.setDireccion(personManager.getDireccion());
         return personContractor;
     }
-    public static PersonaBO buildPersonFromCustomer(PEWUResponse customer, String rolCode) {
-        PersonaBO personCustomer = new PersonaBO();
-        personCustomer.setNombres(customer.getPemsalwu().getNombres());
-        personCustomer.setApePaterno(customer.getPemsalwu().getApellip());
-        personCustomer.setApeMaterno(customer.getPemsalwu().getApellim());
-        personCustomer.setTipoDocumento(customer.getPemsalwu().getTdoi());
-        personCustomer.setNroDocumento(customer.getPemsalwu().getNdoi());
-        personCustomer.setFechaNacimiento(customer.getPemsalwu().getFechan());
-        personCustomer.setSexo(customer.getPemsalwu().getSexo());
-        personCustomer.setCorreoElectronico(customer.getPemsalwu().getContac3());
-        personCustomer.setRol(ValidationUtil.getValueByName(rolCode));
-        personCustomer.setCelular(customer.getPemsalwu().getContac2());
 
-        personCustomer.setTipoVia(ValidationUtil.validateAllVia(customer.getPemsalwu().getIdendi1()));
-        personCustomer.setNombreVia(ValidationUtil.validateAllVia(customer.getPemsalwu().getNombdi1()));
-        personCustomer.setNumeroVia(ValidationUtil.validateAllVia(customer.getPemsalwu().getNroext1()));
-
-        personCustomer.setDistrito(customer.getPemsalw4().getDesdist());
-        personCustomer.setProvincia(customer.getPemsalw4().getDesprov());
-        personCustomer.setDepartamento(customer.getPemsalw4().getDesdept());
-        personCustomer.setDireccion(customer.getPemsalwu().getIdendi1().concat(" ").concat(customer.getPemsalwu().getNombdi1()));
-
-        return personCustomer;
-    }
     public static PersonaBO buildPersonFromNonCustomer(QuotationLifeDAO participant, PersonaBO personManager){
         PersonaBO personNonCustomer = new PersonaBO();
         String apellidos = participant.getClientLastName();

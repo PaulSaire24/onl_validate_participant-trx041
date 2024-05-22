@@ -54,7 +54,7 @@ public class ParticipantsBusiness {
     }
 
     private static boolean isCompanyCustomer(ParticipantGroupDTO part) {
-        return StringUtils.startsWith(part.getDocumentNumber(), RBVDInternalConstants.Number.VEINTE);
+        return StringUtils.startsWith(part.getDocumentNumber(), RBVDInternalConstants.Number.VEINTE) && part.getDocumentNumber().length()>=ConstantsUtil.Number.DIEZ;
     }
 
     public List<ParticipantGroupDTO> groupByDocumentNumberAndDocumentType(InputParticipantsDTO participant){

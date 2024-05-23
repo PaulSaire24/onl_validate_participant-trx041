@@ -14,7 +14,8 @@ public class ConstantsUtil {
     public enum Product {
 
         BUSINESS_LIFE("BUSINESS_LIFE","VIDA"),
-        DYNAMIC_LIFE("VIDADINAMICO","841");
+        DYNAMIC_LIFE("VIDADINAMICO","841"),
+        VEHICLE("VEHICULAR","830");
         private final String name;
         private final String code;
 
@@ -33,13 +34,60 @@ public class ConstantsUtil {
     }
 
 
+
+    public static final class PERSONAL_ADDRESS {
+        private PERSONAL_ADDRESS() {
+        }
+
+        public static final String SIN_ESPECIFICAR = "SN";
+        public static final String NO_EXIST = "NotExist";
+
+        public static final String INTERIOR_NUMBER_ID = "DPTO.";
+    }
+    public static final class PERSONAL_DATA {
+        private PERSONAL_DATA() {
+        }
+
+        public static final String RUC_ID = "R";
+        public static final String EMAIL_VALUE = "EMAIL";
+        public static final String MOBILE_VALUE = "MOBILE_NUMBER";
+        public static final int MAX_CHARACTER = 1;
+    }
+    public static final class ADDRESS_LABEL {
+        private ADDRESS_LABEL() {
+        }
+
+        public static final String DISTRICT = "DISTRICT";
+        public static final String PROVINCE = "PROVINCE";
+        public static final String DEPARTMENT = "DEPARTMENT";
+        public static final String UBIGEO = "UBIGEO";
+        public static final String EXTERIOR_NUMBER = "EXTERIOR_NUMBER";
+        public static final String STREET = "STREET";
+    }
+
+    public static final class Organization {
+        private Organization() {
+        }
+        public static final String RUC_ID = "R";
+        public static final String TAG_OTROS = "OTROS";
+        public static final String COUNTRY_REQUIRED = "PERU";
+    }
+
+    public static final class ContactType {
+        private ContactType() {
+        }
+        public static final String PHONE_NUMBER = "PHONE_NUMBER";
+        public static final String MOBILE_NUMBER = "MOBILE_NUMBER";
+        public static final String EMAIL = "EMAIL";
+
+    }
+
     public static final class RegularExpression{
         private RegularExpression() {   }
         public static final String CONTAIN_ONLY_LETTERS=".*[a-zA-Z].*";
         public static final String CONTAIN_ONLY_NUMBERS=".*[0-9].*";
         public static final String UNSPECIFIED = "SN";
     }
-
     public static final class Delimeter{
         public static final String VERTICAL_BAR = "|";
 
@@ -50,7 +98,6 @@ public class ConstantsUtil {
         public static final int UNO = 1;
         public static final int CERO = 0;
         public static final int DIEZ = 10;
-
         public static final int CLIENT_BANK_LENGHT =8;
 
         private Number() {
@@ -78,15 +125,5 @@ public class ConstantsUtil {
         public int getValue() {
             return value;
         }
-    }
-
-    public static int getValueByName(String name){
-        Rol[] val = Rol.values();
-        for (Rol er: val) {
-            if(er.getName().equalsIgnoreCase(name)){
-                return er.getValue();
-            }
-        }
-        return 0;
     }
 }

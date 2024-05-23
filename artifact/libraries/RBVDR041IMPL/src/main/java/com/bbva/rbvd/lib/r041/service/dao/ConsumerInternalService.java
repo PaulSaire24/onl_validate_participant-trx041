@@ -1,4 +1,4 @@
-package com.bbva.rbvd.lib.r041.service.api;
+package com.bbva.rbvd.lib.r041.service.dao;
 
 import com.bbva.pbtq.dto.validatedocument.response.host.pewu.PEWUResponse;
 import com.bbva.rbvd.dto.participant.dao.QuotationCustomerDAO;

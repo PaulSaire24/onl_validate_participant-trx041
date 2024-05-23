@@ -81,8 +81,6 @@ public class ParticipantsUtil {
             contactDetail2.setContact("example@bbva.com");
             contactDetail2.setContactType("EMAIL");
             ContactDetailsDTO contactDetail3 = new ContactDetailsDTO();
-            contactDetail3.setContact("012243985");
-            contactDetail3.setContactType("PHONE_NUMBER");
             contactDetailList.add(contactDetail1);
             contactDetailList.add(contactDetail2);
             contactDetailList.add(contactDetail3);
@@ -135,9 +133,9 @@ public class ParticipantsUtil {
         requestBody.setChannelId("PC");
         requestBody.setTraceId("c05ed2bd-1a7c-47ca-b7c9-fc639f47790a");
         List<ParticipantsDTO> participantsList = new ArrayList<>();
-        ParticipantsDTO participant1 = buildParticipant("PAYMENT_MANAGER","DNI", "78392872","NATURAL",true);
-        ParticipantsDTO participant2 = buildParticipant("INSURED","DNI", "78392172","NATURAL",true);
-        ParticipantsDTO participant3 = buildParticipant("CONTRACTOR","DNI", "78394872","NATURAL",true);
+        ParticipantsDTO participant1 = buildParticipant("PAYMENT_MANAGER","DNI", "20392872","NATURAL",true);
+        ParticipantsDTO participant2 = buildParticipant("INSURED","DNI", "20392372","NATURAL",true);
+        ParticipantsDTO participant3 = buildParticipant("CONTRACTOR","DNI", "20391872","NATURAL",true);
         participantsList.add(participant1);
         participantsList.add(participant2);
         participantsList.add(participant3);
@@ -146,7 +144,7 @@ public class ParticipantsUtil {
     }
 
     public static InputParticipantsDTO getMockRequestBodyValidateNaturalParticipantsLifeCase1(){
-InputParticipantsDTO requestBody = new InputParticipantsDTO();
+        InputParticipantsDTO requestBody = new InputParticipantsDTO();
         requestBody.setQuotationId("0123489304");
         requestBody.setChannelId("PC");
         requestBody.setTraceId("c05ed2bd-1a7c-47ca-b7c9-fc639f47790a");
@@ -167,6 +165,25 @@ InputParticipantsDTO requestBody = new InputParticipantsDTO();
         List<ParticipantsDTO> participantsList = new ArrayList<>();
         ParticipantsDTO participant1 = buildParticipant("PAYMENT_MANAGER","DNI", "78394872","NATURAL",true);
         participantsList.add(participant1);
+        requestBody.setParticipants(participantsList);
+        return requestBody;
+    }
+
+    public static InputParticipantsDTO getMockRequestBodyValidateNaturalParticipantsLifeCase3(){
+        InputParticipantsDTO requestBody = new InputParticipantsDTO();
+        requestBody.setQuotationId("0123489304");
+        requestBody.setChannelId("PC");
+        requestBody.setTraceId("c05ed2bd-1a7c-47ca-b7c9-fc639f47790a");
+        List<ParticipantsDTO> participantsList = new ArrayList<>();
+        ParticipantsDTO participant1 = buildParticipant("PAYMENT_MANAGER","DNI", "78394872","NATURAL",true);
+        ParticipantsDTO participant2 = buildParticipant("INSURED","DNI", "78394872","NATURAL",true);
+        ParticipantsDTO participant3 = buildParticipant("INSURED","DNI", "78394872","NATURAL",false);
+
+        participantsList.add(participant1);
+        participantsList.add(participant2);
+        participant3.getPerson().setFirstName(null);
+        participant3.getPerson().setSecondLastName(null);
+        participantsList.add(participant3);
         requestBody.setParticipants(participantsList);
         return requestBody;
     }
@@ -863,8 +880,8 @@ InputParticipantsDTO requestBody = new InputParticipantsDTO();
         requestBody.setTraceId("c05ed2bd-1a7c-47ca-b7c9-fc639f47790a");
         List<ParticipantsDTO> participantsList = new ArrayList<>();
         ParticipantsDTO participant1 = buildParticipant("PAYMENT_MANAGER","RUC", "201928394221","LEGAL", true);
-        ParticipantsDTO participant2 = buildParticipant("INSURED","RUC", "201928394221","LEGAL", true);
-        ParticipantsDTO participant3 = buildParticipant("INSURED","RUC", "201928394221","NATURAL",true);
+        ParticipantsDTO participant2 = buildParticipant("CONTRACTOR","RUC", "201928394221","LEGAL", true);
+        ParticipantsDTO participant3 = buildParticipant("INSURED","RUC", "201928394221","LEGAL",true);
         participantsList.add(participant1);
         participantsList.add(participant2);
         participantsList.add(participant3);

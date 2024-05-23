@@ -10,7 +10,7 @@ import com.bbva.rbvd.dto.participant.group.ParticipantGroupDTO;
 import com.bbva.rbvd.dto.participant.request.InputParticipantsDTO;
 import com.bbva.rbvd.dto.participant.request.ParticipantsDTO;
 import com.bbva.rbvd.dto.participant.request.PersonDTO;
-import com.bbva.rbvd.lib.r041.service.api.ConsumerInternalService;
+import com.bbva.rbvd.lib.r041.service.dao.ConsumerInternalService;
 import com.bbva.rbvd.lib.r041.transfer.Participant;
 import com.bbva.rbvd.lib.r041.transfer.LegalRepresentative;
 import com.bbva.rbvd.lib.r041.transfer.InputNonCustomer;
@@ -53,8 +53,8 @@ public class ParticipantsBusiness {
         return orderParticipantByType(participants);
     }
 
-    private static boolean isCompanyCustomer(ParticipantGroupDTO part) {
-        return StringUtils.startsWith(part.getDocumentNumber(), RBVDInternalConstants.Number.VEINTE);
+    private static boolean isCompanyCustomer(String documentNumber, String documentType) {
+        return StringUtils.startsWith(documentNumber, RBVDInternalConstants.Number.VEINTE) && documentType.equals(ConstantsUtil.Organization.RUC_ID);
     }
 
     public List<ParticipantGroupDTO> groupByDocumentNumberAndDocumentType(InputParticipantsDTO participant){
@@ -125,7 +125,7 @@ public class ParticipantsBusiness {
                 myParticipantByDocument.setDocumentNumber(documentNumber);
                 myParticipantByDocument.setCustomer(executeGetCustomer(documentNumber, documentType));
 
-                if (isCompanyCustomer(inputParticipant)) {
+                if (isCompanyCustomer(documentNumber, documentType)) {
                     myParticipantByDocument.setLegalCustomer(executeGetBusinessAgentASOInformation(inputPerson.getCustomerId()));
                 }
 
@@ -164,7 +164,7 @@ public class ParticipantsBusiness {
 
             String productId = quotationInformation.getInsuranceProduct().getInsuranceProductId().toString();
             String planId = quotationInformation.getQuotationMod().getInsuranceModalityType();
-            nonCustomerFromDB.setQuotationLife(getInsuredFromQuotation(internalQuotationId,productId,planId,documentNumber,documentType));
+            nonCustomerFromDB.setQuotationLife(getNonCustomerInsuredFromQuotation(internalQuotationId,productId,planId,documentNumber,documentType));
             LOGGER.info("** findParticipant nonCustomerFromQuotation -> {}",nonCustomerFromDB);
         }
         return nonCustomerFromDB;
@@ -180,11 +180,11 @@ public class ParticipantsBusiness {
                 legalRepresentative.setLastName(participant.getPerson().getLastName());
                 legalRepresentative.setSecondLastName(participant.getPerson().getSecondLastName());
             }else{
-                legalRepresentative.setDocumentType(customerInformation.getPemsalwu().getTdoi());
-                legalRepresentative.setDocumentNumber(customerInformation.getPemsalwu().getNdoi());
-                legalRepresentative.setFirstName(participant.getPerson().getFirstName());
-                legalRepresentative.setLastName(participant.getPerson().getLastName());
-                legalRepresentative.setSecondLastName(participant.getPerson().getSecondLastName());
+                legalRepresentative.setDocumentType(documentType);
+                legalRepresentative.setDocumentNumber(documentNumber);
+                legalRepresentative.setFirstName(customerInformation.getPemsalwu().getNombres());
+                legalRepresentative.setLastName(customerInformation.getPemsalwu().getApellip());
+                legalRepresentative.setSecondLastName(customerInformation.getPemsalwu().getApellim());
             }
 
             return legalRepresentative;
@@ -201,7 +201,7 @@ public class ParticipantsBusiness {
         return consumerInternalService.executeListBusinessService(encryptedCustomerId);
     }
 
-    private QuotationLifeDAO getInsuredFromQuotation(String quotationId, String productId, String planId,String documentNumber,String documentType){
+    private QuotationLifeDAO getNonCustomerInsuredFromQuotation(String quotationId, String productId, String planId, String documentNumber, String documentType){
         return consumerInternalService.getDataInsuredBD(quotationId,productId,planId,documentNumber,documentType);
     }
 

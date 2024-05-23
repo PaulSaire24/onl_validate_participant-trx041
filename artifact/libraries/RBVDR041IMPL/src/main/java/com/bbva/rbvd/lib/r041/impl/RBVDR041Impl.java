@@ -7,7 +7,7 @@ import com.bbva.rbvd.dto.participant.request.InputParticipantsDTO;
 import com.bbva.rbvd.lib.r041.pattern.composite.ParticipantHandler;
 import com.bbva.rbvd.lib.r041.pattern.factory.FactoryProduct;
 import com.bbva.rbvd.lib.r041.properties.ParticipantProperties;
-import com.bbva.rbvd.lib.r041.service.api.ConsumerInternalService;
+import com.bbva.rbvd.lib.r041.service.dao.ConsumerInternalService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

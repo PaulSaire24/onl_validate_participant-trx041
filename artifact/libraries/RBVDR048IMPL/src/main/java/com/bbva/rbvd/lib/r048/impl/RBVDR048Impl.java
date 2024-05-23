@@ -164,7 +164,8 @@ public class RBVDR048Impl extends RBVDR048Abstract {
     public ListBusinessesASO executeListBusiness(String encryptedCustomerId) {
         LOGGER.info("***** RBVDR048Impl - executeListBusinessService Start *****");
         ListBusinessesASO listBusinesses = rbvdR066.executeGetListBusinesses(encryptedCustomerId, null);
-        if(CollectionUtils.isEmpty(listBusinesses.getData())){
+
+        if(Objects.isNull(listBusinesses.getData())){
             throw new BusinessException(ValidateParticipantErrors.ERROR_INTERNAL_SERVICE_INVOKATION.getAdviceCode(), false,
                     ValidateParticipantErrors.ERROR_INTERNAL_SERVICE_INVOKATION.getMessage().
                             concat(TypeErrorControllerEnum.ERROR_LIST_BUSINESS_SERVICE.getValue()));

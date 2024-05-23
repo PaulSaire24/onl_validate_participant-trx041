@@ -1027,7 +1027,7 @@ public class RBVDR048Test {
 	public void executeInvokeListBusinesServiceWithEmptyResult(){
 		LOGGER.info("RBVDR048 - Executing executeInvokeListBusinesServiceWithEmptyResult...");
 		ListBusinessesASO businesses = new ListBusinessesASO();
-		businesses.setData(new ArrayList<>());
+		businesses.setData(null);
 		when(rbvdr066.executeGetListBusinesses(anyString(),anyObject())).thenReturn(businesses);
 
 		ListBusinessesASO validation = rbvdR048.executeListBusiness("customerId");

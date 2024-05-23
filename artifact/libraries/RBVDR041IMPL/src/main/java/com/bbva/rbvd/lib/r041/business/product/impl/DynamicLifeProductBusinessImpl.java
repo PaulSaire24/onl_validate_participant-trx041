@@ -21,6 +21,7 @@ public class DynamicLifeProductBusinessImpl implements IDynamicLifeBusiness {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DynamicLifeProductBusinessImpl.class);
     public DynamicLifeProductBusinessImpl() {
+        //not implemented
     }
 
     @Override

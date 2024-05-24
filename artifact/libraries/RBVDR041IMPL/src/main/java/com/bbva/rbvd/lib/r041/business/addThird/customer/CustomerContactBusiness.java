@@ -31,11 +31,11 @@ public class CustomerContactBusiness {
 
         String mobile = getContactDetail(participant, ConstantsUtil.PERSONAL_DATA.MOBILE_VALUE,
                 customerInformationDb.getQuotationMod().getCustomerPhoneDesc(),
-                customer.getPemsalwu().getContact());
+                customer.getPemsalwu().getContac2());
 
         String email = getContactDetail(participant, ConstantsUtil.PERSONAL_DATA.EMAIL_VALUE,
                 customerInformationDb.getQuotationMod().getContactEmailDesc(),
-                customer.getPemsalwu().getContac2());
+                customer.getPemsalwu().getContac3());
 
         contactBO.setMobile(mobile);
         contactBO.setEmail(email);

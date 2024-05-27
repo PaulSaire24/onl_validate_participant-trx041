@@ -2,14 +2,9 @@ package com.bbva.rbvd.lib.r041.validation;
 
 import com.bbva.rbvd.dto.insrncsale.bo.emision.EntidadBO;
 import com.bbva.rbvd.dto.insrncsale.utils.PersonTypeEnum;
-import com.bbva.rbvd.dto.participant.dao.RolDAO;
-import com.bbva.rbvd.lib.r041.properties.ParticipantProperties;
-import com.bbva.rbvd.dto.participant.request.ParticipantsDTO;
-import com.bbva.rbvd.lib.r041.transfer.PayloadConfig;
 import com.bbva.rbvd.lib.r041.util.ConstantsUtil;
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.List;
 import java.util.Objects;
 
 public class ValidationUtil {

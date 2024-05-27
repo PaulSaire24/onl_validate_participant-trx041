@@ -1,6 +1,8 @@
 package com.bbva.rbvd.lib.r041.pattern.composite;
 
+import com.bbva.rbvd.lib.r041.pattern.strategy.product.CardStrategy;
 import com.bbva.rbvd.lib.r041.pattern.strategy.product.DynamicLifeStrategy;
+import com.bbva.rbvd.lib.r041.pattern.strategy.product.HomeStrategy;
 import com.bbva.rbvd.lib.r041.pattern.strategy.product.VehicleStrategy;
 import com.bbva.rbvd.lib.r041.properties.ParticipantProperties;
 import com.bbva.rbvd.lib.r041.util.ConstantsUtil;
@@ -19,9 +21,8 @@ public class NoLifeHandler extends AbstractCompositeParticipantHandler{
      */
     static {
         addProductHandler(ConstantsUtil.Product.VEHICLE.getCode(), new VehicleStrategy());
-        //addProductHandler(ConstantsUtil.Product.HOGAR.getCode(), new HOGARStrategy());
-        //addProductHandler(ConstantsUtil.Product.PT.getCode(), new PTStrategy());
-
+        addProductHandler(ConstantsUtil.Product.HOME.getCode(), new HomeStrategy());
+        addProductHandler(ConstantsUtil.Product.CARD.getCode(), new CardStrategy());
     }
 
     public NoLifeHandler(RBVDR048 rbvdr048, ParticipantProperties participantProperties){

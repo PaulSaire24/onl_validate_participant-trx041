@@ -29,7 +29,7 @@ public class AddThirdBusiness {
         List<RepresentanteLegalBO> legalsRepresentatives = new ArrayList<>();
 
         participants.forEach(participant -> {
-            Integer externalRoleId = this.getExternalCompanyRole(participant.getInputParticipant(), payloadConfig);
+            Integer externalRoleId = getExternalCompanyRole(participant.getInputParticipant(), payloadConfig);
             if (externalRoleId != null) {
                 if (isNaturalPerson(participant)) {
                     personas.add(createPersonaBO(participant, payloadConfig, externalRoleId));

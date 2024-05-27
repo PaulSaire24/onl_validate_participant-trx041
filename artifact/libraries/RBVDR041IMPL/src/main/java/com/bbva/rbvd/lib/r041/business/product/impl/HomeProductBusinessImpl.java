@@ -1,9 +1,8 @@
 package com.bbva.rbvd.lib.r041.business.product.impl;
 
 import com.bbva.rbvd.dto.insrncsale.bo.emision.AgregarTerceroBO;
-import com.bbva.rbvd.dto.insrncsale.bo.emision.OrganizacionBO;
 import com.bbva.rbvd.dto.insrncsale.bo.emision.PersonaBO;
-import com.bbva.rbvd.lib.r041.business.product.IVehicleProductBusiness;
+import com.bbva.rbvd.lib.r041.business.product.HomeProductBusiness;
 import com.bbva.rbvd.lib.r041.transfer.PayloadConfig;
 import com.bbva.rbvd.lib.r041.transform.bean.PersonBean;
 import com.bbva.rbvd.lib.r041.util.ConstantsUtil;
@@ -11,32 +10,14 @@ import org.springframework.util.StringUtils;
 
 import java.util.Optional;
 
-public class VehicleProductBusinessImpl implements IVehicleProductBusiness {
-    @Override
-    public AgregarTerceroBO doVehicleProduct(PayloadConfig payloadConfig, AgregarTerceroBO rimacRequestData){
-
+public class HomeProductBusinessImpl implements HomeProductBusiness {
+    public AgregarTerceroBO doHomeProduct(PayloadConfig payloadConfig, AgregarTerceroBO rimacRequestData) {
         if(rimacRequestData.getPayload().getPersona() != null){
             rimacRequestData.getPayload().getPersona().forEach(person -> {
-                enrichAdditionalPersonValues(person);
                 validateInsuredWithNoData(person, rimacRequestData);
             });
         }
-
-        if(rimacRequestData.getPayload().getOrganizacion() != null){
-            rimacRequestData.getPayload().getOrganizacion().forEach(VehicleProductBusinessImpl::enrichAdditionalOrganizationValues);
-        }
-
-        rimacRequestData.getPayload().setCotizacion(payloadConfig.getQuotationInformation().getQuotation().getInsuranceCompanyQuotaId());
         return rimacRequestData;
-    }
-
-    private static void enrichAdditionalPersonValues(PersonaBO persona) {
-        persona.setProteccionDatosPersonales("S");
-        persona.setEnvioComunicacionesComerciales("N");
-    }
-    private static void enrichAdditionalOrganizationValues(OrganizacionBO organization) {
-        organization.setProteccionDatosPersonales("S");
-        organization.setEnvioComunicacionesComerciales("N");
     }
 
     private static void validateInsuredWithNoData(PersonaBO enrichedPerson, AgregarTerceroBO rimacRequestPerson){
@@ -47,6 +28,5 @@ public class VehicleProductBusinessImpl implements IVehicleProductBusiness {
             }
         }
     }
-
 
 }

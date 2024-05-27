@@ -4,21 +4,17 @@ import com.bbva.pbtq.dto.validatedocument.response.host.pewu.PEWUResponse;
 import com.bbva.rbvd.dto.insrncsale.bo.emision.PersonaBO;
 import com.bbva.rbvd.dto.participant.dao.QuotationCustomerDAO;
 import com.bbva.rbvd.dto.participant.dao.QuotationLifeDAO;
-import com.bbva.rbvd.dto.participant.request.ContactDetailsDTO;
 import com.bbva.rbvd.dto.participant.request.IdentityDocumentDTO;
 import com.bbva.rbvd.dto.participant.request.ParticipantsDTO;
 import com.bbva.rbvd.dto.participant.request.PersonDTO;
 import com.bbva.rbvd.lib.r041.business.addThird.customer.CustomerContactBusiness;
 import com.bbva.rbvd.lib.r041.model.AddressBO;
 import com.bbva.rbvd.lib.r041.model.ContactBO;
-import com.bbva.rbvd.lib.r041.transfer.NonCustomerFromDB;
 import com.bbva.rbvd.lib.r041.util.ConstantsUtil;
 import com.bbva.rbvd.lib.r041.validation.ValidationUtil;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.util.CollectionUtils;
 
 import java.util.Objects;
-import java.util.Optional;
 
 import static com.bbva.rbvd.lib.r041.util.ConvertUtil.toLocalDate;
 
@@ -47,7 +43,7 @@ public class PersonBean {
         return personContractor;
     }
 
-    public static PersonaBO buildPersonFromNonCustomer(QuotationLifeDAO participant, PersonaBO personManager){
+    public static PersonaBO buildPersonNonCustomerFromLifeDB(QuotationLifeDAO participant, PersonaBO personManager){
         PersonaBO personNonCustomer = new PersonaBO();
         String apellidos = participant.getClientLastName();
         String apPaterno="";
@@ -88,7 +84,7 @@ public class PersonBean {
         return personNonCustomer;
     }
 
-    public static PersonaBO getPersonFromPEWU(ParticipantsDTO participant, PEWUResponse customer, QuotationCustomerDAO customerInformationDb, Integer roleId, AddressBO addressBO){
+    public static PersonaBO getPersonFromPEWU(ParticipantsDTO participant, PEWUResponse customer, QuotationCustomerDAO customerInformationDb, Integer roleId, AddressBO addressBO)  {
         PersonaBO persona = new PersonaBO();
 
         ContactBO customerContact = CustomerContactBusiness.getContactToCustomerBO(participant, customer, customerInformationDb);
@@ -127,7 +123,9 @@ public class PersonBean {
         personaBO.setNroDocumento(identityDocumentDTO.getValue());
         personaBO.setApePaterno(person.getLastName());
         personaBO.setApeMaterno(person.getSecondLastName());
-        personaBO.setNombres(person.getFirstName().concat(" ").concat(person.getMiddleName()));
+        personaBO.setNombres(person.getFirstName().concat(
+                Objects.nonNull(person.getMiddleName()) ?
+                        " ".concat(person.getMiddleName()):StringUtils.EMPTY));
         personaBO.setFechaNacimiento(String.valueOf(toLocalDate(person.getBirthDate())));
         personaBO.setSexo(person.getGender().getId().equals("MALE") ? "M" : "F");
         personaBO.setTipoPersona(ValidationUtil.getPersonType(personaBO).getCode());
@@ -146,6 +144,18 @@ public class PersonBean {
         personaBO.setNombreVia(addressBO.getNombreVia());
         personaBO.setNumeroVia(addressBO.getNumeroVia());
         return personaBO;
+    }
+
+    public static PersonaBO buildDirectionDataFromPerson(PersonaBO personToEnrich, PersonaBO person) {
+        personToEnrich.setDireccion(person.getDireccion());
+        personToEnrich.setDistrito(person.getDistrito());
+        personToEnrich.setProvincia(person.getProvincia());
+        personToEnrich.setDepartamento(person.getDepartamento());
+        personToEnrich.setUbigeo(person.getUbigeo());
+        personToEnrich.setTipoVia(person.getTipoVia());
+        personToEnrich.setNombreVia(person.getNombreVia());
+        personToEnrich.setNumeroVia(person.getNumeroVia());
+        return person;
     }
 
     private PersonBean() {

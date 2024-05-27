@@ -143,6 +143,24 @@ public class ParticipantsUtil {
         return requestBody;
     }
 
+    public static InputParticipantsDTO getMockRequestBodyValidateNaturalParticipantsWithInsuredByContractor(){
+        InputParticipantsDTO requestBody = new InputParticipantsDTO();
+        requestBody.setQuotationId("0123489304");
+        requestBody.setChannelId("PC");
+        requestBody.setTraceId("c05ed2bd-1a7c-47ca-b7c9-fc639f47790a");
+        List<ParticipantsDTO> participantsList = new ArrayList<>();
+        ParticipantsDTO participant1 = buildParticipant("PAYMENT_MANAGER","DNI", "20392872","NATURAL",true);
+        ParticipantsDTO participant2 = buildParticipant("INSURED","DNI", "20392372","NATURAL",false);
+        participant2.setAddresses(null);
+        participant2.getPerson().setMiddleName(null);
+        ParticipantsDTO participant3 = buildParticipant("CONTRACTOR","DNI", "20391872","NATURAL",true);
+        participantsList.add(participant1);
+        participantsList.add(participant2);
+        participantsList.add(participant3);
+        requestBody.setParticipants(participantsList);
+        return requestBody;
+    }
+
     public static InputParticipantsDTO getMockRequestBodyValidateNaturalParticipantsLifeCase1(){
         InputParticipantsDTO requestBody = new InputParticipantsDTO();
         requestBody.setQuotationId("0123489304");
@@ -236,7 +254,7 @@ public class ParticipantsUtil {
 
         insuranceProductEntity.setInsuranceProductType(productType);
         insuranceProductEntity.setInsuranceProductId(new BigDecimal(1));
-        insuranceProductEntity.setInsuranceProductDesc("VIDAINVERSION");
+        insuranceProductEntity.setInsuranceProductDesc("PRODUCT_DESCRIPTION");
         insuranceBusinessEntity.setInsuranceBusinessName(businessName);
 
         insuranceCompanyDAO.setInsuranceCompanyId(new BigDecimal(1));

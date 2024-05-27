@@ -9,13 +9,14 @@ import org.apache.commons.lang3.StringUtils;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public class NonCustomerAddressBusiness {
 
 
     public AddressBO getAddressBO(List<AddressesDTO> addresses) {
         AddressBO addressBO = new AddressBO();
-        if(addresses.size()>0) {
+        if(Objects.nonNull(addresses) && !addresses.isEmpty()) {
             List<AddressComponentsDTO> addressComponents= addresses.get(0).getLocation().getAddressComponent();
             addressBO.setDireccion(addresses.get(0).getFormattedAddress());
             addressBO.setDistrito(getAddressComponentValue(addressComponents, ConstantsUtil.ADDRESS_LABEL.DISTRICT));

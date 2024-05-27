@@ -45,7 +45,7 @@ public class DynamicLifeProductBusinessImpl implements IDynamicLifeBusiness {
                             .findFirst();
                     if(managerParticipant.isPresent()){
                         PersonaBO personManager =  CustomerBusiness.mapCustomerRequestData(managerParticipant.get(), payloadConfig.getQuotationInformation(), ValidationUtil.getValueByName(managerParticipant.get().getRolCode()));
-                        PersonaBO person = PersonBean.buildPersonFromNonCustomer(participant.getNonCustomerFromDB().getQuotationLife(),personManager);
+                        PersonaBO person = PersonBean.buildPersonNonCustomerFromLifeDB(participant.getNonCustomerFromDB().getQuotationLife(),personManager);
                         person.setRolName(payloadConfig.getParticipantProperties().obtainPropertyFromConsole(ConstantsUtil.Rol.INSURED.getName()));
                         personas.add(person);
                     }

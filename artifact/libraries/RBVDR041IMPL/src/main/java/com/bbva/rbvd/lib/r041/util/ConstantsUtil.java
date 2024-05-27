@@ -15,7 +15,9 @@ public class ConstantsUtil {
 
         BUSINESS_LIFE("BUSINESS_LIFE","VIDA"),
         DYNAMIC_LIFE("VIDADINAMICO","841"),
-        VEHICLE("VEHICULAR","830");
+        VEHICLE("VEHICULAR","830"),
+        HOME("HOGAR_TOTAL","832"),
+        CARD("PROTECCION_TARJETA","834");
         private final String name;
         private final String code;
 

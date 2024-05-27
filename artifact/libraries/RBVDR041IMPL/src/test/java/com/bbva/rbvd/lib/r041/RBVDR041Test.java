@@ -98,7 +98,7 @@ public class RBVDR041Test {
 		when(this.applicationConfigurationService.getProperty(ConstantsUtil.ENABLED_LIFE_PRODUCTS))
 				.thenReturn("841");
 		when(this.applicationConfigurationService.getProperty(ConstantsUtil.ENABLED_NON_LIFE_PRODUCTS))
-				.thenReturn("830,832");
+				.thenReturn("830,832,834");
 		when(this.applicationConfigurationService.getProperty("legal-representative-code"))
 				.thenReturn("LEGAL_REPRESENTATIVE");
 
@@ -122,6 +122,55 @@ public class RBVDR041Test {
 	public void executeNaturalPersonTestOkNonLifeProduct(){
 		InputParticipantsDTO request = ParticipantsUtil.getMockRequestBodyValidateNaturalParticipants();
 		when(rbvdr048.executeGetCustomerInformationFromQuotation(anyString())).thenReturn(ParticipantsUtil.buildFindQuotationJoinByPolicyQuotaInternalId("789956435","VEHICULAR","830"));
+		when(rbvdr048.executeGetRolesByCompany(anyObject())).thenReturn(ParticipantsUtil.buildRolByParticipantTypeResponse());
+		AgregarTerceroBO agregarTerceroBO = new AgregarTerceroBO();
+		PayloadAgregarTerceroBO payloadAgregarTerceroBO = new PayloadAgregarTerceroBO();
+		payloadAgregarTerceroBO.setCotizacion("cotizacion");
+		agregarTerceroBO.setPayload(payloadAgregarTerceroBO);
+		when(rbvdr048.executeAddParticipants(anyObject(),anyString(),anyString(),anyString(),anyString())).thenReturn(agregarTerceroBO);
+		when(rbvdr048.executeGetCustomerByDocType(anyString(),anyString())).thenReturn(ParticipantsUtil.buildPersonHostDataResponseCase3());
+		AgregarTerceroBO response = rbvdR041.executeValidateParticipants(request);
+		Assert.assertNotNull(response);
+		Assert.assertEquals(0,this.context.getAdviceList().size());
+	}
+
+	@Test
+	public void executeNaturalPersonTestOkVehicleProductInsuredByContractor(){
+		InputParticipantsDTO request = ParticipantsUtil.getMockRequestBodyValidateNaturalParticipantsWithInsuredByContractor();
+		request.getParticipants().get(1).getPerson().getGender().setId("FEMALE");
+		when(rbvdr048.executeGetCustomerInformationFromQuotation(anyString())).thenReturn(ParticipantsUtil.buildFindQuotationJoinByPolicyQuotaInternalId("789956435","VEHICULAR","830"));
+		when(rbvdr048.executeGetRolesByCompany(anyObject())).thenReturn(ParticipantsUtil.buildRolByParticipantTypeResponse());
+		AgregarTerceroBO agregarTerceroBO = new AgregarTerceroBO();
+		PayloadAgregarTerceroBO payloadAgregarTerceroBO = new PayloadAgregarTerceroBO();
+		payloadAgregarTerceroBO.setCotizacion("cotizacion");
+		agregarTerceroBO.setPayload(payloadAgregarTerceroBO);
+		when(rbvdr048.executeAddParticipants(anyObject(),anyString(),anyString(),anyString(),anyString())).thenReturn(agregarTerceroBO);
+		when(rbvdr048.executeGetCustomerByDocType(anyString(),anyString())).thenReturn(ParticipantsUtil.buildPersonHostDataResponseCase3());
+		AgregarTerceroBO response = rbvdR041.executeValidateParticipants(request);
+		Assert.assertNotNull(response);
+		Assert.assertEquals(0,this.context.getAdviceList().size());
+	}
+
+	@Test
+	public void executeNaturalPersonTestOkHomeProductInsuredByContractor(){
+		InputParticipantsDTO request = ParticipantsUtil.getMockRequestBodyValidateNaturalParticipantsWithInsuredByContractor();
+		when(rbvdr048.executeGetCustomerInformationFromQuotation(anyString())).thenReturn(ParticipantsUtil.buildFindQuotationJoinByPolicyQuotaInternalId("789956435","HOGAR_TOTAL","832"));
+		when(rbvdr048.executeGetRolesByCompany(anyObject())).thenReturn(ParticipantsUtil.buildRolByParticipantTypeResponse());
+		AgregarTerceroBO agregarTerceroBO = new AgregarTerceroBO();
+		PayloadAgregarTerceroBO payloadAgregarTerceroBO = new PayloadAgregarTerceroBO();
+		payloadAgregarTerceroBO.setCotizacion("cotizacion");
+		agregarTerceroBO.setPayload(payloadAgregarTerceroBO);
+		when(rbvdr048.executeAddParticipants(anyObject(),anyString(),anyString(),anyString(),anyString())).thenReturn(agregarTerceroBO);
+		when(rbvdr048.executeGetCustomerByDocType(anyString(),anyString())).thenReturn(ParticipantsUtil.buildPersonHostDataResponseCase3());
+		AgregarTerceroBO response = rbvdR041.executeValidateParticipants(request);
+		Assert.assertNotNull(response);
+		Assert.assertEquals(0,this.context.getAdviceList().size());
+	}
+
+	@Test
+	public void executeNaturalPersonTestOkCardProductInsuredByContractor(){
+		InputParticipantsDTO request = ParticipantsUtil.getMockRequestBodyValidateNaturalParticipantsWithInsuredByContractor();
+		when(rbvdr048.executeGetCustomerInformationFromQuotation(anyString())).thenReturn(ParticipantsUtil.buildFindQuotationJoinByPolicyQuotaInternalId("789956435","PROTECCION_TARJETA","834"));
 		when(rbvdr048.executeGetRolesByCompany(anyObject())).thenReturn(ParticipantsUtil.buildRolByParticipantTypeResponse());
 		AgregarTerceroBO agregarTerceroBO = new AgregarTerceroBO();
 		PayloadAgregarTerceroBO payloadAgregarTerceroBO = new PayloadAgregarTerceroBO();

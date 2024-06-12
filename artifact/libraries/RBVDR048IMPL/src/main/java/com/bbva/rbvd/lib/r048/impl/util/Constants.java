@@ -9,6 +9,8 @@ public class Constants {
         public static final String RIMAC_FUNCTIONAL_MAPPPING_VALUES = "functional.error.mapping.values";
         public static final String SEPARATOR_SIGN = " | ";
 
+        public static final String GENERIC_MESSAGE_KEY = "generic.message";
+
         private Properties() {
         }
     }

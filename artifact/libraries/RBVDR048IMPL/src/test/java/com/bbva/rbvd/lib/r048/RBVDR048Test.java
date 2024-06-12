@@ -922,6 +922,51 @@ public class RBVDR048Test {
 	}
 
 	@Test(expected = BusinessException.class)
+	public void testExecuteAddParticipantsServiceWithGenericError() {
+		String responseBody = "{\n" +
+				"    \"error\": {\n" +
+				"        \"code\": \"ERRD0004\",\n" +
+				"        \"message\": \"Error funcional\",\n" +
+				"        \"details\": {\n" +
+				"            \"CO000027\": \"Se recomienda corregir nombres: PIERO para DNI: 04040005 del responsable.\",\n" +
+				"            \"CO000029\": \"Se recomienda corregir apemat: ALVARADO para DNI: 04040005 del responsable.\",\n" +
+				"            \"CO000030\": \"Se recomienda corregir sexo: M para DNI: 04040005 del responsable.\",\n" +
+				"            \"CO000028\": \"Se recomienda corregir apepat: CÀRDENAS para DNI: 71998180 del asegurado.\",\n" +
+				"            \"CO000031\": \"Se recomienda corregir fecnac: 1995-02-02 para DNI: 71998180 del asegurado.\"\n" +
+				"        },\n" +
+				"        \"httpStatus\": 400\n" +
+				"    }\n" +
+				"}";
+		AgregarTerceroBO agregarTerceroBO = new AgregarTerceroBO();
+		agregarTerceroBO.setPayload(new PayloadAgregarTerceroBO());
+		PersonaBO personaManager = new PersonaBO();
+		personaManager.setRolName("responsable");
+		personaManager.setNroDocumento("04040005");
+		PersonaBO personaContractor = new PersonaBO();
+		personaContractor.setRolName("contratante");
+		personaContractor.setNroDocumento("04040005");
+		PersonaBO personaInsured = new PersonaBO();
+		personaInsured.setRolName("asegurado");
+		personaInsured.setNroDocumento("71998180");
+		List<PersonaBO> personas = new ArrayList<>();
+		personas.add(personaManager);
+		personas.add(personaInsured);
+		personas.add(personaContractor);
+		agregarTerceroBO.getPayload().setPersona(personas);
+
+		ErrorResponseDTO res = new ErrorResponseDTO();
+		res.setMessage("El nombre no corresponde al documento ingresado. Verificar la información brindada por el cliente  y actualizar de ser necesario. | El apellido paterno no corresponde al documento ingresado. Verificar la información brindada por el cliente  y actualizar de ser necesario. | El celular tiene un formato incorrecto.");
+		res.setCode("ERRD0004");
+		when(this.applicationConfigurationService.getProperty("api.connector.add.participants.rimac.productId.url")).thenReturn("https://apitest.rimac.com/api-vida/V1/cotizaciones/{cotizacion}/persona-agregar");
+		when(this.externalApiConnector.exchange(anyString(), anyObject(),anyObject(), (Class<AgregarTerceroBO>) any(), anyMap()))
+				.thenThrow(new HttpClientErrorException(HttpStatus.BAD_REQUEST, "", responseBody.getBytes(), StandardCharsets.UTF_8));
+		when(pisdr403.executeFindError(anyObject())).thenReturn(res);
+		AgregarTerceroBO validation = this.rbvdR048.executeAddParticipants(agregarTerceroBO,"quotationId","productId","traceId", "PC");
+
+		assertNotNull(validation);
+	}
+
+	@Test(expected = BusinessException.class)
 	public void testExecuteAddParticipantsServiceWithTimeoutException() {
 		LOGGER.info("RBVDR048 - Executing testExecuteAddParticipantsServiceWithTimeoutException...");
 

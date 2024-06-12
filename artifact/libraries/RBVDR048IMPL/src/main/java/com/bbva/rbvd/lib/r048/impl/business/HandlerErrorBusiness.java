@@ -20,12 +20,14 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClientException;
 
-import java.util.Map;
-import java.util.HashMap;
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.HashMap;
 import java.util.Arrays;
+import java.util.Set;
+import java.util.HashSet;
 import java.util.stream.Collectors;
 
 public class HandlerErrorBusiness {
@@ -140,6 +142,16 @@ public class HandlerErrorBusiness {
             groupedMessages = messagesByRoleMap.mapMessagesToRolesOfPerson(payload.getPersona(),messageList);
         } else if (payload.getOrganizacion() != null){
             groupedMessages = messagesByRoleMap.mapMessagesToRolesOfCompany(payload.getOrganizacion(),messageList);
+        }
+
+        if(groupedMessages.isEmpty()){
+            Set<String> uniqueMessages = new HashSet<>(Arrays.asList(messageList));
+            String outputGenericMessage = "";
+            for(String message : uniqueMessages){
+                outputGenericMessage = outputGenericMessage.isEmpty() ? message.trim():
+                        outputGenericMessage + Constants.Properties.SEPARATOR_SIGN + message.trim();
+            }
+            return outputGenericMessage;
         }
 
         StringBuilder message = new StringBuilder();

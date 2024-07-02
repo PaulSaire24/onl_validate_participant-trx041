@@ -124,7 +124,7 @@ public class ParticipantsBusiness {
 
                 myParticipantByDocument.setDocumentType(documentType);
                 myParticipantByDocument.setDocumentNumber(documentNumber);
-                myParticipantByDocument.setCustomer(executeGetCustomer(documentNumber, documentType, inputPerson.getCustomerId()));
+                myParticipantByDocument.setCustomer(executeGetCustomer(inputPerson.getCustomerId()));
 
                 if (isCompanyCustomer(documentNumber, documentType)) {
                     myParticipantByDocument.setLegalCustomer(executeGetBusinessAgentASOInformation(inputPerson.getCustomerId()));
@@ -193,10 +193,8 @@ public class ParticipantsBusiness {
         return null;
     }
 
-    private PEWUResponse executeGetCustomer(String documentNumber,String documentType, String customerId){
-        if(Strings.isNotBlank(customerId))
-            return consumerInternalService.executeGetCustomerServiceByCustomerId(customerId);
-        return consumerInternalService.executeGetCustomerServiceByDocType(documentNumber,documentType);
+    private PEWUResponse executeGetCustomer(String customerId){
+        return consumerInternalService.executeGetCustomerServiceByCustomerId(customerId);
     }
 
     public ListBusinessesASO executeGetBusinessAgentASOInformation(String customerId){

@@ -397,6 +397,23 @@ public class RBVDR041Test {
 	}
 
 	@Test
+	public void executeValidationWithNaturalPersonDataTypeOkCase7(){
+		AgregarTerceroBO agregarTerceroBO = new AgregarTerceroBO();
+		PayloadAgregarTerceroBO payloadAgregarTerceroBO = new PayloadAgregarTerceroBO();
+		payloadAgregarTerceroBO.setCotizacion("cotizacion");
+		agregarTerceroBO.setPayload(payloadAgregarTerceroBO);
+		when(rbvdr048.executeAddParticipants(anyObject(),anyString(),anyString(),anyString(),anyString())).thenReturn(agregarTerceroBO);
+		Mockito.when(rbvdr048.executeGetCustomerInformationFromQuotation(Mockito.eq("0123489304"))).thenReturn(ParticipantsUtil.buildFindQuotationJoinByPolicyQuotaInternalId("71998384","VEHICULAR","830"));
+		Mockito.when(rbvdr048.executeGetRolesByCompany(anyObject())).thenReturn(ParticipantsUtil.buildRolByParticipantTypeResponse());
+		Mockito.when(rbvdr048.executeGetCustomerByDocType(Mockito.anyString(),Mockito.anyString())).thenReturn(ParticipantsUtil.buildPersonHostDataResponseCase6());
+
+		AgregarTerceroBO response =  rbvdR041.executeValidateParticipants(ParticipantsUtil.getMockRequestBodyValidateWithNaturalPersonDataTypeOkCase7());
+		Assert.assertNotNull(response);
+		Assert.assertEquals(0, context.getAdviceList().size());
+
+	}
+
+	@Test
 	public void executeLegalPersonTestOk() throws IOException {
 		InputParticipantsDTO request = ParticipantsUtil.getMockRequestBodyValidateLegalParticipants();
 		when(rbvdr048.executeGetCustomerInformationFromQuotation(anyString())).thenReturn(ParticipantsUtil.buildFindQuotationJoinByPolicyQuotaInternalId("20123453922","VEHICULAR","830"));
@@ -409,6 +426,7 @@ public class RBVDR041Test {
 		agregarTerceroBO.setPayload(payloadAgregarTerceroBO);
 		when(rbvdr048.executeAddParticipants(anyObject(),anyString(),anyString(),anyString(),anyString())).thenReturn(agregarTerceroBO);
 		when(rbvdr048.executeGetCustomerByDocType(anyString(),anyString())).thenReturn(ParticipantsUtil.buildPersonHostDataResponseCase3());
+		when(rbvdr048.executeGetCustomerByCustomerId(anyString())).thenReturn(ParticipantsUtil.buildPersonHostDataResponseCase3());
 		AgregarTerceroBO response = rbvdR041.executeValidateParticipants(request);
 		Assert.assertNotNull(response);
 		Assert.assertEquals(0,this.context.getAdviceList().size());
@@ -427,6 +445,7 @@ public class RBVDR041Test {
 		agregarTerceroBO.setPayload(payloadAgregarTerceroBO);
 		when(rbvdr048.executeAddParticipants(anyObject(),anyString(),anyString(),anyString(),anyString())).thenReturn(agregarTerceroBO);
 		when(rbvdr048.executeGetCustomerByDocType(anyString(),anyString())).thenReturn(ParticipantsUtil.buildPersonHostDataResponseCase3());
+		when(rbvdr048.executeGetCustomerByCustomerId(anyString())).thenReturn(ParticipantsUtil.buildPersonHostDataResponseCase3());
 
 		AgregarTerceroBO response = rbvdR041.executeValidateParticipants(request);
 		Assert.assertNotNull(response);
@@ -445,6 +464,7 @@ public class RBVDR041Test {
 		Mockito.when(rbvdr048.executeGetCustomerInformationFromQuotation(Mockito.eq("0123489304"))).thenReturn(ParticipantsUtil.buildFindQuotationJoinByPolicyQuotaInternalId("71998384","VEHICULAR","830"));
 		Mockito.when(rbvdr048.executeGetRolesByCompany(anyObject())).thenReturn(ParticipantsUtil.buildRolByParticipantTypeResponse());
 		Mockito.when(rbvdr048.executeGetCustomerByDocType(Mockito.anyString(),Mockito.anyString())).thenReturn(new PEWUResponse());
+		Mockito.when(rbvdr048.executeGetCustomerByCustomerId(Mockito.anyString())).thenReturn(new PEWUResponse());
 
 		AgregarTerceroBO response =  rbvdR041.executeValidateParticipants(ParticipantsUtil.getMockRequestBodyValidateNaturalParticipants());
 		Assert.assertNull(response);
@@ -467,6 +487,7 @@ public class RBVDR041Test {
 		agregarTerceroBO.setPayload(payloadAgregarTerceroBO);
 		when(rbvdr048.executeAddParticipants(anyObject(),anyString(),anyString(),anyString(),anyString())).thenReturn(agregarTerceroBO);
 		when(rbvdr048.executeGetCustomerByDocType(anyString(),anyString())).thenReturn(ParticipantsUtil.buildPersonHostDataResponseCase3());
+		when(rbvdr048.executeGetCustomerByCustomerId(anyString())).thenReturn(ParticipantsUtil.buildPersonHostDataResponseCase3());
 		AgregarTerceroBO response = rbvdR041.executeValidateParticipants(request);
 		Assert.assertNotNull(response);
 		Assert.assertEquals(0,this.context.getAdviceList().size());
@@ -502,6 +523,7 @@ public class RBVDR041Test {
 		agregarTerceroBO.setPayload(payloadAgregarTerceroBO);
 		when(rbvdr048.executeAddParticipants(anyObject(),anyString(),anyString(),anyString(),anyString())).thenReturn(agregarTerceroBO);
 		when(rbvdr048.executeGetCustomerByDocType(anyString(),anyString())).thenReturn(ParticipantsUtil.buildPersonHostDataResponseCase3());
+		when(rbvdr048.executeGetCustomerByCustomerId(anyString())).thenReturn(ParticipantsUtil.buildPersonHostDataResponseCase3());
 		AgregarTerceroBO response = rbvdR041.executeValidateParticipants(request);
 		Assert.assertNotNull(response);
 		Assert.assertEquals(0,this.context.getAdviceList().size());
@@ -562,6 +584,7 @@ public class RBVDR041Test {
         when(rbvdr048.executeAddParticipants(anyObject(),anyString(),anyString(),anyString(),anyString())).thenReturn(new AgregarTerceroBO());
         when(rbvdr048.executeGetDataInsuredBD(anyString(),anyString(),anyString(),anyString(),anyString())).thenReturn(quotationLifeDAOResponseDB);
         when(rbvdr048.executeGetCustomerByDocType(anyString(),anyString())).thenReturn(ParticipantsUtil.buildPersonHostDataResponseCase3());
+		when(rbvdr048.executeGetCustomerByCustomerId(anyString())).thenReturn(ParticipantsUtil.buildPersonHostDataResponseCase3());
 		when(rbvdr048.executeGetRolesByCompany(anyObject())).thenReturn(ParticipantsUtil.buildRolByParticipantTypeResponse());
         AgregarTerceroBO response = rbvdR041.executeValidateParticipants(request);
         Assert.assertNotNull(response);
@@ -657,6 +680,7 @@ public class RBVDR041Test {
         when(this.rbvdr048.executeAddParticipants(anyObject(),anyString(),anyString(),anyString(),anyString())).thenThrow(new BusinessException("BBVA14554",false,"businessError"));
         when(rbvdr048.executeGetDataInsuredBD(anyString(),anyString(),anyString(),anyString(),anyString())).thenReturn(quotationLifeDAOResponseDB);
         when(rbvdr048.executeGetCustomerByDocType(anyString(),anyString())).thenReturn(ParticipantsUtil.buildPersonHostDataResponseCase3());
+		when(rbvdr048.executeGetCustomerByCustomerId(anyString())).thenReturn(ParticipantsUtil.buildPersonHostDataResponseCase3());
 		when(rbvdr048.executeGetRolesByCompany(anyObject())).thenReturn(ParticipantsUtil.buildRolByParticipantTypeResponse());
 		AgregarTerceroBO response = rbvdR041.executeValidateParticipants(request);
 

@@ -1006,14 +1006,20 @@ public class RBVDR048Test {
 
 		when(pbtqr002.executeSearchInHostByDocument(Mockito.anyString(), Mockito.anyString()))
 				.thenReturn(responseHost);
+		when(pbtqr002.executeSearchInHostByCustomerId(Mockito.anyString()))
+				.thenReturn(responseHost);
+
 		when(applicationConfigurationService.getProperty(anyString())).thenReturn("DNI");
 
 		PEWUResponse validation = rbvdR048.executeGetCustomerByDocType("00000000","L");
 		assertNotNull(validation);
+
+		validation = rbvdR048.executeGetCustomerByCustomerId("00000001");
+		assertNotNull(validation);
 	}
 
 	@Test(expected = BusinessException.class)
-	public void executeGetListCustomerHostWithAdvice() {
+	public void executeGetListCustomerHostByDocumentWithAdvice() {
 		LOGGER.info("RBVDR048 - Executing executeGetListCustomerHostWithAdvice...");
 
 		PEWUResponse responseHost = new PEWUResponse();
@@ -1027,6 +1033,24 @@ public class RBVDR048Test {
 				.thenReturn(responseHost);
 
 		PEWUResponse validation = rbvdR048.executeGetCustomerByDocType("00000000","L");
+		assertNull(validation);
+	}
+
+	@Test(expected = BusinessException.class)
+	public void executeGetListCustomerHostByCustomerWithAdvice() {
+		LOGGER.info("RBVDR048 - Executing executeGetListCustomerHostWithAdvice...");
+
+		PEWUResponse responseHost = new PEWUResponse();
+		responseHost.setHostAdviceCode("code");
+		responseHost.setHostMessage("some error");
+		List<ContactDetailsBO> contactDetailsBO = new ArrayList<>();
+		GetContactDetailsASO contactDetailsASO = new GetContactDetailsASO();
+		contactDetailsASO.setData(contactDetailsBO);
+
+		when(pbtqr002.executeSearchInHostByCustomerId(Mockito.anyString()))
+				.thenReturn(responseHost);
+
+		PEWUResponse validation = rbvdR048.executeGetCustomerByCustomerId("00000001");
 		assertNull(validation);
 	}
 
@@ -1084,20 +1108,33 @@ public class RBVDR048Test {
 	public void testExecutegetCustomerok() {
 		LOGGER.info("RBVDR048 - Executing executeGetCustomerService ...");
 		when(this.pbtqr002.executeSearchInHostByDocument(anyString(),anyString())).thenReturn(buildPersonHostDataResponseCase3());
+		when(this.pbtqr002.executeSearchInHostByCustomerId(anyString())).thenReturn(buildPersonHostDataResponseCase3());
+
 		PEWUResponse response = this.rbvdR048.executeGetCustomerByDocType(anyString(),anyString());
-
 		assertNotNull(response);
-
+		response = this.rbvdR048.executeGetCustomerByCustomerId("00000001");
+		assertNotNull(response);
 	}
 
 	@Test(expected = BusinessException.class)
-	public void testExecuteGetCustomerError() {
+	public void testExecuteGetCustomerByDocumentError() {
 		LOGGER.info("RBVDR048 - Executing executeGetCustomerService ...");
 		PEWUResponse pemsalwu = new PEWUResponse();
 		pemsalwu.setHostAdviceCode("124567");
 		when(this.pbtqr002.executeSearchInHostByDocument(anyString(),anyString())).thenReturn(pemsalwu);
-		PEWUResponse response = this.rbvdR048.executeGetCustomerByDocType(anyString(),anyString());
 
+		PEWUResponse response = this.rbvdR048.executeGetCustomerByDocType(anyString(),anyString());
+		assertNotNull(response);
+	}
+
+	@Test(expected = BusinessException.class)
+	public void testExecuteGetCustomerByCustomerrror() {
+		LOGGER.info("RBVDR048 - Executing executeGetCustomerService ...");
+		PEWUResponse pemsalwu = new PEWUResponse();
+		pemsalwu.setHostAdviceCode("124567");
+		when(this.pbtqr002.executeSearchInHostByCustomerId(anyString())).thenReturn(pemsalwu);
+
+		PEWUResponse response = this.rbvdR048.executeGetCustomerByCustomerId(anyString());
 		assertNotNull(response);
 	}
 

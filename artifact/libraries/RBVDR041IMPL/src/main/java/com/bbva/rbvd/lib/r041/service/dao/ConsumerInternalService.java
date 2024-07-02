@@ -32,6 +32,12 @@ public class ConsumerInternalService {
         return rbvdr048.executeGetCustomerByDocType(documentNumber, documentType);
     }
 
+    public PEWUResponse executeGetCustomerServiceByCustomerId(String customerId) {
+        LOGGER.info("***** ConsumerInternalService - executeGetCustomerByCustomerId Start *****");
+        LOGGER.info("***** ConsumerInternalService - executeGetCustomerByCustomerId customerId {} *****", customerId);
+        return rbvdr048.executeGetCustomerByCustomerId(customerId);
+    }
+
     public ListBusinessesASO executeListBusinessService(String encryptedCustomerId){
         LOGGER.info("***** ConsumerInternalService - executeListBusinessService Start *****");
         return rbvdr048.executeListBusiness(encryptedCustomerId);

@@ -187,6 +187,18 @@ public class ParticipantsUtil {
         return requestBody;
     }
 
+    public static InputParticipantsDTO getMockRequestBodyValidateWithNaturalPersonDataTypeOkCase7(){
+        InputParticipantsDTO requestBody = new InputParticipantsDTO();
+        requestBody.setQuotationId("0123489304");
+        requestBody.setChannelId("PC");
+        requestBody.setTraceId("c05ed2bd-1a7c-47ca-b7c9-fc639f47790a");
+        List<ParticipantsDTO> participantsList = new ArrayList<>();
+        ParticipantsDTO participant1 = buildParticipant("PAYMENT_MANAGER","DNI", "78394872","NATURAL",false);
+        participantsList.add(participant1);
+        requestBody.setParticipants(participantsList);
+        return requestBody;
+    }
+
     public static InputParticipantsDTO getMockRequestBodyValidateNaturalParticipantsLifeCase3(){
         InputParticipantsDTO requestBody = new InputParticipantsDTO();
         requestBody.setQuotationId("0123489304");

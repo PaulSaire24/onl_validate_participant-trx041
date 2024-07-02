@@ -13,6 +13,7 @@ import java.util.List;
 public interface RBVDR048 {
 	AgregarTerceroBO executeAddParticipants(AgregarTerceroBO requestBody, String quotationId, String productId, String traceId,String channelId);
     PEWUResponse executeGetCustomerByDocType(String documentNumber, String documentType);
+    PEWUResponse executeGetCustomerByCustomerId(String customerId);
     String executeKsmkCryptography(String customerId);
     ListBusinessesASO executeListBusiness(String encryptedCustomerId);
     QuotationLifeDAO executeGetDataInsuredBD(String quotationId, String productId, String planId, String ducumentNumber, String documentType);

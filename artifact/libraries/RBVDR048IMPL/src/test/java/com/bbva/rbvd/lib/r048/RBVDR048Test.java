@@ -1006,9 +1006,15 @@ public class RBVDR048Test {
 
 		when(pbtqr002.executeSearchInHostByDocument(Mockito.anyString(), Mockito.anyString()))
 				.thenReturn(responseHost);
+		when(this.pbtqr002.executeSearchInHostByCustomerId(anyString()))
+				.thenReturn(responseHost);
+
 		when(applicationConfigurationService.getProperty(anyString())).thenReturn("DNI");
 
 		PEWUResponse validation = rbvdR048.executeGetCustomerByDocType("00000000","L");
+		assertNotNull(validation);
+
+		validation = rbvdR048.executeGetCustomerByCustomerId("00000001");
 		assertNotNull(validation);
 	}
 
@@ -1028,6 +1034,9 @@ public class RBVDR048Test {
 
 		PEWUResponse validation = rbvdR048.executeGetCustomerByDocType("00000000","L");
 		assertNull(validation);
+
+		validation = rbvdR048.executeGetCustomerByCustomerId("00000001");
+		assertNotNull(validation);
 	}
 
 	@Test
@@ -1084,10 +1093,12 @@ public class RBVDR048Test {
 	public void testExecutegetCustomerok() {
 		LOGGER.info("RBVDR048 - Executing executeGetCustomerService ...");
 		when(this.pbtqr002.executeSearchInHostByDocument(anyString(),anyString())).thenReturn(buildPersonHostDataResponseCase3());
+		when(this.pbtqr002.executeSearchInHostByCustomerId(anyString())).thenReturn(buildPersonHostDataResponseCase3());
+
 		PEWUResponse response = this.rbvdR048.executeGetCustomerByDocType(anyString(),anyString());
-
 		assertNotNull(response);
-
+		response = this.rbvdR048.executeGetCustomerByCustomerId("00000001");
+		assertNotNull(response);
 	}
 
 	@Test(expected = BusinessException.class)
@@ -1097,7 +1108,9 @@ public class RBVDR048Test {
 		pemsalwu.setHostAdviceCode("124567");
 		when(this.pbtqr002.executeSearchInHostByDocument(anyString(),anyString())).thenReturn(pemsalwu);
 		PEWUResponse response = this.rbvdR048.executeGetCustomerByDocType(anyString(),anyString());
+		assertNotNull(response);
 
+		response = rbvdR048.executeGetCustomerByCustomerId("00000001");
 		assertNotNull(response);
 	}
 

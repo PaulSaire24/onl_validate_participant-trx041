@@ -103,6 +103,21 @@ public class RBVDR048Impl extends RBVDR048Abstract {
     }
 
     @Override
+    public PEWUResponse executeGetCustomerByCustomerId(String customerId) {
+        LOGGER.info("***** RBVDR048Impl - executeGetCustomerByCustomerId Start *****");
+        LOGGER.info("***** RBVDR048Impl - executeGetCustomerByCustomerId customerId {}*****", customerId);
+        PEWUResponse result = pbtqR002.executeSearchInHostByCustomerId(customerId);
+        LOGGER.info("***** RBVDR048Impl - executeGetCustomerByCustomerId  ***** Response Host: {}", result);
+        if( Objects.isNull(result.getHostAdviceCode()) || result.getHostAdviceCode().isEmpty()){
+            return result;
+        }
+        LOGGER.info("***** RBVDR048Impl - executeGetListCustomer ***** with error: {}", result.getHostMessage());
+        throw new BusinessException(ValidateParticipantErrors.ERROR_INTERNAL_SERVICE_INVOKATION.getAdviceCode(), false,
+                ValidateParticipantErrors.ERROR_INTERNAL_SERVICE_INVOKATION.getMessage()
+                        .concat(TypeErrorControllerEnum.ERROR_PBTQ_CLIENT_INFORMATION_SERVICE.getValue()));
+    }
+
+    @Override
     public QuotationLifeDAO executeGetDataInsuredBD(String quotationId, String productId, String planId, String documentNumber, String documentType) {
         LOGGER.info("***** RBVDR048Impl - getDataInsuredBD - START ****");
         try{

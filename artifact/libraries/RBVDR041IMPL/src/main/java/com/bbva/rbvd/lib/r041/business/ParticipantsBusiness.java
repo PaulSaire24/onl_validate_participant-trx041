@@ -19,6 +19,7 @@ import com.bbva.rbvd.lib.r041.util.ConstantsUtil;
 import com.bbva.rbvd.lib.r041.validation.ValidationUtil;
 import com.bbva.rbvd.lib.r048.RBVDR048;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -123,7 +124,7 @@ public class ParticipantsBusiness {
 
                 myParticipantByDocument.setDocumentType(documentType);
                 myParticipantByDocument.setDocumentNumber(documentNumber);
-                myParticipantByDocument.setCustomer(executeGetCustomer(documentNumber, documentType));
+                myParticipantByDocument.setCustomer(executeGetCustomer(documentNumber, documentType, inputPerson.getCustomerId()));
 
                 if (isCompanyCustomer(documentNumber, documentType)) {
                     myParticipantByDocument.setLegalCustomer(executeGetBusinessAgentASOInformation(inputPerson.getCustomerId()));
@@ -192,7 +193,9 @@ public class ParticipantsBusiness {
         return null;
     }
 
-    private PEWUResponse executeGetCustomer(String documentNumber,String documentType){
+    private PEWUResponse executeGetCustomer(String documentNumber,String documentType, String customerId){
+        if(Strings.isNotBlank(customerId))
+            return consumerInternalService.executeGetCustomerServiceByCustomerId(customerId);
         return consumerInternalService.executeGetCustomerServiceByDocType(documentNumber,documentType);
     }
 

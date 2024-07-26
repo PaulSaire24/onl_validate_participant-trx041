@@ -1056,6 +1056,53 @@ public class RBVDR048Test {
 		assertNotNull(response);
 	}
 
+	@Test(expected = BusinessException.class)
+	public void testExecuteAdd() {
+		LOGGER.info("RBVDR048 - Executing testExecuteAddParticipantsServiceWithRestClientException_FunctionalErrorCase...");
+
+		String responseBody = "{\n" +
+				"    \"error\": {\n" +
+				"        \"code\": \"VIDA001\",\n" +
+				"        \"message\": \"Error al Validar Datos.\",\n" +
+				"        \"details\": [\n" +
+				"            \"El cúmulo del cliente ha superado el límite máximo para su cotización.\"\n" +
+				"        ],\n" +
+				"        \"httpStatus\": 400\n" +
+				"    }\n" +
+				"}";
+
+		AgregarTerceroBO agregarTerceroBO = new AgregarTerceroBO();
+		agregarTerceroBO.setPayload(new PayloadAgregarTerceroBO());
+		OrganizacionBO organizationManager = new OrganizacionBO();
+		organizationManager.setRol(23);
+		organizationManager.setNroDocumento("70221978");
+		organizationManager.setRolName("responsable");
+		OrganizacionBO organizationContractor = new OrganizacionBO();
+		organizationContractor.setRol(8);
+		organizationContractor.setNroDocumento("70221978");
+		organizationContractor.setRolName("contratante");
+		OrganizacionBO organizationInsured = new OrganizacionBO();
+		organizationInsured.setRol(9);
+		organizationInsured.setNroDocumento("70221978");
+		organizationInsured.setRolName("asegurado");
+		List<OrganizacionBO> organizations = new ArrayList<>();
+		organizations.add(organizationManager);
+		organizations.add(organizationContractor);
+		organizations.add(organizationInsured);
+		agregarTerceroBO.getPayload().setOrganizacion(organizations);
+
+		/*ErrorResponseDTO res = new ErrorResponseDTO();
+		res.setCode("Bbva41255");
+		res.setMessage("");*/
+		when(this.applicationConfigurationService.getProperty(anyString())).thenReturn("https://apitest.rimac.com/api-vida/V1/cotizaciones/{cotizacion}/persona-agregar");
+		when(this.externalApiConnector.exchange(anyString(), anyObject(),anyObject(), (Class<AgregarTerceroBO>) any(), anyMap()))
+				.thenThrow(new HttpClientErrorException(HttpStatus.BAD_REQUEST, "", responseBody.getBytes(), StandardCharsets.UTF_8));
+		when(pisdr403.executeFindError(anyObject())).thenReturn(null);
+		AgregarTerceroBO validation = this.rbvdR048.executeAddParticipants(agregarTerceroBO,"quotationId","productId","traceId", "PC");
+
+		assertNotNull(validation);
+	}
+
 	private static PEWUResponse buildPersonHostDataResponseCase3(){
 		PEWUResponse pewuResponse = new PEWUResponse();
 		PEMSALWU pemsalwu = new PEMSALWU();

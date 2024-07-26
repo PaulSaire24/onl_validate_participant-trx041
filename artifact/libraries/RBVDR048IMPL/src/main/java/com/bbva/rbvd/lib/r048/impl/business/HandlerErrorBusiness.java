@@ -11,6 +11,7 @@ import com.bbva.rbvd.dto.participant.utils.ValidateParticipantErrors;
 import com.bbva.rbvd.lib.r048.impl.transform.map.MessagesByRoleMap;
 import com.bbva.rbvd.lib.r048.impl.util.Constants;
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import org.slf4j.Logger;
@@ -90,10 +91,14 @@ public class HandlerErrorBusiness {
             JsonObject jsonResponseObject = new JsonParser().parse(requestBody).getAsJsonObject();
             JsonObject jsonErrorObject = jsonResponseObject.getAsJsonObject("error");
             if (Objects.nonNull(jsonErrorObject)){
-                JsonObject jsonDetailsObject = jsonErrorObject.getAsJsonObject("details");
+                JsonArray jsonDetailsObject = jsonErrorObject.getAsJsonArray("details");
                 String errorCode = jsonErrorObject.get("code").getAsString();
                 if (Objects.nonNull(jsonDetailsObject) && !StringUtils.isEmpty(errorCode)){
-                    Map<String, String> mapDetails = new Gson().fromJson(jsonDetailsObject, HashMap.class);
+                    List<String> mapDetails = new Gson().fromJson(jsonDetailsObject, ArrayList.class);
+                    for (int i = 0; i<mapDetails.size(); i++){
+
+                    }
+
                     error = buildErrorRequest(scope,mapDetails, errorCode,channelId);
                 }
             }
